@@ -1,0 +1,129 @@
+#!/bin/ash -efu
+
+. shell-error
+. build-sh-functions
+
+# assumed: defined aptbox
+APT_Get_PrintLocalFile=
+print_uris()
+{
+	local out
+	local aptbox="${_APTBOXDIR}/aptbox"
+	[ -d "$aptbox" ] ||
+		fatal "$aptbox: Not a directory"
+
+	if ! out="$("$aptbox/apt-get" -q -y --print-uris install -- "$@" 2>&1)"; then
+		printf %s\\n "$out" >&2
+		fatal 'failed to calculate package file list.'
+	fi
+
+	local all_pattern="'\\([a-z]\\+\\):\\([^']\\+\\)' .*"
+	local local_pattern="'\\(file\\|copy\\):\\([^']\\+\\)' .*"
+
+	local all_uris
+	if ! all_uris="$(printf %s "$out" |sed -ne "s/^$all_pattern/\\2/pg")"; then
+		printf %s\\n "$out" >&2
+		fatal 'failed to filter package file list.'
+	fi
+
+	local local_uris cached_uris=
+	if ! local_uris="$(printf %s "$out" |sed -ne "s/^$local_pattern/\\2/pg")"; then
+		printf %s\\n "$out" >&2
+		fatal 'failed to filter package file list.'
+	fi
+
+	if [ "$all_uris" != "$local_uris" ]; then
+		if [ -z "$APT_Get_PrintLocalFile" ]; then
+			if ! out="$("$aptbox/apt-get" -o APT::Get::PrintLocalFile=yes -q -y --print-uris install -- "$@" 2>&1)"; then
+				printf %s\\n "$out" >&2
+				fatal 'calculated package file list is not local and apt-get does not support APT::Get::PrintLocalFile option.'
+			fi
+
+			if ! cached_uris="$(printf %s "$out" |sed -ne "s/^$all_pattern/\\2/pg")" ||
+			   [ -n "$cached_uris" ]; then
+				printf %s\\n "$out" >&2
+				fatal 'calculated package file list is not local and apt-get does not support APT::Get::PrintLocalFile option.'
+			fi
+
+			APT_Get_PrintLocalFile=1
+		fi
+
+		if [ -n "$verbose" ]; then
+			"$aptbox/apt-get" -y -d install -- "$@" >&2 ||
+				fatal 'failed to download packages from calculated package file list.'
+		else
+			if ! out="$("$aptbox/apt-get" -y -d install -- "$@" 2>&1)"; then
+				printf %s\\n "$out" >&2
+				fatal 'failed to download packages from calculated package file list.'
+			fi
+		fi
+
+		if ! out="$("$aptbox/apt-get" -o APT::Get::PrintLocalFile=yes -q -y --print-uris install -- "$@" 2>&1)"; then
+			printf %s\\n "$out" >&2
+			fatal 'failed to calculate local package file list.'
+		fi
+
+		if ! cached_uris="$(printf %s "$out" |grep ^/)" || [ -z "$cached_uris" ]; then
+			printf %s\\n "$out" >&2
+			fatal 'failed to calculate local package file list.'
+		fi
+	fi
+
+	if [ -n "$cached_uris" ]; then
+		[ -n "$local_uris" ] && local_uris="$local_uris
+$cached_uris" || local_uris="$cached_uris"
+	fi
+
+	printf %s "$local_uris" &&
+		verbose 'calculated package file list.'
+}
+
+opts="$common_opts${hasher_opts:+,$hasher_opts}${tools_opts:+,$tools_opts}"
+longopts="$common_longopts${hasher_longopts:+,$hasher_longopts}${tools_longopts:+$tools_longopts}"
+
+TEMP=`getopt -n $PROG -o $opts -l $longopts -- "$@"` || show_usage
+eval set -- "$TEMP"
+
+for func in parse_hasher_args parse_tools_args parse_common_args; do
+	$func "$@"
+	eval set -- "$TEMP"
+	[ -n "$TEMP" ] || break
+done
+eval set -- "$TEMP"
+[ "$#" -gt 0 ] && [ "$1" = '--' ] && shift ||:
+
+[ "$#" -ge 1 ] ||
+	show_usage "Directory name required"
+
+dir="$(readlink -ev "$1")"; shift
+
+[ "$#" -ge 1 ] ||
+	show_usage "Wrong number of arguments"
+
+requires="$@"
+
+pkg_filelist=
+pkg_initlist=
+common_names='setup filesystem rpm'
+
+if [ -f "$requires" ]; then
+	pkg_init_list="$(grep -h '^[^#]' "$requires")" ||:
+
+	pkg_filelist="$(print_uris $common_names $pkg_initlist)" ||
+		fatal 'Failed to generate package file list'
+else
+	pkg_filelist="$(print_uris $common_names $requires)" ||
+		fatal 'Failed to generate package file list'
+fi
+
+[ -n "$pkg_filelist" ] ||
+	exit 0
+
+printf %s\\n "$pkg_filelist" |
+	tr ' ' '\n' |
+	xargs -ri install -p -m644 $verbose -- '{}' "$dir/chroot/.in/" ||
+	fatal 'Could not copy packages'
+
+chroot-run $verbose $number_arg "$dir" -- mkdir -p -- "/.subworkdir/${destdir:-}"
+chroot-run $verbose $number_arg "$dir" -- \
+	/.host/find '/.in' -mindepth 1 -maxdepth 1 -exec mv -f '{}' "/.subworkdir/${destdir:-}" '+'

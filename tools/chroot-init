@@ -1,0 +1,72 @@
+#!/bin/ash -efu
+
+. shell-args
+. build-sh-functions
+
+show_help() {
+	cat <<EOF
+Usage: $PROG [Options] <workdir> [<packages>...]
+
+Hasher options:$hasher_help
+Tools options:$tools_help
+Common options:$common_help
+EOF
+	exit
+}
+
+opts="$common_opts${hasher_opts:+,$hasher_opts}${tools_opts:+,$tools_opts}"
+longopts="$common_longopts${hasher_longopts:+,$hasher_longopts}${tools_longopts:+$tools_longopts}"
+
+TEMP=`getopt -n $PROG -o $opts -l $longopts -- "$@"` || show_usage
+eval set -- "$TEMP"
+for func in parse_hasher_args parse_tools_args parse_common_args; do
+	$func "$@"
+	eval set -- "$TEMP"
+	[ -n "$TEMP" ] || break
+done
+eval set -- "$TEMP"
+[ "$#" -gt 0 ] && [ "$1" = '--' ] && shift ||:
+
+[ "$#" -ge 1 ] ||
+	show_usage "Directory name required"
+
+dir="$1"; shift
+verbose "Work directory: $dir"
+
+hasher_args="$verbose $quiet $number_arg $excludedocs \
+	${apt_config:+--apt-config="$apt_config"} \
+	${apt_prefix:+--apt-prefix="$apt_prefix"}"
+
+hsh_install() {
+	local dir="$1"; shift
+	local requires="$1"; shift
+
+	if [ -f "$requires" ]; then
+		grep -v '^[[:space:]]*#' "$requires" |
+			xargs -r hsh-install $hasher_args -- "$dir"
+	else
+		hsh-install $hasher_args -- "$dir" $requires
+	fi
+}
+
+hsh_initroot() {
+	hsh \
+		$hasher_args --initroot \
+		${target:+--target="$target"} \
+		${cachedir:+--cache-dir="$cachedir"} \
+		-- "$1" ||
+		fatal "$1: Unable to make initial chroot: rc=$?"
+}
+
+[ -d "$dir/chroot" ] ||
+	hsh_initroot "$dir"
+
+[ "$#" -eq 0 ] ||
+	hsh_install "$dir" $@
+
+subdir="$dir/chroot/.subworkdir"
+mkdir -p -- "$subdir"
+verbose "Subwork directory: $subdir"
+
+[ -n "$dataimage" -o -d "$subdir/chroot" ] ||
+	hsh_initroot "$subdir"

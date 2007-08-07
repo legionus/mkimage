@@ -1,0 +1,157 @@
+#!/bin/sh -e
+
+if [ -z "${__included_build_sh_functions:-}" ]; then
+__included_build_sh_functions=1
+
+. shell-error
+
+readonly hasher_opts=""
+readonly hasher_longopts="apt-config:,apt-prefix:,cache-dir:,target:,number:,excludedocs"
+readonly hasher_help="
+--apt-config=FILE                 path to custom apt.conf file;
+--apt-prefix=DIR                  path to apt directory prefix (e.g. /usr);
+--excludedocs                     do not install documentation files;
+--cache-dir=DIR                   cache directory;
+--target=ARCH                     target architecture;
+--number=NUMBER                   subconfig identifier;
+"
+
+apt_config=
+apt_prefix=
+cachedir=
+target=
+number=
+number_arg=
+excludedocs=
+parse_hasher_args() {
+	TEMP=
+	local ignore=
+	while [ "$#" -ne 0 ]; do
+		if [ -n "$ignore" ]; then
+			TEMP="$TEMP '$1'"
+			shift
+			continue
+		fi
+
+		case "$1" in
+			--apt-config)
+				apt_config="$(opt_check_read "$1" "$2")"
+				shift
+				;;
+			--apt-prefix)
+				apt_prefix="$(opt_check_dir "$1" "$2")"
+				shift
+				;;
+			--cache-dir)
+				cachedir="$(opt_check_dir "$1" "$2")"
+				shift
+				;;
+			--target) shift; target="$1"
+				;;
+			--number)
+				number="$(opt_check_number "$1" "$2")"
+				number_arg="--number=$number"
+				shift
+				;;
+			--excludedocs) excludedocs=--excludedocs
+				;;
+			--) ignore=1; continue
+				;;
+			*)  TEMP="$TEMP '$1'"
+				;;
+		esac
+		shift
+	done
+}
+
+readonly tools_opts=""
+readonly tools_longopts="dataimage,dest-dir:"
+readonly tools_help="
+--dataimage                       data image;
+--dest-dir=DIR                    destination directory inside data image;
+"
+
+dataimage=
+destdir=
+parse_tools_args() {
+	TEMP=
+	local ignore=
+	while [ "$#" -ne 0 ]; do
+		if [ -n "$ignore" ]; then
+			TEMP="$TEMP '$1'"
+			shift
+			continue
+		fi
+
+		case "$1" in
+			--dataimage) dataimage=1
+				;;
+			--dest-dir)
+				destdir="$(opt_check_dir "$1" "$2")"
+				shift
+				;;
+			--) ignore=1; continue
+				;;
+			*) TEMP="$TEMP '$1'"
+				;;
+		esac
+		shift
+	done
+}
+
+show_help() {
+	fatal "show_help(): Undefined function"
+}
+
+print_version() {
+	cat <<-EOF
+	$PROG version $PROG_VERSION
+	Written by Alexey Gladkov <legion@altlinux.org>
+
+	Copyright (C) 2007  Alexey Gladkov <legion@altlinux.org>
+	This is free software; see the source for copying conditions.  There is NO
+	warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+	EOF
+	exit
+}
+
+readonly common_opts="q,v,V,h"
+readonly common_longopts="quiet,verbose,version,help"
+readonly common_help="
+-q, --quiet                       try to be more quiet;
+-v, --verbose                     print a message for each action;
+-V, --version                     print program version and exit;
+-h, --help                        show this text and exit.
+"
+
+quiet=
+verbose=
+parse_common_args() {
+	TEMP=
+	local ignore=
+	while [ "$#" -ne 0 ]; do
+		if [ -n "$ignore" ]; then
+			TEMP="$TEMP '$1'"
+			shift
+			continue
+		fi
+
+		case "$1" in
+			-h|--help) show_help
+				;;
+			-q|--quiet) quiet=-q
+				;;
+			-v|--verbose) verbose=-v; quiet=
+				;;
+			-V|--version) print_version "$PROG"
+				;;
+			--) ignore=1; continue
+				;;
+			*) TEMP="$TEMP '$1'"
+				;;
+		esac
+		shift
+	done
+}
+
+fi

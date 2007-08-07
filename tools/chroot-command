@@ -1,0 +1,70 @@
+#!/bin/ash -efu
+
+. shell-args
+. build-sh-functions
+
+rc=0
+hshcmd=
+
+show_help() {
+	cat <<EOF
+Usage: $PROG [Options] <workdir> [<program>...]
+
+Hasher options:$hasher_help
+Common options:$common_help
+EOF
+	exit
+}
+
+chroot_run() {
+	local out="$($hshcmd -- "$@" 2>&1)" ||
+		{
+			rc=$?
+			printf %s\\n "$out" >&2
+			message '"$@": failed to run cmd in chroot.'		
+		}
+}
+
+chroot_exec() {
+	local out="$($hshcmd --execute="$1" 2>&1)" ||
+		{
+			rc=$?
+			printf %s\\n "$out" >&2
+			message '$1: failed to exec in chroot.'
+		}
+}
+
+opts="$common_opts${hasher_opts:+,$hasher_opts}"
+longopts="$common_longopts${hasher_longopts:+,$hasher_longopts}"
+
+TEMP=`getopt -n $PROG -o $opts -l $longopts -- "$@"` || show_usage
+eval set -- "$TEMP"
+
+for func in parse_hasher_args parse_common_args; do
+	$func "$@"
+	eval set -- "$TEMP"
+	[ -n "$TEMP" ] || break
+done
+eval set -- "$TEMP"
+[ "$#" -gt 0 ] && [ "$1" = '--' ] && shift ||:
+
+[ "$#" -gt 1 ] ||
+	show_usage "Wrong number of arguments"
+
+workdir="$(readlink -ve "$1")"; shift
+
+[ "$#" -ge 1 ] ||
+	show_usage "Wrong number of arguments"
+
+hshcmd="hsh-run \
+	${apt_config:+--apt-config="$apt_config"} \
+	${apt_prefix:+--apt-prefix="$apt_prefix"} \
+	$verbose $quiet $number_arg $excludedocs \
+	--rooter --save-fakeroot --mount=/dev/pts \
+	-- '$workdir'"
+
+case "$PROG" in
+	*-run)  chroot_run  "$@" ;;
+	*-exec) chroot_exec "$1" ;;
+esac
+exit $rc

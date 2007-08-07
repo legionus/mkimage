@@ -1,0 +1,3 @@
+#!/bin/ash -efu
+
+echo "Run: $*"

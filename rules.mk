@@ -1,0 +1,35 @@
+include $(CONFIGDIR)/hasher.mk
+include $(CONFIGDIR)/tools.mk
+
+WORKDIR = $(CURDIR)/.workdir
+SUBWORKDIR = $(WORKDIR)/chroot/.subworkdir
+OUTDIR = $(WORKDIR)/.outdir
+CACHEDIR = $(WORKDIR)/.cache
+
+.PHONY: $(SUBDIRS)
+
+all:: init build
+
+init: $(SUBDIRS)
+	mkdir -p -- $(WORKDIR) $(OUTDIR) $(CACHEDIR)
+	$(CHROOT_INIT) $(HASHER_FLAGS) $(TOOLS_FLAGS) -- "$(WORKDIR)" $(INITROOT_REQUIRES)
+
+build: $(SUBDIRS)
+ifdef REQUIRES
+ifdef DATAIMAGE
+	$(CHROOT_COPY) $(HASHER_FLAGS) $(TOOLS_FLAGS) -- "$(WORKDIR)" $(REQUIRES)
+else
+	$(CHROOT_INSTALL) $(HASHER_FLAGS) -- "$(SUBWORKDIR)" $(REQUIRES)
+endif
+endif # REQUIRES
+	$(CHROOT_BUILD) $(HASHER_FLAGS) $(TOOLS_FLAGS) -- "$(WORKDIR)" "$(OUTDIR)"
+
+clean: $(SUBDIRS)
+	$(CHROOT_CLEAN) $(HASHER_FLAGS) -- "$(WORKDIR)"
+
+distclean: $(SUBDIRS)
+	$(CHROOT_CLEAN) $(HASHER_FLAGS) -- "$(WORKDIR)"
+	rm -rf -- $(WORKDIR) $(OUTDIR) $(CACHEDIR)
+
+$(SUBDIRS):
+	$(MAKE) $(MFLAGS) -C $@ $(MAKECMDGOALS)
