@@ -10,30 +10,27 @@ all: $(SUBDIRS)
 ##################################################
 ### init
 ##################################################
-init: $(SUBDIRS)
+prepare: $(SUBDIRS)
 	mkdir -p -- $(APTBOXDIR) $(WORKDIR) $(OUTDIR) $(CACHEDIR)
 	[ -d "$(APTBOXDIR)/aptbox" ] || $(MKAPTBOX)
 
-init-chroot: init $(SUBDIRS)
-	$(CHROOT_INIT)
-
-init-data: init $(SUBDIRS)
+prepare-workdir: prepare $(SUBDIRS)
 	$(CHROOT_INIT)
 
 ##################################################
-### install reuires
+### build image
 ##################################################
-install-data: init-data $(SUBDIRS)
+build-data: prepare-workdir $(SUBDIRS)
 	$(CHROOT_COPY)
 
-install-chroot: init-chroot $(SUBDIRS)
+build-image: prepare-workdir $(SUBDIRS)
 	$(CHROOT_INSTALL)
 
 ##################################################
-### build
+### pack
 ##################################################
-build: init $(SUBDIRS)
-	$(CHROOT_BUILD)
+pack: prepare-workdir $(SUBDIRS)
+	$(CHROOT_PACK)
 
 ##################################################
 ### cleanup

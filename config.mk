@@ -8,10 +8,9 @@ CONFIGDIR = /usr/share/mkimage
 MKAPTBOX		= $(TOOLSDIR)/mki-mkaptbox
 
 # workdir tools
-CHROOT_INIT 		= $(TOOLSDIR)/chroot-init
-CHROOT_BUILD 		= $(TOOLSDIR)/chroot-build
+CHROOT_PREPARE		= $(TOOLSDIR)/chroot-prepare
+CHROOT_PACK 		= $(TOOLSDIR)/chroot-pack
 CHROOT_CLEAN 		= $(TOOLSDIR)/chroot-clean
-CHROOT_DISTCLEAN 	= $(TOOLSDIR)/chroot-distclean
 CHROOT_EXEC 		= $(TOOLSDIR)/chroot-exec
 CHROOT_RUN 		= $(TOOLSDIR)/chroot-run
 
