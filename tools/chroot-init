@@ -1,41 +1,21 @@
 #!/bin/ash -efu
 
-. shell-args
-. build-sh-functions
+. shell-error
 
-show_help() {
-	cat <<EOF
-Usage: $PROG [Options] <workdir> [<packages>...]
+verbose="${VERBOSE:+-v}"
+quiet="${QUIET:+-q}"
+TARGET="${TARGET:+--target="$TARGET"}"
+NUMBER="${NUMBER:+--number="$NUMBER"}"
+EXCLUDE_DOCS="${EXCLUDE_DOCS:+--excludedocs}"
+APT_CONFIG="${APT_CONFIG:+--apt-config="$APT_CONFIG"}"
+APT_PREFIX="${APT_PREFIX:+--apt-prefix="$APT_PREFIX"}"
+CACHEDIR="${CACHEDIR:+--cache-dir="$CACHEDIR"}"
+REQUIRES="${REQUIRES:-}"
 
-Hasher options:$hasher_help
-Tools options:$tools_help
-Common options:$common_help
-EOF
-	exit
-}
-
-opts="$common_opts${hasher_opts:+,$hasher_opts}${tools_opts:+,$tools_opts}"
-longopts="$common_longopts${hasher_longopts:+,$hasher_longopts}${tools_longopts:+$tools_longopts}"
-
-TEMP=`getopt -n $PROG -o $opts -l $longopts -- "$@"` || show_usage
-eval set -- "$TEMP"
-for func in parse_hasher_args parse_tools_args parse_common_args; do
-	$func "$@"
-	eval set -- "$TEMP"
-	[ -n "$TEMP" ] || break
-done
-eval set -- "$TEMP"
-[ "$#" -gt 0 ] && [ "$1" = '--' ] && shift ||:
-
-[ "$#" -ge 1 ] ||
-	show_usage "Directory name required"
-
-dir="$1"; shift
+dir="${WORKDIR:?workdir required}"
 verbose "Work directory: $dir"
 
-hasher_args="$verbose $quiet $number_arg $excludedocs \
-	${apt_config:+--apt-config="$apt_config"} \
-	${apt_prefix:+--apt-prefix="$apt_prefix"}"
+hasher_args="--save-fakeroot $verbose $quiet $NUMBER $EXCLUDE_DOCS $APT_CONFIG $APT_PREFIX"
 
 hsh_install() {
 	local dir="$1"; shift
@@ -43,30 +23,27 @@ hsh_install() {
 
 	if [ -f "$requires" ]; then
 		grep -v '^[[:space:]]*#' "$requires" |
-			xargs -r hsh-install $hasher_args -- "$dir"
+			xargs -r \
+				env -i PATH="$PATH" hsh-install $hasher_args -- "$dir"
 	else
-		hsh-install $hasher_args -- "$dir" $requires
+		env -i PATH="$PATH" hsh-install $hasher_args -- "$dir" $requires
 	fi
 }
 
 hsh_initroot() {
-	hsh \
-		$hasher_args --initroot \
-		${target:+--target="$target"} \
-		${cachedir:+--cache-dir="$cachedir"} \
-		-- "$1" ||
+	env -i PATH="$PATH" hsh --initroot $hasher_args $TARGET $CACHEDIR -- "$1" ||
 		fatal "$1: Unable to make initial chroot: rc=$?"
 }
 
 [ -d "$dir/chroot" ] ||
 	hsh_initroot "$dir"
 
-[ "$#" -eq 0 ] ||
-	hsh_install "$dir" $@
+[ -z "$REQUIRES" ] ||
+	hsh_install "$dir" "$REQUIRES"
 
 subdir="$dir/chroot/.subworkdir"
-mkdir -p -- "$subdir"
+mkdir $verbose -p -- "$subdir"
 verbose "Subwork directory: $subdir"
 
-[ -n "$dataimage" -o -d "$subdir/chroot" ] ||
+[ -n "$MKI_DATAIMAGE" -o -d "$subdir/chroot" ] ||
 	hsh_initroot "$subdir"

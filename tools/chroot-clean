@@ -1,51 +1,20 @@
 #!/bin/ash -efu
 
-. shell-args
-. build-sh-functions
+. shell-error
 
-show_help() {
-	cat <<EOF
-Usage: $PROG [Options] <workdir>
-
-Hasher options:$hasher_help
-Tools options:$tools_help
-Common options:$common_help
-EOF
-	exit
-}
-
-opts="$common_opts${hasher_opts:+,$hasher_opts}"
-longopts="$common_longopts${hasher_longopts:+,$hasher_longopts}"
-
-TEMP=`getopt -n $PROG -o $opts -l $longopts -- "$@"` || show_usage
-eval set -- "$TEMP"
-
-for func in parse_hasher_args parse_tools_args parse_common_args; do
-	$func "$@"
-	eval set -- "$TEMP"
-	[ -n "$TEMP" ] || break
-done
-eval set -- "$TEMP"
-[ "$#" -gt 0 ] && [ "$1" = '--' ] && shift ||:
-
-[ "$#" -ge 1 ] ||
-	fatal "Directory name required"
-
-dir="$(readlink -ev "$1")"; shift
+dir="${WORKDIR:?workdir required}"
 subdir="$dir/.subworkdir"
 
 verbose "Work directory: $dir"
 
+hasher_args="--clean ${VERBOSE:+-v} ${QUIET:+-q} ${NUMBER:+--number="$NUMBER"}"
+
 if [ -d "$subdir/chroot" ]; then
-	hsh --clean $verbose $quiet $number_arg "$subdir" ||
+	env -i PATH="$PATH" hsh $hasher_args "$subdir" ||
 		fatal "$subdir: Unable to clean workdir: rc=$?"
 fi
 
-if [ -d "$subdir" ]; then
-	rm -rf -- "$subdir"
-fi
-
 if [ -d "$dir/chroot" ]; then
-	hsh --clean $verbose $quiet $number_arg "$dir" ||
+	env -i PATH="$PATH" hsh $hasher_args "$dir" ||
 		fatal "$dir: Unable to clean workdir: rc=$?"
 fi

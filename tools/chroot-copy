@@ -1,14 +1,23 @@
 #!/bin/ash -efu
 
 . shell-error
-. build-sh-functions
+
+verbose="${VERBOSE:+-v}"
+quiet="${QUIET:+-q}"
+destdir="${DESTDIR:-}"
+NUMBER="${NUMBER:+--number="$NUMBER"}"
+REQUIRES="${REQUIRES:-}"
+
+aptboxdir="${APTBOXDIR:?global aptbox required}"
+dir="${WORKDIR:?workdir required}"
+
 
 # assumed: defined aptbox
 APT_Get_PrintLocalFile=
 print_uris()
 {
 	local out
-	local aptbox="${_APTBOXDIR}/aptbox"
+	local aptbox="$aptboxdir/aptbox"
 	[ -d "$aptbox" ] ||
 		fatal "$aptbox: Not a directory"
 
@@ -78,43 +87,23 @@ $cached_uris" || local_uris="$cached_uris"
 		verbose 'calculated package file list.'
 }
 
-opts="$common_opts${hasher_opts:+,$hasher_opts}${tools_opts:+,$tools_opts}"
-longopts="$common_longopts${hasher_longopts:+,$hasher_longopts}${tools_longopts:+$tools_longopts}"
-
-TEMP=`getopt -n $PROG -o $opts -l $longopts -- "$@"` || show_usage
-eval set -- "$TEMP"
-
-for func in parse_hasher_args parse_tools_args parse_common_args; do
-	$func "$@"
-	eval set -- "$TEMP"
-	[ -n "$TEMP" ] || break
-done
-eval set -- "$TEMP"
-[ "$#" -gt 0 ] && [ "$1" = '--' ] && shift ||:
-
-[ "$#" -ge 1 ] ||
-	show_usage "Directory name required"
-
-dir="$(readlink -ev "$1")"; shift
-
-[ "$#" -ge 1 ] ||
-	show_usage "Wrong number of arguments"
-
-requires="$@"
+verbose "Work directory: $dir"
+if [ "$REQUIRES" -eq 0 ]; then
+	message "Nothing to do"
+	exit  0
+fi
 
 pkg_filelist=
 pkg_initlist=
-common_names='setup filesystem rpm'
 
-if [ -f "$requires" ]; then
-	pkg_init_list="$(grep -h '^[^#]' "$requires")" ||:
-
-	pkg_filelist="$(print_uris $common_names $pkg_initlist)" ||
-		fatal 'Failed to generate package file list'
+if [ -f "$REQUIRES" ]; then
+	pkg_init_list="$(grep -h '^[^#]' "$REQUIRES")" ||:
 else
-	pkg_filelist="$(print_uris $common_names $requires)" ||
-		fatal 'Failed to generate package file list'
+	pkg_init_list="$REQUIRES"
 fi
+
+pkg_filelist="$(print_uris setup filesystem rpm $pkg_init_list)" ||
+	fatal 'Failed to generate package file list'
 
 [ -n "$pkg_filelist" ] ||
 	exit 0
@@ -124,6 +113,6 @@ printf %s\\n "$pkg_filelist" |
 	xargs -ri install -p -m644 $verbose -- '{}' "$dir/chroot/.in/" ||
 	fatal 'Could not copy packages'
 
-chroot-run $verbose $number_arg "$dir" -- mkdir -p -- "/.subworkdir/${destdir:-}"
-chroot-run $verbose $number_arg "$dir" -- \
-	/.host/find '/.in' -mindepth 1 -maxdepth 1 -exec mv -f '{}' "/.subworkdir/${destdir:-}" '+'
+chroot-run $NUMBER "$dir" -- mkdir $verbose -p -- "/.subworkdir/$destdir"
+chroot-run $NUMBER "$dir" -- \
+	/.host/find '/.in' -mindepth 1 -maxdepth 1 -exec mv $verbose -f '{}' "/.subworkdir/$destdir" '+'

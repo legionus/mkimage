@@ -5,7 +5,7 @@ TOOLSDIR = /usr/share/mkimage/tools
 CONFIGDIR = /usr/share/mkimage
 
 ### Global helpers
-TOOLS_FLAGS =
+MKAPTBOX		= $(TOOLSDIR)/mki-mkaptbox
 
 # workdir tools
 CHROOT_INIT 		= $(TOOLSDIR)/chroot-init
@@ -30,10 +30,8 @@ NO_CACHE =
 ### Per-image variables
 SUBDIRS = 
 
-DATA =
-INITROOT_REQUIRES =
-REQUIRES =
-OUTNAME =
+MKI_INITROOT_REQUIRES =
+MKI_REQUIRES =
 
-DESTDIR =
-DATAIMAGE =
+MKI_DESTDIR =
+MKI_DATAIMAGE =

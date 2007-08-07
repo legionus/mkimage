@@ -1,0 +1,14 @@
+#!/bin/ash -efu
+
+. shell-error
+
+verbose="${VERBOSE:+-v}"
+quiet="${QUIET:+-q}"
+TARGET="${TARGET:+--target="$TARGET"}"
+APT_CONFIG="${APT_CONFIG:+--apt-config="$APT_CONFIG"}"
+APT_PREFIX="${APT_PREFIX:+--apt-prefix="$APT_PREFIX"}"
+
+aptboxdir="${APTBOXDIR:?global aptbox required}"
+
+exec env -i PATH="$PATH" \
+	mkaptbox --without-stuff $verbose $quiet $TARGET $APT_CONFIG $APT_PREFIX -- $aptboxdir

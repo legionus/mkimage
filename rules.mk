@@ -1,35 +1,49 @@
-include $(CONFIGDIR)/hasher.mk
-include $(CONFIGDIR)/tools.mk
-
 WORKDIR = $(CURDIR)/.workdir
-SUBWORKDIR = $(WORKDIR)/chroot/.subworkdir
 OUTDIR = $(WORKDIR)/.outdir
 CACHEDIR = $(WORKDIR)/.cache
 
 .PHONY: $(SUBDIRS)
+.EXPORT_ALL_VARIABLES:
 
-all:: init build
+all: $(SUBDIRS)
 
+##################################################
+### init
+##################################################
 init: $(SUBDIRS)
-	mkdir -p -- $(WORKDIR) $(OUTDIR) $(CACHEDIR)
-	$(CHROOT_INIT) $(HASHER_FLAGS) $(TOOLS_FLAGS) -- "$(WORKDIR)" $(INITROOT_REQUIRES)
+	mkdir -p -- $(APTBOXDIR) $(WORKDIR) $(OUTDIR) $(CACHEDIR)
+	[ -d "$(APTBOXDIR)/aptbox" ] || $(MKAPTBOX)
 
-build: $(SUBDIRS)
-ifdef REQUIRES
-ifdef DATAIMAGE
-	$(CHROOT_COPY) $(HASHER_FLAGS) $(TOOLS_FLAGS) -- "$(WORKDIR)" $(REQUIRES)
-else
-	$(CHROOT_INSTALL) $(HASHER_FLAGS) -- "$(SUBWORKDIR)" $(REQUIRES)
-endif
-endif # REQUIRES
-	$(CHROOT_BUILD) $(HASHER_FLAGS) $(TOOLS_FLAGS) -- "$(WORKDIR)" "$(OUTDIR)"
+init-chroot: init $(SUBDIRS)
+	$(CHROOT_INIT)
 
+init-data: init $(SUBDIRS)
+	$(CHROOT_INIT)
+
+##################################################
+### install reuires
+##################################################
+install-data: init-data $(SUBDIRS)
+	$(CHROOT_COPY)
+
+install-chroot: init-chroot $(SUBDIRS)
+	$(CHROOT_INSTALL)
+
+##################################################
+### build
+##################################################
+build: init $(SUBDIRS)
+	$(CHROOT_BUILD)
+
+##################################################
+### cleanup
+##################################################
 clean: $(SUBDIRS)
-	$(CHROOT_CLEAN) $(HASHER_FLAGS) -- "$(WORKDIR)"
+	[ ! -d "$(WORKDIR)" ] || $(CHROOT_CLEAN)
 
-distclean: $(SUBDIRS)
-	$(CHROOT_CLEAN) $(HASHER_FLAGS) -- "$(WORKDIR)"
-	rm -rf -- $(WORKDIR) $(OUTDIR) $(CACHEDIR)
+distclean: clean $(SUBDIRS)
+	rm -rf -- $(WORKDIR) $(OUTDIR) $(CACHEDIR) $(APTBOXDIR)/aptbox
 
+##################################################
 $(SUBDIRS):
 	$(MAKE) $(MFLAGS) -C $@ $(MAKECMDGOALS)

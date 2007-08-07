@@ -1,52 +1,20 @@
 #!/bin/ash -efu
 
-. shell-args
-. build-sh-functions
+. shell-error
 
-show_help() {
-	cat <<EOF
-Usage: $PROG [Options] <workdir> [<packages>...]
+dir="${WORKDIR:?workdir required}"
+[ -d "$dir/chroot" ] ||
+	show_usage "$dir: Directory not look like hasher workdir"
 
-Hasher options:$hasher_help
-Common options:$common_help
-EOF
-	exit
-}
-
-opts="$common_opts${hasher_opts:+,$hasher_opts}"
-longopts="$common_longopts${hasher_longopts:+,$hasher_longopts}"
-
-TEMP=`getopt -n $PROG -o $opts -l $longopts -- "$@"` || show_usage
-eval set -- "$TEMP"
-for func in parse_hasher_args parse_common_args; do
-	$func "$@"
-	eval set -- "$TEMP"
-	[ -n "$TEMP" ] || break
-done
-eval set -- "$TEMP"
-[ "$#" -gt 0 ] && [ "$1" = '--' ] && shift ||:
-
-[ "$#" -ge 1 ] ||
-	show_usage "Directory name required"
-
-[ -d "$1/chroot" ] ||
-	show_usage "$1: Directory not look like hasher workdir"
-
-dir="$1"; shift
 verbose "Work directory: $dir"
 
-[ "$#" -gt 1 ] ||
-	show_usage "Packages required"
+hasher_args="${VERBOSE:+-v} ${QUIET:+-q} ${EXCLUDE_DOCS:+--excludedocs} ${NUMBER:+--number="$NUMBER"}"
+REQUIRES="${REQUIRES:-}"
 
-requires="$@"
-
-hasher_args="$verbose $quiet $number_arg $excludedocs \
-	${apt_config:+--apt-config="$apt_config"} \
-	${apt_prefix:+--apt-prefix="$apt_prefix"}"
-
-if [ -f "$requires" ]; then
-	grep -v '^[[:space:]]*#' "$requires" |
-		xargs -r hsh-install $hasher_args -- "$dir"
+if [ -f "$REQUIRES" ]; then
+	grep -v '^[[:space:]]*#' "$REQUIRES" |
+		xargs -r \
+			env -i PATH="$PATH" hsh-install $hasher_args -- "$dir"
 else
-	hsh-install $hasher_args -- "$dir" $requires
+	env -i PATH="$PATH" hsh-install $hasher_args -- "$dir" $REQUIRES
 fi
