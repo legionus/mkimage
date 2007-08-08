@@ -1,7 +1,8 @@
 include /usr/share/mkimage/config.mk
 
-REQUIRES = openntpd postfix
-DESTDIR = /RPM.disk1
+MKI_REQUIRES = openntpd postfix
+MKI_DESTDIR = /RPM.disk1
+MKI_DATAIMAGE = 1
 
 all: build-data
 

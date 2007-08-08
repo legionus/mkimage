@@ -5,8 +5,8 @@
 verbose="${VERBOSE:+-v}"
 quiet="${QUIET:+-q}"
 TARGET="${TARGET:+--target="$TARGET"}"
-APT_CONFIG="${APT_CONFIG:+--apt-config="$APT_CONFIG"}"
-APT_PREFIX="${APT_PREFIX:+--apt-prefix="$APT_PREFIX"}"
+APT_CONFIG="${HSH_APT_CONFIG:+--apt-config="$HSH_APT_CONFIG"}"
+APT_PREFIX="${HSH_APT_PREFIX:+--apt-prefix="$HSH_APT_PREFIX"}"
 
 aptboxdir="${APTBOXDIR:?global aptbox required}"
 

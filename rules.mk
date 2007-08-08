@@ -1,6 +1,7 @@
 WORKDIR = $(CURDIR)/.workdir
 OUTDIR = $(WORKDIR)/.outdir
 CACHEDIR = $(WORKDIR)/.cache
+MYMAKEFILE = $(CURDIR)/Makefile
 
 .PHONY: $(SUBDIRS)
 .EXPORT_ALL_VARIABLES:
@@ -15,7 +16,7 @@ prepare: $(SUBDIRS)
 	[ -d "$(APTBOXDIR)/aptbox" ] || $(MKAPTBOX)
 
 prepare-workdir: prepare $(SUBDIRS)
-	$(CHROOT_INIT)
+	$(CHROOT_PREPARE)
 
 ##################################################
 ### build image
@@ -24,7 +25,7 @@ build-data: prepare-workdir $(SUBDIRS)
 	$(CHROOT_COPY)
 
 build-image: prepare-workdir $(SUBDIRS)
-	$(CHROOT_INSTALL)
+	$(CHROOT_IMAGE_INSTALL) $(MKI_REQUIRES)
 
 ##################################################
 ### pack

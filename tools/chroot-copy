@@ -4,13 +4,15 @@
 
 verbose="${VERBOSE:+-v}"
 quiet="${QUIET:+-q}"
-destdir="${DESTDIR:-}"
-NUMBER="${NUMBER:+--number="$NUMBER"}"
-REQUIRES="${REQUIRES:-}"
+destdir="${MKI_DESTDIR:-}"
+NUMBER="${HSH_NUMBER:+--number="$HSH_NUMBER"}"
+REQUIRES="${MKI_REQUIRES:-}"
 
 aptboxdir="${APTBOXDIR:?global aptbox required}"
 dir="${WORKDIR:?workdir required}"
 
+ownership="$(stat -c '%u:%g' "$dir/chroot")" ||
+	fatal "$dir/chroot: Unable to get ownership"
 
 # assumed: defined aptbox
 APT_Get_PrintLocalFile=
@@ -88,7 +90,7 @@ $cached_uris" || local_uris="$cached_uris"
 }
 
 verbose "Work directory: $dir"
-if [ "$REQUIRES" -eq 0 ]; then
+if [ -z "$REQUIRES" ]; then
 	message "Nothing to do"
 	exit  0
 fi
@@ -113,6 +115,11 @@ printf %s\\n "$pkg_filelist" |
 	xargs -ri install -p -m644 $verbose -- '{}' "$dir/chroot/.in/" ||
 	fatal 'Could not copy packages'
 
-chroot-run $NUMBER "$dir" -- mkdir $verbose -p -- "/.subworkdir/$destdir"
-chroot-run $NUMBER "$dir" -- \
-	/.host/find '/.in' -mindepth 1 -maxdepth 1 -exec mv $verbose -f '{}' "/.subworkdir/$destdir" '+'
+cat > "$dir/chroot/tmp/script" <<EOF
+#!/bin/sh -efux
+mkdir $verbose -p -- '/.subworkdir/$destdir'
+find /.in -mindepth 1 -maxdepth 1 |xargs -r cp $verbose -alt '/.subworkdir/$destdir' --
+EOF
+chroot-exec "$dir/chroot/tmp/script"
+
+find "$dir/chroot/.in/" -mindepth 1 -maxdepth 1 |xargs -r rm -rf --

@@ -1,6 +1,7 @@
 include /usr/share/mkimage/config.mk
 
-REQUIRES = basesystem mkrpmbox
+MKI_REQUIRES = xsltproc
+MKI_INITROOT_REQUIRES = mksh
 
 all: build-image
 

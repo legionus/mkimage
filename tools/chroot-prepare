@@ -4,46 +4,45 @@
 
 verbose="${VERBOSE:+-v}"
 quiet="${QUIET:+-q}"
-TARGET="${TARGET:+--target="$TARGET"}"
-NUMBER="${NUMBER:+--number="$NUMBER"}"
-EXCLUDE_DOCS="${EXCLUDE_DOCS:+--excludedocs}"
-APT_CONFIG="${APT_CONFIG:+--apt-config="$APT_CONFIG"}"
-APT_PREFIX="${APT_PREFIX:+--apt-prefix="$APT_PREFIX"}"
-CACHEDIR="${CACHEDIR:+--cache-dir="$CACHEDIR"}"
 REQUIRES="${REQUIRES:-}"
+save_fakeroot=
 
 dir="${WORKDIR:?workdir required}"
 verbose "Work directory: $dir"
 
-hasher_args="--save-fakeroot $verbose $quiet $NUMBER $EXCLUDE_DOCS $APT_CONFIG $APT_PREFIX"
-
-hsh_install() {
-	local dir="$1"; shift
-	local requires="$1"; shift
-
-	if [ -f "$requires" ]; then
-		grep -v '^[[:space:]]*#' "$requires" |
-			xargs -r \
-				env -i PATH="$PATH" hsh-install $hasher_args -- "$dir"
-	else
-		env -i PATH="$PATH" hsh-install $hasher_args -- "$dir" $requires
-	fi
-}
-
 hsh_initroot() {
-	env -i PATH="$PATH" hsh --initroot $hasher_args $TARGET $CACHEDIR -- "$1" ||
-		fatal "$1: Unable to make initial chroot: rc=$?"
+	env -i PATH="$PATH" \
+	hsh \
+	    --initroot \
+	    --pkg-init-list='basesystem fakeroot>=0:0.7.3' \
+	    --pkg-build-list='' \
+	    $verbose $quiet \
+	    $save_fakeroot \
+	    ${TARGET:+--target="$TARGET"} \
+	    ${HSH_NUMBER:+--number="$HSH_NUMBER"} \
+	    ${HSH_EXCLUDE_DOCS:+--excludedocs} \
+	    ${HSH_APT_CONFIG:+--apt-config="$HSH_APT_CONFIG"} \
+	    ${HSH_APT_PREFIX:+--apt-prefix="$HSH_APT_PREFIX"} \
+	    ${HSH_CACHEDIR:+--cache-dir="$HSH_CACHEDIR"} \
+	    -- "$1" ||
+	fatal "$1: Unable to make initial chroot: rc=$?"
 }
 
 [ -d "$dir/chroot" ] ||
 	hsh_initroot "$dir"
 
-[ -z "$REQUIRES" ] ||
-	hsh_install "$dir" "$REQUIRES"
+[ -z "$MKI_INITROOT_REQUIRES" ] ||
+	chroot-install $MKI_INITROOT_REQUIRES
+
+ownership="$(stat -c '%u:%g' "$dir/chroot")" ||
+	fatal "$dir/chroot: Unable to get ownership"
 
 subdir="$dir/chroot/.subworkdir"
-mkdir $verbose -p -- "$subdir"
+mkdir $verbose -p -m1770 -- "$subdir"
+chown $verbose "$ownership" -- "$subdir"
+
 verbose "Subwork directory: $subdir"
 
+save_fakeroot='--save-fakeroot'
 [ -n "$MKI_DATAIMAGE" -o -d "$subdir/chroot" ] ||
 	hsh_initroot "$subdir"

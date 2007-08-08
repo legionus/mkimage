@@ -3,13 +3,18 @@
 . shell-error
 
 dir="${WORKDIR:?workdir required}"
+
+case "$PROG" in
+	*-image-*) dir="$dir/chroot/.subworkdir" ;;
+esac
+
 [ -d "$dir/chroot" ] ||
 	show_usage "$dir: Directory not look like hasher workdir"
 
 verbose "Work directory: $dir"
 
-hasher_args="${VERBOSE:+-v} ${QUIET:+-q} ${EXCLUDE_DOCS:+--excludedocs} ${NUMBER:+--number="$NUMBER"}"
-REQUIRES="${REQUIRES:-}"
+hasher_args="${VERBOSE:+-v} ${QUIET:+-q} ${HSH_EXCLUDE_DOCS:+--excludedocs} ${HSH_NUMBER:+--number="$HSH_NUMBER"}"
+REQUIRES="$@"
 
 if [ -f "$REQUIRES" ]; then
 	grep -v '^[[:space:]]*#' "$REQUIRES" |

@@ -3,11 +3,11 @@
 . shell-error
 
 dir="${WORKDIR:?workdir required}"
-subdir="$dir/.subworkdir"
+subdir="$dir/chroot/.subworkdir"
 
 verbose "Work directory: $dir"
 
-hasher_args="--clean ${VERBOSE:+-v} ${QUIET:+-q} ${NUMBER:+--number="$NUMBER"}"
+hasher_args="--clean ${VERBOSE:+-v} ${QUIET:+-q} ${HSH_NUMBER:+--number="$HSH_NUMBER"}"
 
 if [ -d "$subdir/chroot" ]; then
 	env -i PATH="$PATH" hsh $hasher_args "$subdir" ||
