@@ -1,0 +1,50 @@
+#!/bin/ash -efu
+
+. shell-error
+
+no_cache="${NO_CACHE:-}"
+dir="${WORKDIR:?work directory required}"
+outdir="${OUTDIR:?out directory required}"
+cachedir="${CACHEDIR:?cache directory required}"
+makefile="${MYMAKEFILE:?makefile required}"
+
+payload() {
+	stat --printf='%A\t%s\t%Y\n' "$makefile"
+
+	cd "$aptbox/var"
+	find -mindepth 1 -type f -printf '%s\t%p\n'
+	cd - >/dev/null
+
+	cd "$outdir"
+	find -mindepth 1 -printf '%M\t%s\t%T@\t%p\n'
+	cd - >/dev/null
+}
+
+digest() {
+	payload |
+		sha256sum - |
+		cut -d\  -f1
+}
+
+[ -z "$no_cache" ] ||
+	exit 1
+
+aptbox="$dir/aptbox"
+[ -d "$aptbox" ] ||
+	exit 1
+
+"$aptbox"/apt-get update
+
+sha="`digest`"
+
+cachefile="$cachedir/mkicache"
+if [ ! -s "$cachefile" ]; then
+	printf '%s\n' "$sha" > "$cachefile"
+	exit 1
+fi
+
+old_sha="`head -1 "$cachefile"`"
+if [ "$old_sha" != "$sha" ]; then
+	printf '%s\n' "$sha" > "$cachefile"
+	exit 1
+fi

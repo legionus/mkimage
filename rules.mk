@@ -16,22 +16,28 @@ prepare: $(SUBDIRS)
 	[ -d "$(APTBOXDIR)/aptbox" ] || $(MKAPTBOX)
 
 prepare-workdir: prepare $(SUBDIRS)
-	$(CHROOT_PREPARE)
+	$(RESULT_CHANGE) || $(CHROOT_PREPARE)
+
+##################################################
+### hooks
+##################################################
+run-scripts: prepare-workdir $(SUBDIRS)
+	$(RESULT_CHANGE) || $(CHROOT_RUN_SCRIPTS)
 
 ##################################################
 ### build image
 ##################################################
 build-data: prepare-workdir $(SUBDIRS)
-	$(CHROOT_COPY)
+	$(RESULT_CHANGE) || $(CHROOT_COPY)
 
 build-image: prepare-workdir $(SUBDIRS)
-	$(CHROOT_IMAGE_INSTALL) $(MKI_REQUIRES)
+	$(RESULT_CHANGE) || $(CHROOT_IMAGE_INSTALL) $(MKI_REQUIRES)
 
 ##################################################
 ### pack
 ##################################################
 pack: prepare-workdir $(SUBDIRS)
-	$(CHROOT_PACK)
+	$(RESULT_CHANGE) || $(CHROOT_PACK)
 
 ##################################################
 ### cleanup
