@@ -40,8 +40,12 @@ ownership="$(stat -c '%u:%g' "$dir/chroot")" ||
 subdir="$dir/chroot/.subworkdir"
 mkdir $verbose -p -m1770 -- "$subdir"
 chown $verbose "$ownership" -- "$subdir"
-
 verbose "Subwork directory: $subdir"
+
+our="$dir/chroot/.our"
+mkdir $verbose -p -m1770 -- "$our"
+chown $verbose "$ownership" -- "$our"
+verbose "Output directory for rooter user: $our"
 
 save_fakeroot='--save-fakeroot'
 [ -n "$MKI_DATAIMAGE" -o -d "$subdir/chroot" ] ||

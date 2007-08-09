@@ -7,6 +7,7 @@ CONFIGDIR = /usr/share/mkimage
 ### Global helpers
 MKAPTBOX		= $(TOOLSDIR)/mki-mkaptbox
 RESULT_CHANGE		= $(TOOLSDIR)/mki-result-check
+CHROOT_SCRIPTS		= $(TOOLSDIR)/chroot-scripts
 
 # workdir tools
 CHROOT_PREPARE 		= $(TOOLSDIR)/chroot-prepare
@@ -16,7 +17,8 @@ CHROOT_EXEC 		= $(TOOLSDIR)/chroot-exec
 CHROOT_RUN 		= $(TOOLSDIR)/chroot-run
 
 # subworkdir tools
-CHROOT_COPY 		= $(TOOLSDIR)/chroot-copy
+CHROOT_COPY_PKGS	= $(TOOLSDIR)/chroot-copy-pkgs
+CHROOT_COPY_TREE	= $(TOOLSDIR)/chroot-copy-tree
 CHROOT_INSTALL		= $(TOOLSDIR)/chroot-install
 CHROOT_IMAGE_INSTALL	= $(TOOLSDIR)/chroot-image-install
 
@@ -36,5 +38,12 @@ SUBDIRS =
 MKI_INITROOT_REQUIRES =
 MKI_REQUIRES =
 
+MKI_DATA_TREE =
 MKI_DESTDIR =
 MKI_DATAIMAGE =
+
+### Pack image
+MKI_OUTNAME =
+
+# MKI_PACKTYPE := squash | tar.bz2 | tar.gz
+MKI_PACKTYPE =

@@ -1,0 +1,34 @@
+#!/bin/ash -efu
+
+. shell-error
+
+curdir="${CURDIR:?Current directory required}"
+dir="${WORKDIR:?Work directory required}"
+
+scriptdir="$curdir/scripts.d"
+[ -d "$scriptdir" ] ||
+	exit 0
+
+chroot="$dir/chroot"
+[ -d "$chroot" ] ||
+	exit 0
+
+cat > "$chroot/.in/start.sh" <<EOF
+#!/bin/sh -efu
+export WORKDIR=/.subworkdir
+/.in/script.sh
+EOF
+
+find "$scriptdir" -mindepth 1 -maxdepth 1 -type f |
+while read script; do
+	[ -x "$script" ] || continue
+
+	cp -f -- "$script" "$chroot/.in/script.sh"
+	chmod 755 -- "$chroot/.in/script.sh"
+
+	chroot-exec "$chroot/.in/start.sh" ||
+		fatal "$script: Unable to run script"
+done
+
+cd "$chroot/.in"
+rm -rf -- "start.sh" "script.sh"

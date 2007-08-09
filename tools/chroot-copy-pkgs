@@ -116,9 +116,10 @@ printf %s\\n "$pkg_filelist" |
 	fatal 'Could not copy packages'
 
 cat > "$dir/chroot/tmp/script" <<EOF
-#!/bin/sh -efux
+#!/bin/sh -efu
+rm -rf -- '/.subworkdir/$destdir'
 mkdir $verbose -p -- '/.subworkdir/$destdir'
-find /.in -mindepth 1 -maxdepth 1 |xargs -r cp $verbose -alt '/.subworkdir/$destdir' --
+/.host/find /.in -mindepth 1 -maxdepth 1 |xargs -r cp $verbose -alt '/.subworkdir/$destdir' --
 EOF
 chroot-exec "$dir/chroot/tmp/script"
 

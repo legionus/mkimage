@@ -1,3 +1,55 @@
 #!/bin/ash -efu
 
-echo "Run: $*"
+. shell-error
+
+verbose="${VERBOSE:+-v}"
+quiet="${QUIET:+-q}"
+dir="${WORKDIR:?work directory required}"
+outdir="${OUTDIR:?output directory required}"
+outname="${MKI_OUTNAME:?output name required}"
+type="${MKI_PACKTYPE:?pack type required}"
+
+chroot="$dir/chroot"
+[ -d "$chroot" ] ||
+	exit 0
+
+outname="${outname##*/}"
+
+case "$type" in
+	squash)
+		cat >"$chroot/tmp/packimage.sh"<<-EOF
+		#!/bin/sh -efu
+		mksquashfs /.subworkdir '/.our/$outname' \
+			-e /.subworkdir/.host /.subworkdir/.in /.subworkdir/.out /.subworkdir/.fakedata
+		EOF
+		;;
+	tar.bz2)
+		cat >"$chroot/tmp/packimage.sh"<<-EOF
+		#!/bin/sh -efu
+		cd /.subworkdir
+		tar \
+			--numeric-owner \
+			--exclude .host \
+			--exclude .in \
+			--exclude .out \
+			--exclude .fakedata \
+			-jcf '/.our/$outname' .
+		EOF
+		;;
+	tar.gz)
+		cat >"$chroot/tmp/packimage.sh"<<-EOF
+		#!/bin/sh -efu
+		cd /.subworkdir
+		tar \
+			--numeric-owner \
+			--exclude .host \
+			--exclude .in \
+			--exclude .out \
+			--exclude .fakedata \
+			-zcf '/.our/$outname' .
+		EOF
+		;;
+esac
+
+chroot-exec "$chroot/tmp/packimage.sh"
+mv $verbose -f -- "$chroot/.our/$outname" "$outdir"

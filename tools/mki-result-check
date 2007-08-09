@@ -12,7 +12,7 @@ payload() {
 	stat --printf='%A\t%s\t%Y\n' "$makefile"
 
 	cd "$aptbox/var"
-	find -mindepth 1 -type f -printf '%s\t%p\n'
+	find -name '*_release' -exec cat '{}' '+'
 	cd - >/dev/null
 
 	cd "$outdir"
@@ -20,14 +20,11 @@ payload() {
 	cd - >/dev/null
 }
 
-digest() {
-	payload |
-		sha256sum - |
-		cut -d\  -f1
-}
-
-[ -z "$no_cache" ] ||
+sha=
+invalid_cache() {
+	printf '%s\n' "$sha" > "$cachefile"
 	exit 1
+}
 
 aptbox="$dir/aptbox"
 [ -d "$aptbox" ] ||
@@ -35,16 +32,15 @@ aptbox="$dir/aptbox"
 
 "$aptbox"/apt-get update
 
-sha="`digest`"
+sha="`payload |sha256sum - |cut -d\  -f1`"
 
 cachefile="$cachedir/mkicache"
-if [ ! -s "$cachefile" ]; then
-	printf '%s\n' "$sha" > "$cachefile"
-	exit 1
-fi
+[ -s "$cachefile" ] ||
+	invalid_cache
 
 old_sha="`head -1 "$cachefile"`"
-if [ "$old_sha" != "$sha" ]; then
-	printf '%s\n' "$sha" > "$cachefile"
-	exit 1
-fi
+[ "$old_sha" = "$sha" ] ||
+	invalid_cache
+
+[ -z "$no_cache" ] ||
+	invalid_cache
