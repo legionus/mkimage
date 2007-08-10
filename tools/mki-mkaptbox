@@ -10,5 +10,8 @@ APT_PREFIX="${HSH_APT_PREFIX:+--apt-prefix="$HSH_APT_PREFIX"}"
 
 aptboxdir="${APTBOXDIR:?global aptbox required}"
 
+[ ! -d "$aptboxdir/aptbox" ]
+	exec env -i PATH="$PATH" "$aptboxdir"/aptbox/apt-get update
+
 exec env -i PATH="$PATH" \
 	mkaptbox --without-stuff $verbose $quiet $TARGET $APT_CONFIG $APT_PREFIX -- $aptboxdir

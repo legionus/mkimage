@@ -13,7 +13,7 @@ all: $(SUBDIRS)
 ##################################################
 prepare: $(SUBDIRS)
 	mkdir -p -- $(APTBOXDIR) $(WORKDIR) $(OUTDIR) $(CACHEDIR)
-	[ -d "$(APTBOXDIR)/aptbox" ] || $(MKAPTBOX)
+	$(MKAPTBOX)
 
 prepare-workdir: prepare $(SUBDIRS)
 	$(CHROOT_PREPARE)
