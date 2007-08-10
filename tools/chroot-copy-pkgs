@@ -95,25 +95,24 @@ if [ -z "$REQUIRES" ]; then
 	exit  0
 fi
 
-pkg_filelist=
 pkg_initlist=
-
 if [ -f "$REQUIRES" ]; then
 	pkg_init_list="$(grep -h '^[^#]' "$REQUIRES")" ||:
 else
 	pkg_init_list="$REQUIRES"
 fi
 
-pkg_filelist="$(print_uris setup filesystem rpm $pkg_init_list)" ||
-	fatal 'Failed to generate package file list'
-
-[ -n "$pkg_filelist" ] ||
-	exit 0
-
-printf %s\\n "$pkg_filelist" |
+printf '%s\n' "$pkg_init_list" |
 	tr ' ' '\n' |
-	xargs -ri install -p -m644 $verbose -- '{}' "$dir/chroot/.in/" ||
+while read p; do
+	[ -n "$p" ] ||
+		continue
+
+	print_uris $p |
+		tr ' ' '\n' |
+		xargs -r cp $verbose -ut "$dir/chroot/.in/" -- ||
 	fatal 'Could not copy packages'
+done
 
 cat > "$dir/chroot/tmp/script" <<EOF
 #!/bin/sh -efu
