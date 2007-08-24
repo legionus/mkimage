@@ -1,0 +1,13 @@
+#!/bin/ash -efu
+
+. "${0%/*}"/mki-sh-functions
+
+verbose "has started executing."
+
+type="${MKI_PACKTYPE:?pack type required}"
+
+case "$type" in
+	isoboot|isodata|squash|tarbz2|data) ;;
+	*) type='custom' ;;
+esac
+exec mki-pack-$type

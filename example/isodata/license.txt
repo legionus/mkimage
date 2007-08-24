@@ -1,0 +1,82 @@
+Notification: terms of use of the Software and the Works Contained therein
+
+Hereby ALT Linux informs the owner (you) of the present copy of
+the ALT Linux 4.0 Server distribution (hereafter referred to as "the
+Distribution") about the following terms of use of the Software included
+in the Distribution:
+
+1. Copyright in the Works
+
+Computer programs and other works included in the Distribution (hereafter
+referred to as "the Works") are protected by copyright according to the
+Berne Convention for the Protection of Literary and Artistic Works,
+other international treaties and national legislation of the country
+where the Distribution has been purchased.
+
+A holder of the copyright in a particular Works is indicated in a Work
+concerned or in the documentation supplied with it.
+
+2. Fair use of the Works
+
+You can, without any further authorization by a copyright holder,
+use the Works in a limited number of ways as it is permitted under
+the Berne Convention or the Protection of Literary and Artistic Works,
+other international treaties in the field and national legislation of the
+country where the Distribution has been purchased (right of a fair use).
+
+3. The use of Free Works
+
+All the Works in the Distribution, except for the Works listed below,
+are licensed to you under so called 'free licenses' and, therefore, are
+Free Works. Under a free license, you are granted the following rights
+in addition to the usual right of fair use:
+
+- to obtain and to study the source code of a Work;
+- to install, copy and use a Work on an unlimited number of computers
+for any purpose;
+- to make any modifications to a Work;
+- to launch, lease, and distribute a Work by any means either in the
+original or a modified form, either gratis or for a fee, provided
+that you accompany them with a copy of the original license agreement
+(free license).
+
+By performing one of the acts of use allowed under a free licence,
+when this use would otherwise exceed the scope of a fair use of a Work,
+you agree to the terms of that license.
+
+Upon request from you, or any third party interested, made within three
+years from the day of publication of this Distribution, ALT Linux will
+give the source code of a Work for the cost of physically performing
+source distribution.
+
+4. Other Rights
+
+Any rights which have not been explicitly granted to you under a license
+agreement or according to applicable laws, or which can not be alienated
+from their owner under the laws of the country where the Distribution
+has been purchased, are retained by their owners.
+
+5. Rights in texts, designs and trademarks
+
+All texts, designs, and trademarks which are incorporated in the
+Distribution or imprinted on the box and the cover of the Distribution
+and which constitute an intellectual property of ALT Linux are subject
+to copyright, trademark and design protection according to international
+treaties and legislation of the country where the Distribution has been
+purchased. Their use requires an authorization by ALT Linux.
+
+6. Limited warranty
+
+- Should your copy of the Distribution contain manufacturing defects
+ALT Linux will change it without any charge.
+- ALT Linux hopes that the Distribution will be useful for you, but in
+no circumstances will be liable for any special, incidental, direct or
+indirect damages whatsoever (including, but not limited to, damages for
+loss of business, interruption of business, financial loss, legal fees and
+penalties resulting from a court judgement, or any other consequential
+loss) arising out of the use or inability to use the Distribution or
+any of the Works contained therein.
+- Users are responsible for abidance by national Laws while using the
+Distribution.
+- ALT Linux takes no obligations to provide a users support, unless it
+is subject of a special agreement.

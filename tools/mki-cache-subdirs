@@ -1,0 +1,16 @@
+#!/bin/ash -efu
+
+subdirs="${SUBDIRS:?subdirectories required}"
+
+[ -n "$subdirs" ] ||
+	exit 0
+
+payload() {
+	local d outdir
+
+	for d in $subdirs; do
+	    	cd "$curdir/$d/$workdirname/$outdirname"
+		find -mindepth 1 -printf '%M\t%s\t%T@\t%p\n'
+		cd - >/dev/null
+	done
+}

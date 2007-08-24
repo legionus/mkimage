@@ -1,0 +1,21 @@
+#!/bin/ash -efu
+
+. "${0%/*}"/mki-sh-functions
+
+verbose "has started executing."
+
+[ -d "$chroot" ] ||
+	fatal "$dir: not look like a work directory of hasher."
+
+cp_args=
+dev_number1="$(stat -c '%d' "$outdir")"
+dev_number2="$(stat -c '%d' "$chroot/.our")"
+
+[ "$dev_number1" -ne "$dev_number2" ] ||
+	cp_args='-l'
+
+cd "$chroot/.our"
+find -mindepth 1 -maxdepth 1 |
+	xargs -r cp $cp_args -aft "$outdir" --
+
+mki-run -- find /.our -mindepth 1 -maxdepth 1 -execdir rm -rf -- '{}' '+'

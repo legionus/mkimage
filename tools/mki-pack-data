@@ -1,0 +1,18 @@
+#!/bin/ash -efu
+
+. "${0%/*}"/mki-sh-functions
+
+[ -d "$chroot" ] ||
+	fatal "$dir: not look like a work directory of hasher."
+
+cat >"$chroot/tmp/packimage.sh"<<-EOF
+#!/bin/sh -efu
+cd /.our
+/.host/find -mindepth 1 -maxdepth 1 -exec rm -rf -- '{}' '+'
+/.host/find /.image/ -mindepth 1 -maxdepth 1 -exec cp -alt /.our/ -- '{}' '+'
+#/.host/find /.image/ -mindepth 1 -maxdepth 1 -exec rm -rf -- '{}' '+'
+EOF
+
+mki-exec "$chroot/tmp/packimage.sh"
+rm -f -- "$chroot/tmp/packimage.sh"
+mki-copy-our2out

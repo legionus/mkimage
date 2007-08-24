@@ -1,0 +1,25 @@
+#!/bin/ash -efu
+
+aptbox="$dir/aptbox"
+
+[ -d "$aptbox" ] ||
+	fatal "$aptbox: not a directory."
+
+payload() {
+	stat --printf='%A\t%s\t%Y\n' "$makefile"
+
+	cd "$aptbox/var"
+	find -name '*_release' -exec cat '{}' '+'
+	cd - >/dev/null
+
+	cd "$outdir"
+	find -mindepth 1 -printf '%M\t%s\t%T@\t%p\n'
+	cd - >/dev/null
+
+	local d outdir
+	for d in ${SUBDIRS:-}; do
+	    	cd "$curdir/$d/$workdirname/$outdirname"
+		find -mindepth 1 -printf '%M\t%s\t%T@\t%p\n'
+		cd - >/dev/null
+	done
+}

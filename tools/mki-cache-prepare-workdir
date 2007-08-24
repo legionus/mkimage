@@ -1,0 +1,24 @@
+#!/bin/ash -efu
+
+pkgboxdir="${PKGBOX:?directory required}"
+
+aptbox="$dir/aptbox"
+pkgbox="$pkgboxdir/aptbox"
+
+[ -d "$aptbox" ] ||
+	fatal "$aptbox: not a directory."
+
+[ -d "$pkgbox" ] ||
+	fatal "$pkgbox: not a directory."
+
+payload() {
+	stat --printf='%A\t%s\t%Y\n' "$makefile"
+
+	cd "$aptbox/var"
+	find -name '*_release' -exec cat '{}' '+'
+	cd - >/dev/null
+
+	cd "$pkgbox/var"
+	find -name '*_release' -exec cat '{}' '+'
+	cd - >/dev/null
+}

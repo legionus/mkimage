@@ -1,0 +1,39 @@
+#!/bin/ash -efu
+
+. "${0%/*}"/mki-sh-functions
+
+verbose "has started executing."
+
+outname="${MKI_OUTNAME:-outname}"
+outname="${outname##*/}"
+
+[ -d "$chroot" ] ||
+	fatal "$dir: not look like a work directory of hasher."
+
+mki-install mkisofs
+
+cat >"$chroot/tmp/packimage.sh"<<EOF
+#!/bin/sh -efu
+cd /tmp
+cat > .mkisofsrc <<-__EOF__
+	APPI="${ISODATA_APPI:-}"
+	COPY="${ISODATA_COPY:-}"
+	ABST="${ISODATA_ABST:-}"
+	BIBL="${ISODATA_BIBL:-}"
+	PREP="${ISODATA_PREP:-}"
+	PUBL="${ISODATA_PUBL:-}"
+	SYSI="${ISODATA_SYSI:-}"
+	VOLI="${ISODATA_VOLI:-}"
+	VOLS="${ISODATA_VOLS:-}"
+__EOF__
+		
+rc=0
+mkisofs $verbose -T -J -l -r -U -o '/.our/$outname' /.image/ || rc=\$?
+
+rm -f -- .mkisofsrc
+exit \$rc
+EOF
+
+mki-exec "$chroot/tmp/packimage.sh"
+rm -f -- "$chroot/tmp/packimage.sh"
+mki-copy-our2out

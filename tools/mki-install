@@ -1,17 +1,15 @@
 #!/bin/ash -efu
 
-. shell-error
+. "${0%/*}"/mki-sh-functions
 
-dir="${WORKDIR:?workdir required}"
+verbose "has started executing."
 
 case "$PROG" in
-	*-image-*) dir="$dir/chroot/.subworkdir" ;;
+	*-image-*) dir="$subdir" ;;
 esac
 
-[ -d "$dir/chroot" ] ||
-	show_usage "$dir: Directory not look like hasher workdir"
-
-verbose "Work directory: $dir"
+[ -d "$chroot" ] ||
+	fatal "$dir: not look like a work directory of hasher."
 
 hasher_args="${VERBOSE:+-v} ${QUIET:+-q} ${HSH_EXCLUDE_DOCS:+--excludedocs} ${HSH_NUMBER:+--number="$HSH_NUMBER"}"
 REQUIRES="$@"

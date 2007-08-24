@@ -1,0 +1,25 @@
+#!/bin/sh
+
+#mkdir -p -- "$WORKDIR/ALTLinux/base"
+
+if [ -d "$WORKDIR/ALTLinux/RPMS.base" ]; then
+	/.host/find "$WORKDIR/ALTLinux/RPMS.base" -type f -name '*.rpm' -printf '%f\n' |
+	while read fn; do
+		[ -f "$WORKDIR/ALTLinux/RPMS.disk/$fn" ] || continue
+		rm -vf -- "$WORKDIR/ALTLinux/RPMS.disk/$fn"
+	done
+fi
+
+genbasedir \
+	--topdir="$WORKDIR" \
+        --architecture="$INFO_ARCH" \
+        --no-oldhashfile \
+        --partial \
+        --bz2only \
+	--create \
+        --notautomatic=false \
+        ${INFO_NAME:+--archive="$INFO_NAME"} \
+        ${INFO_VERSION:+--version="$INFO_VERSION"} \
+        ${INFO_ORIGIN:+--origin="$INFO_ORIGIN"} \
+        ${INFO_LABEL:+--label="$INFO_LABEL"} \
+        ALTLinux disk

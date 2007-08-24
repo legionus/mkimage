@@ -1,0 +1,16 @@
+#!/bin/ash -efu
+
+data_tree="${MKI_DATA_TREE:?Data tree required}"
+data_tree="$(opt_check_dir 'MKI_DATA_TREE' "$data_tree")"
+
+payload() {
+	stat --printf='%A\t%s\t%Y\n' "$makefile"
+
+	cd "$outdir"
+	find -mindepth 1 -printf '%M\t%s\t%T@\t%p\n'
+	cd - >/dev/null
+
+	cd "$data_tree"
+	find -mindepth 1 -printf '%M\t%s\t%T@\t%p\n'
+	cd - >/dev/null
+}

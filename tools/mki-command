@@ -1,12 +1,8 @@
 #!/bin/ash -efu
 
-. shell-error
+. "${0%/*}"/mki-sh-functions
 
-verbose="${VERBOSE:+-v}"
-quiet="${QUIET:+-q}"
-
-dir="${WORKDIR:?workdir required}"
-verbose "Work directory: $dir"
+verbose "has started executing."
 
 case "$PROG" in
 	*-run)

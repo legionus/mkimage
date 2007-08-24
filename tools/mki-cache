@@ -1,0 +1,44 @@
+#!/bin/ash -efu
+
+# retval = 0 - cached
+# retval = 1 - not cached
+
+. "${0%/*}"/mki-sh-functions
+
+verbose "has started executing."
+
+[ "$#" -eq 2 ] ||
+	fatal "Usage: $PROG <check | build> <target>"
+
+if [ -n "${NO_CACHE:-}" ]; then
+	verbose "Cache disabled"
+	exit 0
+fi
+
+action="$1"; shift
+
+case "$1" in
+	prepare-workdir|build-data|build-image|copy-tree|pack-image|subdirs) ;;
+	*) fatal "$1: unknown target" ;;
+esac
+cachefile="$cachedir/mki/$1"
+
+sha=
+invalid_cache() {
+	printf '%s\n' "$sha" > "$cachefile"
+	exit ${1:-1}
+}
+
+. mki-cache-$1
+
+sha="`payload |sha256sum - |cut -d\  -f1`"
+
+[ "$action" != 'build' ] ||
+	invalid_cache 0
+
+[ -s "$cachefile" ] ||
+	invalid_cache
+
+old_sha="`head -1 "$cachefile"`"
+[ "$old_sha" = "$sha" ] ||
+	invalid_cache

@@ -1,0 +1,46 @@
+#!/bin/ash -efu
+
+. "${0%/*}"/mki-sh-functions
+. shell-regexp
+
+verbose "has started executing."
+
+scriptdir="${MKI_SCRIPTDIR:?Script directory required}"
+
+if [ ! -d "$scriptdir" ]; then
+	verbose "$scriptdir: not found ... ignoring!"
+	exit 0
+fi
+
+[ -d "$chroot" ] ||
+	fatal "$dir: not look like a hasher work directory."
+
+addenv() {
+	printenv |
+		sed -ne 's/^\(INFO_[^=]\+\)=/\1\t/p' |
+	while read n v; do
+		printf 'export %s="%s"\n' "$n" "$(quote_shell "$v")"
+	done
+}
+
+cat > "$chroot/tmp/start.sh" <<EOF
+#!/bin/sh -efu
+$(addenv)
+export WORKDIR=/.image
+printf 'alias chroot="fakechroot /sbin/chroot"\n' >> "\$HOME/.bashrc"
+/tmp/script.sh
+EOF
+
+find "$scriptdir" -mindepth 1 -maxdepth 1 -type f |
+while read script; do
+	[ -x "$script" ] || continue
+
+	cp -f -- "$script" "$chroot/tmp/script.sh"
+	chmod 755 -- "$chroot/tmp/script.sh"
+
+	mki-exec "$chroot/tmp/start.sh" ||
+		fatal "$script: unable to run script."
+done
+
+cd "$chroot/tmp"
+rm -rf -- "start.sh" "script.sh"

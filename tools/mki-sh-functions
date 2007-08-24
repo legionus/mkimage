@@ -1,0 +1,44 @@
+#!/bin/sh -efu
+
+if [ -z "${__included_mki_sh_functions:-}" ]; then
+__included_mki_sh_functions=1
+
+. shell-error
+. shell-args
+
+verbose="${VERBOSE:+-v}"
+quiet="${QUIET:+-q}"
+
+workdirname=${WORKDIRNAME:?Work directory name required}
+outdirname=${OUTDIRNAME:?Out directory name required}
+#cachedirname=${CACHEDIRNAME:?Cache directory name required}
+
+bindir="${TOOLSDIR:?Helper directory required}"
+bindir="$(opt_check_dir 'TOOLSDIR' "$bindir")"
+
+cachedir="${CACHEDIR:?cache required}"
+cachedir="$(opt_check_dir 'CACHEDIR' "$cachedir")"
+
+curdir="${CURDIR:?Current directory required}"
+curdir="$(opt_check_dir 'CURDIR' "$curdir")"
+
+outdir="${OUTDIR:?Output directory required}"
+outdir="$(opt_check_dir 'OUTDIR' "$outdir")"
+
+dir="${WORKDIR:?Work directory required}"
+dir="$(opt_check_dir 'WORKDIR' "$dir")"
+
+chroot="$dir/chroot"
+
+subdir="$chroot/$WORKDIRNAME"
+subchroot="$subdir/chroot"
+
+makefile="${MYMAKEFILE:?makefile required}"
+makefile="$(opt_check_read 'MYMAKEFILE' "$makefile")"
+
+[ -s "$makefile" ] ||
+	fatal "$makefile: Makefile is empty"
+
+export PATH="$bindir:$PATH"
+
+fi
