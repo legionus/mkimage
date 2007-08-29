@@ -1,6 +1,6 @@
 ### Global variables
 ifndef MKI_PREFIX
-MKI_PREFIX = /usr/share/mkimage
+MKI_PREFIX = @PREFIXDIR@
 endif
 
 CONFIGDIR = $(MKI_PREFIX)
