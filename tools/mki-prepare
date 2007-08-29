@@ -47,7 +47,7 @@ verbose "Work directory: $subdir."
 [ -z "$MKI_INITROOT_REQUIRES" ] ||
 	mki-install $MKI_INITROOT_REQUIRES
 
-ownership="$(stat -c '%u:%g' "$chroot")" ||
+ownership="$(stat -c '%u:%g' "$chroot/")" ||
 	fatal "$chroot: unable to get ownership."
 
 our="$chroot/.our"

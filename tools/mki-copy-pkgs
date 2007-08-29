@@ -8,7 +8,7 @@ destdir="${MKI_DESTDIR:-}"
 REQUIRES="${MKI_REQUIRES:-}"
 aptboxdir="${PKGBOX:?global aptbox required}"
 
-ownership="$(stat -c '%u:%g' "$chroot")" ||
+ownership="$(stat -c '%u:%g' "$chroot/")" ||
 	fatal "$chroot: unable to get ownership."
 
 # assumed: defined aptbox
