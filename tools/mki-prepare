@@ -16,7 +16,7 @@ hsh_initroot() {
 	hsh \
 		--initroot \
 		--without-stuff \
-		--pkg-init-list='basesystem fakeroot>=0:0.7.3' \
+		--pkg-init-list='basesystem fakeroot>=0:0.7.3 fakechroot>=2.6' \
 		--pkg-build-list='' \
 		$verbose $quiet $target $apt_config $apt_prefix $save_fakeroot \
 		${HSH_NUMBER:+--number="$HSH_NUMBER"} \
