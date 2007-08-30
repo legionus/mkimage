@@ -12,12 +12,7 @@ subdirs="${SUBDIRS:?subdirectories required}"
 for d in $subdirs; do
 	outdir="$curdir/$d/$workdirname/$outdirname"
 
-	cp_args=
-	dev_number1="$(stat -c '%d' "$outdir/")"
-	dev_number2="$(stat -c '%d' "$chroot/")"
-
-	[ "$dev_number1" -ne "$dev_number2" ] ||
-		cp_args='-l'
+	get_copy_args "$outdir/" "$chroot/"
 
 	mkdir -p -- "$chroot/.in/$d"
 	find "$outdir" -mindepth 1 -maxdepth 1 \

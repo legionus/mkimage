@@ -41,4 +41,18 @@ makefile="$(opt_check_read 'MYMAKEFILE' "$makefile")"
 
 export PATH="$bindir:$PATH"
 
+get_copy_args() {
+	[ "$#" -eq 2 ] ||
+		fatal "get_copy_args(): more arguments required"
+
+	cp_args=
+
+	local dev_number1 dev_number2
+	dev_number1="$(stat -c '%d' "$1")"
+	dev_number2="$(stat -c '%d' "$2")"
+
+	[ "$dev_number1" -ne "$dev_number2" ] ||
+		cp_args='-l'
+}
+
 fi

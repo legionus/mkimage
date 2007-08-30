@@ -7,12 +7,7 @@ verbose "has started executing."
 [ -d "$chroot" ] ||
 	fatal "$dir: not look like a work directory of hasher."
 
-cp_args=
-dev_number1="$(stat -c '%d' "$outdir/")"
-dev_number2="$(stat -c '%d' "$chroot/.our/")"
-
-[ "$dev_number1" -ne "$dev_number2" ] ||
-	cp_args='-l'
+get_copy_args "$outdir/" "$chroot/.our/"
 
 cd "$chroot/.our"
 find -mindepth 1 -maxdepth 1 |
