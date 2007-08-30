@@ -1,0 +1,18 @@
+#!/bin/ash -efu
+
+. "${0%/*}"/mki-sh-functions
+
+verbose "has started executing."
+
+target=
+[ "$#" -eq 0 ] ||
+	target="$1"
+
+[ -d "$cachedir" ] ||
+	exit 0
+
+if [ -z "$target" ]; then
+	find "$cachedir/" -mindepth 1 -maxdepth 1 -execdir rm -rf -- '{}' '+'
+else
+	rm -rf -- "$cachedir/$target"
+fi

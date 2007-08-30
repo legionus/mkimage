@@ -25,7 +25,10 @@ prepare-workdir: prepare $(SUBDIRS)
 	fi
 
 run-scripts: prepare-workdir $(SUBDIRS)
-	$(CHROOT_SCRIPTS) || exit 1
+	if ! $(CHROOT_SCRIPTS); then \
+	    $(CHROOT_INVALIDATE_CACHE) mki; \
+	    exit 1; \
+	fi
 
 copy-tree: prepare-workdir $(SUBDIRS)
 	if ! $(CHROOT_CACHE) check copy-tree; then \
@@ -58,7 +61,10 @@ pack-image: prepare-workdir copy-subdirs $(SUBDIRS)
 	fi
 
 clean: $(SUBDIRS)
-	[ ! -d "$(WORKDIR)" ] || $(CHROOT_CLEAN)
+	if [ -d "$(WORKDIR)" ]; then \
+	    $(CHROOT_INVALIDATE_CACHE) mki; \
+	    $(CHROOT_CLEAN); \
+	fi
 
 distclean: clean $(SUBDIRS)
 	rm -rf -- $(WORKDIR) $(OUTDIR) $(CACHEDIR) $(PKGBOX)

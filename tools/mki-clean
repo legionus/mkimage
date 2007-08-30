@@ -15,8 +15,3 @@ if [ -d "$chroot" ]; then
 	env -i PATH="$PATH" hsh $hasher_args "$dir" ||
 		fatal "$dir: unable to clean workdir: rc=$?"
 fi
-
-if [ -d "$cachedir/mki" ]; then
-	find "$cachedir/mki" -mindepth 1 -maxdepth 1 \
-		-execdir rm -rf -- '{}' '+'
-fi

@@ -9,6 +9,7 @@ TOOLSDIR = $(MKI_PREFIX)/tools
 ### Global helpers
 CHROOT_MKAPTBOX		= $(TOOLSDIR)/mki-mkaptbox
 CHROOT_CACHE		= $(TOOLSDIR)/mki-cache
+CHROOT_INVALIDATE_CACHE	= $(TOOLSDIR)/mki-invalidate-cache
 
 CHROOT_SCRIPTS		= $(TOOLSDIR)/mki-scripts
 CHROOT_PREPARE 		= $(TOOLSDIR)/mki-prepare
