@@ -33,6 +33,12 @@ copy-tree: prepare-workdir $(SUBDIRS)
 	    $(CHROOT_CACHE) build copy-tree || exit 1; \
 	fi
 
+copy-subdirs: prepare-workdir $(SUBDIRS)
+	if [ -n "$(SUBDIRS)" ] && ! $(CHROOT_CACHE) check subdirs; then \
+	    $(CHROOT_COPY_SUBDIRS) || exit 1; \
+	    $(CHROOT_CACHE) build subdirs || exit 1; \
+	fi
+
 build-data: prepare-workdir $(SUBDIRS)
 	if ! $(CHROOT_CACHE) check build-data; then \
 	    $(CHROOT_COPY_PKGS) || exit 1; \
@@ -45,11 +51,7 @@ build-image: prepare-workdir $(SUBDIRS)
 	    $(CHROOT_CACHE) build build-image || exit 1; \
 	fi
 
-pack-image: prepare-workdir $(SUBDIRS)
-	if [ -n "$(SUBDIRS)" ] && ! $(CHROOT_CACHE) check subdirs; then \
-	    $(CHROOT_COPY_SUBDIRS) || exit 1; \
-	    $(CHROOT_CACHE) build subdirs || exit 1; \
-	fi
+pack-image: prepare-workdir copy-subdirs $(SUBDIRS)
 	if ! $(CHROOT_CACHE) check pack-image; then \
 	    $(CHROOT_PACK) || exit 1; \
 	    $(CHROOT_CACHE) build pack-image || exit 1; \
