@@ -28,6 +28,7 @@ dir	/sbin		0755	0 0
 dir	/bin		0755	0 0
 dir	/etc/terminfo	0755	0 0
 dir	/etc/terminfo/l	0755	0 0
+file	/etc/terminfo/l/linux	/lib/terminfo/l/linux	0644	0 0
 dir	/etc		0755	0 0
 dir	/proc		0755	0 0
 dir	/sys		0755	0 0

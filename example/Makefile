@@ -2,7 +2,9 @@ include /usr/share/mkimage/config.mk
 
 SUBDIRS = base disk install2
 
-MKI_INITROOT_REQUIRES = kernel-image-std-smp memtest86 apt-utils
+INFO_THEME = server
+
+MKI_INITROOT_REQUIRES = kernel-image-std-smp memtest86 apt-utils design-bootloader-installer-$(INFO_THEME)
 MKI_PACKTYPE = isoboot
 MKI_OUTNAME = legion-test.iso
 MKI_NO_SUBCHROOT = 1

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -ex
 
 cd "$WORKDIR"
 
@@ -18,16 +18,8 @@ rm -rf ./usr/share/icons/{hicolor,large,mini}
 rm -rf ./lib*/security
 
 # remove cpp
-if [ -x /usr/bin/fakechroot ]; then
-	cat > .script.sh <<-EOF
-	#!/bin/sh
-	rpmquery -a cpp\* gcc\* |
-		xargs -r rpmi -e --nodeps --
-	EOF
-	chmod +x .script.sh
-	fakechroot chroot "$WORKDIR" /.script.sh
-	rm -f .script.sh
-fi
+fakechroot "$WORKDIR/" rpmquery -a cpp\* gcc\* |
+	xargs -r fakechroot "$WORKDIR/" rpmi -e --nodeps --
 
 # remove X11 dri modules
 rm -rf ./usr/lib*/X11/modules/dri
@@ -132,13 +124,13 @@ rm -rf ./var/cache/apt ./var/lib*/apt
 # run depmod
 if [ -x /usr/bin/fakechroot ]; then
 	cat > .script.sh <<-EOF
-	#!/bin/sh
+	#!/bin/sh -x
 	for i in /lib*/modules/*; do
 		/sbin/depmod -a -F /boot/System.map-\${i##*/} \${i##*/}
 	done
 	EOF
 	chmod +x .script.sh
-	fakechroot chroot "$WORKDIR" /.script.sh
+	fakechroot /sbin/chroot "$WORKDIR/" /.script.sh
 	rm -f .script.sh
 fi
 
