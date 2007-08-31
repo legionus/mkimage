@@ -25,9 +25,12 @@ prepare-workdir: prepare $(SUBDIRS)
 	fi
 
 run-scripts: prepare-workdir $(SUBDIRS)
-	if ! $(CHROOT_SCRIPTS); then \
-	    $(CHROOT_INVALIDATE_CACHE) mki; \
-	    exit 1; \
+	if ! $(CHROOT_CACHE) check run-scripts; then \
+	    if ! $(CHROOT_SCRIPTS); then \
+		$(CHROOT_INVALIDATE_CACHE) mki; \
+		exit 1; \
+	    fi \
+	    $(CHROOT_CACHE) build run-scripts || exit 1; \
 	fi
 
 copy-tree: prepare-workdir $(SUBDIRS)

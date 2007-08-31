@@ -1,0 +1,14 @@
+#!/bin/ash -efu
+
+scriptdir="${MKI_SCRIPTDIR:?Script directory required}"
+
+payload() {
+	stat --printf='%A\t%s\t%Y\n' "$makefile"
+
+	cd "$scriptdir"
+	find -type f -printf '%p %M %s %T@\n' |
+	while read script stamp; do
+		[ ! -x "$script" ] ||
+			printf '%s\n' "$stamp"
+	done
+}
