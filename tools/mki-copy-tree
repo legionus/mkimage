@@ -4,8 +4,8 @@
 
 verbose "has started executing."
 
-data_tree="${MKI_DATA_TREE:?Data required}"
-data_tree="$(opt_check_dir 'MKI_DATA_TREE' "$data_tree")"
+data_tree="${COPY_TREE:?Data required}"
+data_tree="$(opt_check_dir 'COPY_TREE' "$data_tree")"
 
 [ -d "$chroot" ] ||
 	fatal "$dir: not look like a work directory of hasher."

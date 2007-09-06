@@ -70,7 +70,7 @@ MKI_REQUIRES =
 MKI_DESTDIR =
 
 # Specifies a directory to copy in to $(SUBWORKDIR) as is.
-MKI_DATA_TREE =
+COPY_TREE =
 
 ### Pack image 
 # Defines a way of results packing ($(SUBWORKDIR) as root).

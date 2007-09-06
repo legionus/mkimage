@@ -9,7 +9,7 @@ MKI_PACKTYPE = isoboot
 MKI_OUTNAME = legion-test.iso
 MKI_NO_SUBCHROOT = 1
 
-MKI_DATA_TREE = ./isodata
+COPY_TREE = ./isodata
 
 ISOBOOT_VERSION = ALT Linux Test 1.0
 ISOBOOT_MAR_MODULES = ./modules
