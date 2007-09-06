@@ -24,7 +24,13 @@ CHROOT_INSTALL		= $(TOOLSDIR)/mki-install
 CHROOT_IMAGE_INSTALL	= $(TOOLSDIR)/mki-image-install
 
 ### Config global variables
+SYSTEM_ARCH = $(shell uname -m)
 TARGET = i586
+
+ifeq "$(SYSTEM_ARCH)" "x86_64"
+    TARGET = $(SYSTEM_ARCH)
+endif
+
 QUIET =
 VERBOSE = 1
 NO_CACHE =
