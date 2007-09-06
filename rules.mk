@@ -23,6 +23,12 @@ prepare-workdir: prepare $(SUBDIRS)
 	    $(CHROOT_CACHE) build prepare-workdir || exit 1; \
 	fi
 
+prepare-image-workdir: prepare-workdir $(SUBDIRS)
+	if ! $(CHROOT_CACHE) check prepare-image-workdir; then \
+	    $(CHROOT_IMAGE_PREPARE) || exit 1; \
+	    $(CHROOT_CACHE) build prepare-image-workdir || exit 1; \
+	fi
+
 run-scripts: prepare-workdir $(SUBDIRS)
 	if ! $(CHROOT_CACHE) check run-scripts; then \
 	    if ! $(CHROOT_SCRIPTS); then \
@@ -50,9 +56,8 @@ build-data: prepare-workdir $(SUBDIRS)
 	    $(CHROOT_CACHE) build build-data || exit 1; \
 	fi
 
-build-image: prepare-workdir $(SUBDIRS)
+build-image: prepare-image-workdir $(SUBDIRS)
 	if ! $(CHROOT_CACHE) check build-image; then \
-	    $(CHROOT_IMAGE_PREPARE) || exit 1; \
 	    $(CHROOT_IMAGE_INSTALL) $(MKI_REQUIRES) || exit 1; \
 	    $(CHROOT_CACHE) build build-image || exit 1; \
 	fi
