@@ -4,7 +4,6 @@ MKI_REQUIRES = ./packages
 
 MKI_INITROOT_REQUIRES = apt-utils rsync
 MKI_DESTDIR = ALTLinux/RPMS.disk
-MKI_NO_SUBCHROOT = 1
 
 MKI_PACKTYPE = data
 
