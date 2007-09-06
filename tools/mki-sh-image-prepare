@@ -1,0 +1,24 @@
+#!/bin/sh -efu
+
+pkgbox="${PKGBOX:?aptbox required}"
+target="${TARGET:+--target="$TARGET"}"
+apt_config="${HSH_APT_CONFIG:+--apt-config="$HSH_APT_CONFIG"}"
+apt_prefix="${HSH_APT_PREFIX:+--apt-prefix="$HSH_APT_PREFIX"}"
+REQUIRES="${REQUIRES:-}"
+save_fakeroot=
+
+hsh_initroot() {
+	env -i PATH="$PATH" \
+	hsh \
+		--initroot \
+		--without-stuff \
+		--pkg-init-list='basesystem fakeroot>=0:0.7.3 fakechroot>=2.6' \
+		--pkg-build-list='' \
+		$verbose $quiet $target $apt_config $apt_prefix $save_fakeroot \
+		${HSH_NUMBER:+--number="$HSH_NUMBER"} \
+		${HSH_EXCLUDE_DOCS:+--excludedocs} \
+		${HSH_CACHEDIR:+--cache-dir="$HSH_CACHEDIR"} \
+		-- "$1" ||
+	fatal "$1: unable to make initial chroot: rc=$?"
+	rm -rf -- "$1/repo" "$1/chroot/.out"
+}

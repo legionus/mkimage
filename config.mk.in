@@ -13,6 +13,7 @@ CHROOT_INVALIDATE_CACHE	= $(TOOLSDIR)/mki-invalidate-cache
 
 CHROOT_SCRIPTS		= $(TOOLSDIR)/mki-scripts
 CHROOT_PREPARE 		= $(TOOLSDIR)/mki-prepare
+CHROOT_IMAGE_PREPARE	= $(TOOLSDIR)/mki-image-prepare
 CHROOT_PACK 		= $(TOOLSDIR)/mki-pack
 CHROOT_CLEAN 		= $(TOOLSDIR)/mki-clean
 CHROOT_EXEC 		= $(TOOLSDIR)/mki-exec
@@ -55,9 +56,6 @@ MKI_DESTDIR =
 
 # Specifies a directory to copy in to $(SUBWORKDIR) as is.
 MKI_DATA_TREE =
-
-# Do not build sub chroot.
-MKI_NO_SUBCHROOT =
 
 ### Pack image 
 # Defines a way of results packing ($(SUBWORKDIR) as root).

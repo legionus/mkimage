@@ -52,6 +52,7 @@ build-data: prepare-workdir $(SUBDIRS)
 
 build-image: prepare-workdir $(SUBDIRS)
 	if ! $(CHROOT_CACHE) check build-image; then \
+	    $(CHROOT_IMAGE_PREPARE) || exit 1; \
 	    $(CHROOT_IMAGE_INSTALL) $(MKI_REQUIRES) || exit 1; \
 	    $(CHROOT_CACHE) build build-image || exit 1; \
 	fi

@@ -1,0 +1,13 @@
+#!/bin/ash -efu
+
+. "${0%/*}"/mki-sh-functions
+. "${0%/*}"/mki-sh-image-prepare
+
+verbose "has started executing."
+
+save_fakeroot='--save-fakeroot'
+
+[ -d "$subchroot" ] ||
+	hsh_initroot "$subdir"
+
+ln $verbose -nsf -- "$WORKDIRNAME/chroot" "$chroot/.image"

@@ -1,31 +1,9 @@
 #!/bin/ash -efu
 
 . "${0%/*}"/mki-sh-functions
+. "${0%/*}"/mki-sh-image-prepare
 
 verbose "has started executing."
-
-pkgbox="${PKGBOX:?aptbox required}"
-target="${TARGET:+--target="$TARGET"}"
-apt_config="${HSH_APT_CONFIG:+--apt-config="$HSH_APT_CONFIG"}"
-apt_prefix="${HSH_APT_PREFIX:+--apt-prefix="$HSH_APT_PREFIX"}"
-REQUIRES="${REQUIRES:-}"
-save_fakeroot=
-
-hsh_initroot() {
-	env -i PATH="$PATH" \
-	hsh \
-		--initroot \
-		--without-stuff \
-		--pkg-init-list='basesystem fakeroot>=0:0.7.3 fakechroot>=2.6' \
-		--pkg-build-list='' \
-		$verbose $quiet $target $apt_config $apt_prefix $save_fakeroot \
-		${HSH_NUMBER:+--number="$HSH_NUMBER"} \
-		${HSH_EXCLUDE_DOCS:+--excludedocs} \
-		${HSH_CACHEDIR:+--cache-dir="$HSH_CACHEDIR"} \
-		-- "$1" ||
-	fatal "$1: unable to make initial chroot: rc=$?"
-	rm -rf -- "$1/repo" "$1/chroot/.out"
-}
 
 run_mkaptbox() {
 	rm -rf -- "$pkgbox/aptbox"
@@ -59,13 +37,4 @@ verbose "Subwork directory: $subdir."
 mkdir $verbose -p -m1770 -- "$subdir"
 chown $verbose "$ownership" -- "$subdir"
 
-link_target="$WORKDIRNAME"
-save_fakeroot='--save-fakeroot'
-
-if [ -z "$MKI_NO_SUBCHROOT" ]; then 
-	[ -d "$subchroot" ] ||
-		hsh_initroot "$subdir"
-	link_target="$WORKDIRNAME/chroot"
-fi
-
-ln $verbose -sf -- "$link_target" "$chroot/.image"
+ln $verbose -nsf -- "$WORKDIRNAME" "$chroot/.image"
