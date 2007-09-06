@@ -6,7 +6,7 @@ cd "$WORKDIR"
 mkdir -p ./image
 
 # setup stage2 as init
-mv -f ./usr/sbin/install2-init /sbin/init
+mv -f ./usr/sbin/install2-init ./sbin/init
 
 # remove all docs
 rm -rf ./usr/share/{doc,man,info,license,gfxboot}
