@@ -1,48 +1,63 @@
 ### Global variables
-ifndef MKI_PREFIX
-MKI_PREFIX = @PREFIXDIR@
-endif
+MKI_PREFIX ?= @PREFIXDIR@
 
 CONFIGDIR = $(MKI_PREFIX)
 TOOLSDIR = $(MKI_PREFIX)/tools
 
+################################################################################
 ### Global helpers
-CHROOT_MKAPTBOX		= $(TOOLSDIR)/mki-mkaptbox
-CHROOT_CACHE		= $(TOOLSDIR)/mki-cache
-CHROOT_INVALIDATE_CACHE	= $(TOOLSDIR)/mki-invalidate-cache
+################################################################################
+CHROOT_MKAPTBOX		?= $(TOOLSDIR)/mki-mkaptbox
+CHROOT_CACHE		?= $(TOOLSDIR)/mki-cache
+CHROOT_INVALIDATE_CACHE	?= $(TOOLSDIR)/mki-invalidate-cache
 
-CHROOT_SCRIPTS		= $(TOOLSDIR)/mki-scripts
-CHROOT_PREPARE 		= $(TOOLSDIR)/mki-prepare
-CHROOT_IMAGE_PREPARE	= $(TOOLSDIR)/mki-image-prepare
-CHROOT_PACK 		= $(TOOLSDIR)/mki-pack
-CHROOT_CLEAN 		= $(TOOLSDIR)/mki-clean
-CHROOT_EXEC 		= $(TOOLSDIR)/mki-exec
-CHROOT_RUN 		= $(TOOLSDIR)/mki-run
-CHROOT_COPY_SUBDIRS	= $(TOOLSDIR)/mki-copy-subdirs
-CHROOT_COPY_PKGS	= $(TOOLSDIR)/mki-copy-pkgs
-CHROOT_COPY_TREE	= $(TOOLSDIR)/mki-copy-tree
-CHROOT_INSTALL		= $(TOOLSDIR)/mki-install
-CHROOT_IMAGE_INSTALL	= $(TOOLSDIR)/mki-image-install
+CHROOT_SCRIPTS		?= $(TOOLSDIR)/mki-scripts
+CHROOT_PREPARE 		?= $(TOOLSDIR)/mki-prepare
+CHROOT_IMAGE_PREPARE	?= $(TOOLSDIR)/mki-image-prepare
+CHROOT_PACK 		?= $(TOOLSDIR)/mki-pack
+CHROOT_CLEAN 		?= $(TOOLSDIR)/mki-clean
+CHROOT_EXEC 		?= $(TOOLSDIR)/mki-exec
+CHROOT_RUN 		?= $(TOOLSDIR)/mki-run
+CHROOT_COPY_SUBDIRS	?= $(TOOLSDIR)/mki-copy-subdirs
+CHROOT_COPY_PKGS	?= $(TOOLSDIR)/mki-copy-pkgs
+CHROOT_COPY_TREE	?= $(TOOLSDIR)/mki-copy-tree
+CHROOT_INSTALL		?= $(TOOLSDIR)/mki-install
+CHROOT_IMAGE_INSTALL	?= $(TOOLSDIR)/mki-image-install
 
+################################################################################
 ### Config global variables
+################################################################################
 SYSTEM_ARCH = $(shell uname -m)
-TARGET = i586
 
 ifeq "$(SYSTEM_ARCH)" "x86_64"
-    TARGET = $(SYSTEM_ARCH)
+    TARGET ?= $(SYSTEM_ARCH)
+else
+    TARGET ?= i586
 endif
 
-QUIET =
-VERBOSE = 1
-NO_CACHE =
+QUIET ?=
+VERBOSE ?=
 
-HSH_APT_CONFIG = 
-HSH_APT_PREFIX = 
+ifdef QUIET
+    VERBOSE =
+endif
+
+GLOBAL_HSH_NUMBER ?=
+GLOBAL_HSH_APT_CONFIG ?=
+GLOBAL_HSH_APT_PREFIX ?=
+
 HSH_CACHEDIR = $(CACHEDIR)/hsh
-HSH_NUMBER = 
 
+################################################################################
 ### Per-image variables
+################################################################################
 SUBDIRS = 
+
+HSH_NUMBER = $(GLOBAL_HSH_NUMBER)
+HSH_APT_CONFIG = $(GLOBAL_HSH_APT_CONFIG)
+HSH_APT_PREFIX = $(GLOBAL_HSH_APT_PREFIX)
+
+NO_CACHE =
 
 MKI_SCRIPTDIR = $(CURDIR)/scripts.d
 
