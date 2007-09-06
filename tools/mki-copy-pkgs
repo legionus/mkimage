@@ -8,82 +8,12 @@ destdir="${MKI_DESTDIR:-}"
 REQUIRES="${MKI_REQUIRES:-}"
 aptboxdir="${PKGBOX:?global aptbox required}"
 
-ownership="$(stat -c '%u:%g' "$chroot/")" ||
-	fatal "$chroot: unable to get ownership."
-
-# assumed: defined aptbox
-APT_Get_PrintLocalFile=
-print_uris()
-{
-	local out
-	local aptbox="$aptboxdir/aptbox"
-	[ -d "$aptbox" ] ||
-		fatal "$aptbox: Not a directory"
-
-	if ! out="$("$aptbox/apt-get" -q -y --print-uris install -- "$@" 2>&1)"; then
-		printf %s\\n "$out" >&2
-		fatal 'failed to calculate package file list.'
-	fi
-
-	local all_pattern="'\\([a-z]\\+\\):\\([^']\\+\\)' .*"
-	local local_pattern="'\\(file\\|copy\\):\\([^']\\+\\)' .*"
-
-	local all_uris
-	if ! all_uris="$(printf %s "$out" |sed -ne "s/^$all_pattern/\\2/pg")"; then
-		printf %s\\n "$out" >&2
-		fatal 'failed to filter package file list.'
-	fi
-
-	local local_uris cached_uris=
-	if ! local_uris="$(printf %s "$out" |sed -ne "s/^$local_pattern/\\2/pg")"; then
-		printf %s\\n "$out" >&2
-		fatal 'failed to filter package file list.'
-	fi
-
-	if [ "$all_uris" != "$local_uris" ]; then
-		if [ -z "$APT_Get_PrintLocalFile" ]; then
-			if ! out="$("$aptbox/apt-get" -o APT::Get::PrintLocalFile=yes -q -y --print-uris install -- "$@" 2>&1)"; then
-				printf %s\\n "$out" >&2
-				fatal 'calculated package file list is not local and apt-get does not support APT::Get::PrintLocalFile option.'
-			fi
-
-			if ! cached_uris="$(printf %s "$out" |sed -ne "s/^$all_pattern/\\2/pg")" ||
-			   [ -n "$cached_uris" ]; then
-				printf %s\\n "$out" >&2
-				fatal 'calculated package file list is not local and apt-get does not support APT::Get::PrintLocalFile option.'
-			fi
-
-			APT_Get_PrintLocalFile=1
-		fi
-
-		if [ -n "$verbose" ]; then
-			"$aptbox/apt-get" -y -d install -- "$@" >&2 ||
-				fatal 'failed to download packages from calculated package file list.'
-		else
-			if ! out="$("$aptbox/apt-get" -y -d install -- "$@" 2>&1)"; then
-				printf %s\\n "$out" >&2
-				fatal 'failed to download packages from calculated package file list.'
-			fi
-		fi
-
-		if ! out="$("$aptbox/apt-get" -o APT::Get::PrintLocalFile=yes -q -y --print-uris install -- "$@" 2>&1)"; then
-			printf %s\\n "$out" >&2
-			fatal 'failed to calculate local package file list.'
-		fi
-
-		if ! cached_uris="$(printf %s "$out" |grep ^/)" || [ -z "$cached_uris" ]; then
-			printf %s\\n "$out" >&2
-			fatal 'failed to calculate local package file list.'
-		fi
-	fi
-
-	if [ -n "$cached_uris" ]; then
-		[ -n "$local_uris" ] && local_uris="$local_uris
-$cached_uris" || local_uris="$cached_uris"
-	fi
-
-	printf %s "$local_uris" &&
-		verbose 'calculated package file list.'
+tempdir=
+exit_handler() {
+    local rc=$?
+    trap - EXIT
+    [ -z "$tempdir" ] || rm -rf -- "$tempdir"
+    exit $rc
 }
 
 if [ -z "$REQUIRES" ]; then
@@ -91,27 +21,61 @@ if [ -z "$REQUIRES" ]; then
 	exit  0
 fi
 
+requires_list=
+
 for r in $REQUIRES; do
 	if [ -f "$r" ]; then
-		grep -h '^[[:space:]]*[^#]' "$r" ||:
+		requires_list="$requires_list $(grep -h '^[[:space:]]*[^#]' "$r" ||:)"
 	else
-		printf '%s\n' "$r"
-	fi |
-	tr ' ' '\n' |
-	while read p; do
-		[ -n "$p" -a -n "${p##* *}" ] || continue
-
-		verbose "Copy packages for '$p'"
-		list="$(print_uris "$p")"
-
-		[ -n "$list" ] ||
-			fatal "$p: could not find package."
-
-		printf %s "$list" |
-			xargs -r cp $verbose -ut "$chroot/.in/" -- ||
-		fatal 'could not copy packages.'
-	done
+		requires_list="$requires_list $r"
+	fi
 done
+
+if [ -z "$requires_list" ]; then
+	message "Nothing to do"
+	exit 0
+fi
+
+trap exit_handler HUP INT QUIT TERM EXIT
+tempdir="$(mktemp -d "$dir/$PROG.XXXXXXXXX")"
+
+lstfile="$tempdir/lst"
+errfile="$tempdir/err"
+
+> "$lstfile"
+> "$errfile"
+
+rc=0
+printf '%s\n' "$requires_list" |
+	xargs -r mki-print-uris 2>>"$errfile" >>"$lstfile" ||
+	rc=$?
+
+conflicts=
+if [ "$rc" -ne 0 ]; then
+	if ! conflicts="$(LANG=C fgrep ': Conflicts: ' "$errfile")"; then
+		cat "$errfile" >&2
+		fatal 'could not copy packages.'
+	fi
+	> "$lstfile"
+fi
+
+if [ ! -s "$lstfile" ]; then
+	verbose "Conflicts packages found in requires list"
+	[ -z "$verbose" ] ||
+		printf '%s\n' "$conflicts" >&2
+
+	printf '%s\n' "$requires_list" |
+		tr ' ' '\n' |
+		xargs -ri mki-print-uris '{}' > "$lstfile"
+fi
+
+[ -s "$lstfile" ] ||
+	fatal 'could not copy packages.'
+
+sort -u "$lstfile" |
+	tr ' ' '\n' |
+	xargs -r cp $verbose -ut "$chroot/.in/" -- ||
+	fatal 'could not copy packages.'
 
 cat > "$chroot/tmp/script" <<EOF
 #!/bin/sh -efu
