@@ -18,7 +18,6 @@ prepare: $(SUBDIRS)
 	mkdir -p -- $(CACHEDIR)/mki $(CACHEDIR)/hsh
 
 prepare-workdir: prepare $(SUBDIRS)
-	@echo $(PATH)
 	if ! $(CHROOT_CACHE) check prepare-workdir; then \
 	    $(CHROOT_PREPARE) || exit 1; \
 	    $(CHROOT_CACHE) build prepare-workdir || exit 1; \
@@ -29,7 +28,7 @@ run-scripts: prepare-workdir $(SUBDIRS)
 	    if ! $(CHROOT_SCRIPTS); then \
 		$(CHROOT_INVALIDATE_CACHE) mki; \
 		exit 1; \
-	    fi \
+	    fi; \
 	    $(CHROOT_CACHE) build run-scripts || exit 1; \
 	fi
 

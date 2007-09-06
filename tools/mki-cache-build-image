@@ -11,4 +11,18 @@ payload() {
 	cd "$aptbox/var"
 	find -name '*_release' -exec cat '{}' '+'
 	cd - >/dev/null
+
+	local requires="${MKI_REQUIRES:-}"
+
+	[ -n "$requires" ] ||
+		return 0
+
+	local r
+	for r in $requires; do
+		if [ -f "$r" ]; then
+			stat --printf='%A\t%s\t%Y\n' "$r"
+		else
+			printf '%s\n' "$r"
+		fi
+	done
 }
