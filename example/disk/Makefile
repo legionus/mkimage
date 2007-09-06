@@ -14,6 +14,6 @@ INFO_NAME	= ALT Linux Addon
 INFO_VERSION	= 4.0
 INFO_LABEL	= Server
 
-all: build-data pack-image
+all: copy-packages pack-image
 
 include $(CONFIGDIR)/rules.mk

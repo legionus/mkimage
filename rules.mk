@@ -50,10 +50,10 @@ copy-subdirs: prepare-workdir $(SUBDIRS)
 	    $(CHROOT_CACHE) build subdirs || exit 1; \
 	fi
 
-build-data: prepare-workdir $(SUBDIRS)
-	if ! $(CHROOT_CACHE) check build-data; then \
+copy-packages: prepare-workdir $(SUBDIRS)
+	if ! $(CHROOT_CACHE) check copy-packages; then \
 	    $(CHROOT_COPY_PKGS) || exit 1; \
-	    $(CHROOT_CACHE) build build-data || exit 1; \
+	    $(CHROOT_CACHE) build copy-packages || exit 1; \
 	fi
 
 build-image: prepare-image-workdir $(SUBDIRS)

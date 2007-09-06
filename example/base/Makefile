@@ -14,6 +14,6 @@ INFO_NAME	= ALT Linux Basesystem
 INFO_VERSION	= 4.0
 INFO_LABEL	= Server
 
-all: build-data run-scripts pack-image
+all: copy-packages run-scripts pack-image
 
 include $(CONFIGDIR)/rules.mk
