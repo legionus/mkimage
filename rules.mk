@@ -58,7 +58,7 @@ copy-packages: prepare-workdir $(SUBDIRS)
 
 build-image: prepare-image-workdir $(SUBDIRS)
 	if ! $(CHROOT_CACHE) check build-image; then \
-	    $(CHROOT_IMAGE_INSTALL) $(MKI_REQUIRES) && \
+	    $(CHROOT_IMAGE_INSTALL) $(IMAGE_PACKAGES) && \
 	    $(CHROOT_CACHE) build build-image || exit 1; \
 	fi
 

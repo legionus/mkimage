@@ -22,8 +22,8 @@ verbose "Work directory: $subdir."
 [ -d "$chroot" ] ||
 	hsh_initroot "$dir"
 
-[ -z "$MKI_INITROOT_REQUIRES" ] ||
-	mki-install $MKI_INITROOT_REQUIRES
+[ -z "$CHROOT_PACKAGES" ] ||
+	mki-install $CHROOT_PACKAGES
 
 ownership="$(stat -c '%u:%g' "$chroot/")" ||
 	fatal "$chroot: unable to get ownership."

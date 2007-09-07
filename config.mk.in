@@ -64,10 +64,10 @@ NO_CACHE =
 MKI_SCRIPTDIR = $(CURDIR)/scripts.d
 
 # Instrumental chroot packages list or filename with packages list.
-MKI_INITROOT_REQUIRES =
+CHROOT_PACKAGES =
 
 # Work chroot packages list.
-MKI_REQUIRES =
+IMAGE_PACKAGES =
 
 MKI_DESTDIR =
 

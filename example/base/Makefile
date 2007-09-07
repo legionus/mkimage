@@ -1,8 +1,8 @@
 include /usr/share/mkimage/config.mk
 
-MKI_REQUIRES = ./packages
+CHROOT_PACKAGES = apt-utils rsync
+IMAGE_PACKAGES = ./packages
 
-MKI_INITROOT_REQUIRES = apt-utils rsync
 MKI_DESTDIR = ALTLinux/RPMS.base
 
 MKI_PACKTYPE = data

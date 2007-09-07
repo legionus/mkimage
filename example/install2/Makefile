@@ -1,6 +1,6 @@
 include /usr/share/mkimage/config.mk
 
-MKI_REQUIRES = ./packages
+IMAGE_PACKAGES = ./packages
 
 MKI_PACKTYPE = squash
 MKI_OUTNAME = altinst

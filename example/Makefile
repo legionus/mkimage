@@ -4,7 +4,7 @@ SUBDIRS = base disk install2
 
 INFO_THEME = server
 
-MKI_INITROOT_REQUIRES = kernel-image-std-smp memtest86 apt-utils design-bootloader-installer-$(INFO_THEME)
+CHROOT_PACKAGES = kernel-image-std-smp memtest86 apt-utils design-bootloader-installer-$(INFO_THEME)
 MKI_PACKTYPE = isoboot
 MKI_OUTNAME = legion-test.iso
 
@@ -15,5 +15,7 @@ ISOBOOT_MAR_MODULES = ./modules
 ISOBOOT_INITFS = ./initfs
 
 all: copy-tree copy-subdirs run-scripts pack-image
+
+pack-image: OUTDIR = /tmp/out/
 
 include $(CONFIGDIR)/rules.mk

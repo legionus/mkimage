@@ -5,7 +5,7 @@
 verbose "has started executing."
 
 destdir="${MKI_DESTDIR:-}"
-REQUIRES="${MKI_REQUIRES:-}"
+REQUIRES="${IMAGE_PACKAGES:-}"
 aptboxdir="${PKGBOX:?global aptbox required}"
 
 tempdir=

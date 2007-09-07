@@ -4,7 +4,6 @@ pkgbox="${PKGBOX:?aptbox required}"
 target="${TARGET:+--target="$TARGET"}"
 apt_config="${HSH_APT_CONFIG:+--apt-config="$HSH_APT_CONFIG"}"
 apt_prefix="${HSH_APT_PREFIX:+--apt-prefix="$HSH_APT_PREFIX"}"
-REQUIRES="${REQUIRES:-}"
 save_fakeroot=
 
 hsh_initroot() {
