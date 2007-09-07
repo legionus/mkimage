@@ -5,6 +5,9 @@
 
 verbose "has started executing."
 
+# Instrumental chroot should not have docs.
+HSH_EXCLUDE_DOCS=1
+
 run_mkaptbox() {
 	rm -rf -- "$pkgbox/aptbox"
 	env -i PATH="$PATH" \
