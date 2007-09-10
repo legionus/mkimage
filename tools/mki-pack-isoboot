@@ -4,64 +4,44 @@
 
 verbose "has started executing."
 
-mar_modules="${ISOBOOT_MAR_MODULES:?Mar morules required}"
-initfs="${ISOBOOT_INITFS:?initfs required}"
-
 outname="${MKI_OUTNAME:-outname}"
 outname="${outname##*/}"
 
 [ -d "$chroot" ] ||
 	fatal "$dir: not look like a work directory of hasher."
 
-pkgs='mar propagator syslinux mkisofs rsync glibc-utils'
+[ -f "$chroot/.image/syslinux/isolinux.cfg" ] ||
+	fatal '/.image/syslinux/isolinux.cfg: not found.'
+
+pkgs='mkisofs'
 mki-install $pkgs ||
 	fatal "faild to install packages: $pkgs."
-
-cp -aft "$chroot/.in/" -- "$mar_modules" "$initfs"
 
 cat >"$chroot/tmp/packimage.sh"<<EOF
 #!/bin/sh -efu
 
-libdir="\$(getconf LIBDIR)"
-kver="\$(readlink -ev /boot/vmlinuz |sed -e 's,/boot/vmlinuz-,,')"
-
-#FIXME
-mkdir -p -- /.image/isolinux/alt0
-cp -aL /boot/vmlinuz /.image/isolinux/alt0/vmlinuz
-
-cp /usr/lib/syslinux/isolinux.bin /.image/isolinux
-isolinux-config --base /isolinux /.image/isolinux/isolinux.bin
-	
-#FIXME
-mkmar -r / -p '/.in/${mar_modules##*/}' -o /tmp/modules -k "\$kver"
-
-printf '%s\n' "${ISOBOOT_VERSION:-}" > /tmp/.VERSION
-sed \
-	-e "s,@LIBDIR@,\$libdir," \
-	-e "s,@TMPDIR@,/tmp,g" \
-	< '/.in/${initfs##*/}' |
-	gencpio - |
-	gzip -c > /.image/isolinux/alt0/full.cz
-		
-rm -rf -- /tmp/.VERSION
+if [ ! -f /.image/syslinux/isolinux.bin ]; then
+	printf '%s\\n' "$PROG: /.image/syslinux/isolinux.bin: not found"
+	exit 1
+fi
 
 cd /tmp
 cat > .mkisofsrc <<-__EOF__
-	APPI="${ISOBOOT_APPI:-}"
-	COPY="${ISOBOOT_COPY:-}"
-	ABST="${ISOBOOT_ABST:-}"
-	BIBL="${ISOBOOT_BIBL:-}"
-	PREP="${ISOBOOT_PREP:-}"
-	PUBL="${ISOBOOT_PUBL:-}"
-	SYSI="${ISOBOOT_SYSI:-}"
-	VOLI="${ISOBOOT_VOLI:-}"
-	VOLS="${ISOBOOT_VOLS:-}"
+	APPI="${BOOT_APPI:-}"
+	COPY="${BOOT_COPY:-}"
+	ABST="${BOOT_ABST:-}"
+	BIBL="${BOOT_BIBL:-}"
+	PREP="${BOOT_PREP:-}"
+	PUBL="${BOOT_PUBL:-}"
+	SYSI="${BOOT_SYSI:-}"
+	VOLI="${BOOT_VOLI:-}"
+	VOLS="${BOOT_VOLS:-}"
 __EOF__
-		
+
 rc=0
 mkisofs $verbose -J -l -r \
-	-b isolinux/isolinux.bin \
-	-c isolinux/boot.cat \
+	-b syslinux/isolinux.bin \
+	-c syslinux/boot.cat \
 	-no-emul-boot \
 	-boot-info-table \
 	-boot-load-size 4 \
@@ -73,5 +53,4 @@ EOF
 
 mki-exec "$chroot/tmp/packimage.sh"
 rm -f -- "$chroot/tmp/packimage.sh"
-find "$chroot/.in" -mindepth 1 -maxdepth 1 -exec rm -rf -- '{}' '+'
 mki-copy-our2out

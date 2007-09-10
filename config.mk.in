@@ -13,6 +13,7 @@ CHROOT_MKAPTBOX		?= $(TOOLSDIR)/mki-mkaptbox
 CHROOT_CACHE		?= $(TOOLSDIR)/mki-cache
 CHROOT_INVALIDATE_CACHE	?= $(TOOLSDIR)/mki-invalidate-cache
 
+CHROOT_BUILD_PROPAGATOR	?= $(TOOLSDIR)/mki-build-propagator
 CHROOT_SCRIPTS		?= $(TOOLSDIR)/mki-scripts
 CHROOT_PREPARE 		?= $(TOOLSDIR)/mki-prepare
 CHROOT_IMAGE_PREPARE	?= $(TOOLSDIR)/mki-image-prepare
@@ -23,6 +24,8 @@ CHROOT_RUN 		?= $(TOOLSDIR)/mki-run
 CHROOT_COPY_SUBDIRS	?= $(TOOLSDIR)/mki-copy-subdirs
 CHROOT_COPY_PKGS	?= $(TOOLSDIR)/mki-copy-pkgs
 CHROOT_COPY_TREE	?= $(TOOLSDIR)/mki-copy-tree
+CHROOT_COPY_ISOLINUX	?= $(TOOLSDIR)/mki-copy-isolinux
+CHROOT_COPY_PXELINUX	?= $(TOOLSDIR)/mki-copy-pxelinux
 CHROOT_INSTALL		?= $(TOOLSDIR)/mki-install
 CHROOT_IMAGE_INSTALL	?= $(TOOLSDIR)/mki-image-install
 
@@ -77,9 +80,10 @@ COPY_TREE =
 ### Pack image 
 # Defines a way of results packing ($(SUBWORKDIR) as root).
 #
+# boot    - create a bootable ISO image.
 # squash  - create a squashfs filesystem.
 # tarbz2  - create a tar compessed by bzip2.
-# isoboot - create a bootable ISO image.
+# isoboot - create a bootable ISO image (low level).
 # isodata - create a data ISO image.
 # data    - copy $(SUBWORKDIR) as is.
 #
@@ -89,41 +93,52 @@ MKI_PACKTYPE =
 MKI_OUTNAME =
 
 ###
-### isoboot variables
+### A variables for 'boot' pack type and 'build-propagator' target.
 ###
 
 # Modules list for propagator.
-ISOBOOT_MAR_MODULES =
+PROPAGATOR_MAR_MODULES =
 
 # Specifies a propagator initfs file. It is required for creation of file system.
-ISOBOOT_INITFS =
+PROPAGATOR_INITFS =
 
 # Specifies a propagator top message.
-ISOBOOT_VERSION =
+PROPAGATOR_VERSION =
+
+###
+### 'boot' type variables
+###
+
+# Available 'isolinux' and 'pxelinux' types.
+BOOT_TYPE =
+
+###
+### 'boot'/'isoboot' type variables
+###
 
 # Specifies a text string that will be written into the volume header. See: man mkisofs(8).
-ISOBOOT_APPI = 
+BOOT_APPI =
 
 # Specifies the Copyright file name. See: man mkisofs(8).
-ISOBOOT_COPY =
+BOOT_COPY =
 
 # Specifies the abstract file name. See: man mkisofs(8).
-ISOBOOT_ABST =
+BOOT_ABST =
 
 # Specifies the bibliographic file name. See: man mkisofs(8).
-ISOBOOT_BIBL =
+BOOT_BIBL =
 
 # Specifies a text string that will be written into the volume header. See: man mkisofs(8).
-ISOBOOT_PREP =
+BOOT_PREP =
 
 # Specifies  a  text  string that will be written into the volume header. See: man mkisofs(8).
-ISOBOOT_PUBL =
+BOOT_PUBL =
 
 # Specifies  the  system  ID. See: man mkisofs(8).
-ISOBOOT_SYSI =
+BOOT_SYSI =
 
 # Specifies  the  volume  ID  (volume name or label) to be written into the master block. See: man mkisofs(8).
-ISOBOOT_VOLI =
+BOOT_VOLI =
 
 # Specifies the volset ID. See: man mkisofs(8).
-ISOBOOT_VOLS =
+BOOT_VOLS =

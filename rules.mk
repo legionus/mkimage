@@ -38,6 +38,15 @@ run-scripts: prepare-workdir $(SUBDIRS)
 	    $(CHROOT_CACHE) build run-scripts || exit 1; \
 	fi
 
+build-propagator: prepare-workdir $(SUBDIRS)
+	$(CHROOT_BUILD_PROPAGATOR)
+
+copy-isolinux: prepare-workdir $(SUBDIRS)
+	$(CHROOT_COPY_ISOLINUX)
+
+copy-pxelinux: prepare-workdir $(SUBDIRS)
+	$(CHROOT_COPY_PXELINUX)
+
 copy-tree: prepare-workdir $(SUBDIRS)
 	if ! $(CHROOT_CACHE) check copy-tree; then \
 	    $(CHROOT_COPY_TREE) && \

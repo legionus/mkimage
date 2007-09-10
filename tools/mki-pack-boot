@@ -1,0 +1,34 @@
+#!/bin/ash -efu
+
+. "${0%/*}"/mki-sh-functions
+
+verbose "has started executing."
+
+BOOT_TYPE="${BOOT_TYPE:?boot type required}"
+
+outname="${MKI_OUTNAME:-outname}"
+outname="${outname##*/}"
+
+types=
+for b in ${BOOT_TYPE:-}; do
+	case "$b" in
+		isolinux|pxelinux) types="$types $b " ;;
+		*) fatal "Unknown boot type" ;;
+	esac
+done
+
+[ -n "$types" ] ||
+	fatal "Boot type required"
+
+[ -d "$chroot" ] ||
+	fatal "$dir: not look like a work directory of hasher."
+
+mki-build-propagator
+
+for b in $types; do
+	mki-copy-$b
+done
+
+[ -z "${types##* isolinux *}" ] &&
+	exec mki-pack-isoboot ||
+	exec mki-pack-data
