@@ -77,14 +77,18 @@ pack-image: prepare-workdir copy-subdirs $(SUBDIRS)
 	    $(CHROOT_CACHE) build pack-image || exit 1; \
 	fi
 
-clean: $(SUBDIRS)
+clean-current:
 	if [ -d "$(WORKDIR)" ]; then \
 	    $(CHROOT_INVALIDATE_CACHE) mki; \
 	    $(CHROOT_CLEAN); \
 	fi
 
-distclean: clean $(SUBDIRS)
+clean: clean-current $(SUBDIRS)
+
+distclean-current: clean-current
 	rm -rf -- $(WORKDIR) $(OUTDIR) $(CACHEDIR) $(PKGBOX)
+
+distclean: distclean-current $(SUBDIRS)
 
 $(SUBDIRS):
 	$(MAKE) $(MFLAGS) -C $@ $(MAKECMDGOALS)
