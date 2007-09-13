@@ -11,7 +11,7 @@ mki-install syslinux ||
 	fatal "faild to install 'syslinux'."
 
 [ -f "$chroot/.image/syslinux/isolinux.cfg" ] ||
-	message 'Warning: /.image/isolinux/isolinux.cfg: not found.'
+	message 'Warning: /.image/syslinux/isolinux.cfg: not found.'
 
 cat >"$chroot/tmp/packimage.sh"<<EOF
 #!/bin/sh -efu

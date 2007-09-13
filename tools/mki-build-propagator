@@ -23,7 +23,7 @@ libdir="\$(getconf LIBDIR)"
 kver="\$(readlink -ev /boot/vmlinuz |sed -e 's,/boot/vmlinuz-,,')"
 
 #FIXME
-mkdir -p -- /.image/isolinux/alt0
+mkdir -p -- /.image/syslinux/alt0
 mkmar -r / -p '/.in/${mar_modules##*/}' -o /tmp/modules -k "\$kver"
 
 printf '%s\n' "${PROPAGATOR_VERSION:-}" > /tmp/.VERSION
@@ -32,7 +32,7 @@ sed \
 	-e "s,@TMPDIR@,/tmp,g" \
 	< '/.in/${initfs##*/}' |
 	gencpio - |
-	gzip -c > /.image/isolinux/alt0/full.cz
+	gzip -c > /.image/syslinux/alt0/full.cz
 
 rm -rf -- /tmp/.VERSION
 EOF

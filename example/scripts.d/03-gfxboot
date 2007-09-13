@@ -6,8 +6,8 @@ if [ ! -f "$bootlogo" ]; then
 	echo "${0##*/} - SKIP"
 	exit 0
 fi
-mkdir -p "$WORKDIR"/isolinux
-cd "$WORKDIR"/isolinux 
+mkdir -p "$WORKDIR"/syslinux
+cd "$WORKDIR"/syslinux
 
 cp -a "$bootlogo" bootlogo.cpio
 
