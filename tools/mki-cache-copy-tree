@@ -1,7 +1,6 @@
 #!/bin/ash -efu
 
 data_tree="${COPY_TREE:?Data tree required}"
-data_tree="$(opt_check_dir 'COPY_TREE' "$data_tree")"
 
 payload() {
 	stat --printf='%A\t%s\t%Y\n' "$makefile"
@@ -10,7 +9,16 @@ payload() {
 	find -mindepth 1 -printf '%M\t%s\t%T@\t%p\n'
 	cd - >/dev/null
 
-	cd "$data_tree"
-	find -mindepth 1 -printf '%M\t%s\t%T@\t%p\n'
-	cd - >/dev/null
+	for d in $COPY_TREE; do
+		d="$(readlink -ve "$d")"
+
+		if [ -d "$d" ]; then
+			cd "$d"
+			find -mindepth 1 -printf '%M\t%s\t%T@\t%p\n'
+		else
+			cd "${d%/*}"
+			stat --printf='%A\t%s\t%Y\t%n\n' "${d##*/}"
+		fi
+		cd - >/dev/null
+	done
 }
