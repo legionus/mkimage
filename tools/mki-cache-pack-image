@@ -5,6 +5,15 @@ aptbox="$dir/aptbox"
 [ -d "$aptbox" ] ||
 	fatal "$aptbox: not a directory."
 
+workdir_check_status() {
+	[ ! -d "$workdir_changed" ]
+}
+
+workdir_change_status() {
+	[ ! -d "$workdir_changed" ] ||
+		rmdir -- "$workdir_changed"
+}
+
 payload() {
 	stat --printf='%A\t%s\t%Y\n' "$makefile"
 

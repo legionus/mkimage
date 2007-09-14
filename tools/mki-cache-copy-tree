@@ -5,10 +5,6 @@ data_tree="${COPY_TREE:?Data tree required}"
 payload() {
 	stat --printf='%A\t%s\t%Y\n' "$makefile"
 
-	cd "$outdir"
-	find -mindepth 1 -printf '%M\t%s\t%T@\t%p\n'
-	cd - >/dev/null
-
 	for d in $COPY_TREE; do
 		d="$(readlink -ve "$d")"
 
