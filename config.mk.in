@@ -92,6 +92,9 @@ MKI_PACKTYPE =
 # Output image name (useful for squash, tarbz2, isoboot and isodata types).
 MKI_OUTNAME =
 
+# Use <number> processors.
+PACK_SQUASHFS_PROCESSORS ?=
+
 ###
 ### A variables for 'boot' pack type and 'build-propagator' target.
 ###

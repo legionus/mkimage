@@ -2,6 +2,9 @@
 
 . "${0%/*}"/mki-sh-functions
 
+nproc="${PACK_SQUASHFS_PROCESSORS:-}"
+nproc="$(opt_check_number 'PACK_SQUASHFS_PROCESSORS' "$nproc")"
+
 outname="${MKI_OUTNAME:-outname}"
 outname="${outname##*/}"
 
@@ -18,7 +21,7 @@ args=
 [ ! -d /.image/.host ]     || args="\$args /.image/.host"
 [ ! -f /.image/.fakedata ] || args="\$args /.image/.fakedata"
 
-exec mksquashfs /.image/ '/.our/$outname' ${args:+-e $args}
+exec mksquashfs ${nproc:+-processors $nproc} /.image/ '/.our/$outname' ${args:+-e $args}
 EOF
 
 mki-exec "$chroot/tmp/packimage.sh"
