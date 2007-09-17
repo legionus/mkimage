@@ -19,6 +19,14 @@ if [ -d "$WORKDIR/ALTLinux/RPMS.base" ]; then
 	done
 fi
 
+if [ -z "$INFO_ARCH" ]; then
+	INFO_ARCH="$(/.host/find "$WORKDIR"/ALTLinux/RPMS.* -type f -name '*.rpm' -printf '%f\n' |
+			sed -ne 's/.*\.\([^.]\+\)\.rpm$/\1/p' |
+			sort -u |
+			tr '\n' ' ')"
+	INFO_ARCH="${INFO_ARCH% }"
+fi
+
 genbasedir \
 	--topdir="$WORKDIR" \
         --architecture="$INFO_ARCH" \
