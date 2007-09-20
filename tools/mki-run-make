@@ -1,0 +1,24 @@
+#!/bin/ash -efu
+
+. shell-regexp
+
+showenv() {
+	local n v
+
+	printenv |
+		sed -ne 's/^\(GLOBAL_[^=]\+\)=/\1\t/p' |
+	while read n v; do
+		printf '%s="%s"\n' "$n" "$(quote_shell "$v")"
+	done
+
+	for n in MAKEFLAGS MAKELEVEL MFLAGS \
+		PATH PWD SHELL TERM TMP TMPDIR USER;
+	do
+		eval v="\${$n:-}"
+
+		[ -n "$v" ] || continue
+		printf '%s="%s"\n' "$n" "$(quote_shell "$v")"
+	done
+}
+
+eval exec env -i $(showenv) $(quote_shell "$@")

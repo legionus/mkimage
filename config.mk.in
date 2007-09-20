@@ -1,14 +1,15 @@
 ### Global variables
-MKI_PREFIX ?= @PREFIXDIR@
+GLOBAL_PREFIX ?= @PREFIXDIR@
 
-CONFIGDIR = $(MKI_PREFIX)
-TOOLSDIR = $(MKI_PREFIX)/tools
+CONFIGDIR = $(GLOBAL_PREFIX)
+TOOLSDIR = $(GLOBAL_PREFIX)/tools
 
 TOPDIR ?= $(CURDIR)
 
 ################################################################################
 ### Global helpers
 ################################################################################
+RUN_MAKE		= $(TOOLSDIR)/mki-run-make
 CHROOT_MKAPTBOX		?= $(TOOLSDIR)/mki-mkaptbox
 CHROOT_CACHE		?= $(TOOLSDIR)/mki-cache
 CHROOT_INVALIDATE_CACHE	?= $(TOOLSDIR)/mki-invalidate-cache
@@ -32,35 +33,37 @@ CHROOT_IMAGE_INSTALL	?= $(TOOLSDIR)/mki-image-install
 ################################################################################
 ### Config global variables
 ################################################################################
-SYSTEM_ARCH = $(shell uname -m)
-
-ifeq ($(shell uname -m),x86_64)
-    TARGET ?= $(SYSTEM_ARCH)
-else
-    TARGET ?= i586
-endif
-
-QUIET ?=
-VERBOSE ?=
-
-ifdef QUIET
-    VERBOSE =
-endif
-
+GLOBAL_TARGET ?=
 GLOBAL_HSH_NUMBER ?=
 GLOBAL_HSH_APT_CONFIG ?=
 GLOBAL_HSH_APT_PREFIX ?=
+
+GLOBAL_QUIET ?=
+GLOBAL_VERBOSE ?=
+
+ifdef GLOBAL_QUIET
+    GLOBAL_VERBOSE =
+endif
 
 HSH_CACHEDIR = $(CACHEDIR)/hsh
 
 ################################################################################
 ### Per-image variables
 ################################################################################
-ifdef SUBDIRS
-    SUBDIRS =
+PROFILE ?=
+SUBDIRS ?=
+
+TARGET = $(GLOBAL_TARGET)
+
+SYSTEM_ARCH = $(shell uname -m)
+ifeq ($(shell uname -m),x86_64)
+    TARGET ?= $(SYSTEM_ARCH)
 else
-    SUBDIRS = $(PROFILE_SUBDIRS)
+    TARGET ?= i586
 endif
+
+QUIET = $(GLOBAL_QUIET)
+VERBOSE = $(GLOBAL_VERBOSE)
 
 HSH_NUMBER = $(GLOBAL_HSH_NUMBER)
 HSH_APT_CONFIG = $(GLOBAL_HSH_APT_CONFIG)
@@ -91,17 +94,13 @@ COPY_TREE =
 # isodata - create a data ISO image.
 # data    - copy $(SUBWORKDIR) as is.
 #
-ifdef MKI_PACKTYPE
-    MKI_PACKTYPE =
-else
-    MKI_PACKTYPE = $(PROFILE_MKI_PACKTYPE)
-endif
+MKI_PACKTYPE =
 
 # Output image name (useful for squash, tarbz2, isoboot and isodata types).
-MKI_OUTNAME =
+MKI_OUTNAME ?=
 
 # Use <number> processors.
-PACK_SQUASHFS_PROCESSORS ?=
+PACK_SQUASHFS_PROCESSORS =
 
 ###
 ### A variables for 'boot' pack type and 'build-propagator' target.
@@ -153,3 +152,8 @@ BOOT_VOLI =
 
 # Specifies the volset ID. See: man mkisofs(8).
 BOOT_VOLS =
+
+################################################################################
+### Profile dependency
+################################################################################
+all: profile

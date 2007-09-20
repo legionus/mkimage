@@ -7,11 +7,7 @@ WORKDIR 	= $(CURDIR)/$(WORKDIRNAME)
 CACHEDIR	= $(WORKDIR)/$(CACHEDIRNAME)
 PKGBOX		= $(WORKDIR)/pkgbox
 
-ifdef OUTDIR
-OUTDIR		= $(WORKDIR)/$(OUTDIRNAME)
-else
-OUTDIR		= $(PROFILE_OUTDIR)
-endif
+OUTDIR		?= $(WORKDIR)/$(OUTDIRNAME)
 
 .PHONY: $(SUBDIRS)
 .EXPORT_ALL_VARIABLES:
@@ -33,6 +29,12 @@ prepare-image-workdir: prepare-workdir $(SUBDIRS)
 	if ! $(CHROOT_CACHE) check $@; then \
 	    $(CHROOT_IMAGE_PREPARE) && \
 	    $(CHROOT_CACHE) build $@ || exit 1; \
+	fi
+
+profile:
+	if [ -n "$(PROFILE)" ]; then \
+	    $(CHROOT_INVALIDATE_CACHE) mki; \
+	    [ ! -d "$(WORKDIR)" ] || $(CHROOT_CLEAN); \
 	fi
 
 run-scripts: prepare-workdir $(SUBDIRS)
@@ -97,4 +99,4 @@ distclean-current: clean-current
 distclean: distclean-current $(SUBDIRS)
 
 $(SUBDIRS):
-	$(MAKE) $(MFLAGS) -C $@ $(MAKECMDGOALS)
+	$(RUN_MAKE) $(MAKE) $(MFLAGS) -C $@ $(MAKECMDGOALS)
