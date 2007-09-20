@@ -56,7 +56,11 @@ HSH_CACHEDIR = $(CACHEDIR)/hsh
 ################################################################################
 ### Per-image variables
 ################################################################################
-SUBDIRS = 
+ifdef SUBDIRS
+    SUBDIRS =
+else
+    SUBDIRS = $(PROFILE_SUBDIRS)
+endif
 
 HSH_NUMBER = $(GLOBAL_HSH_NUMBER)
 HSH_APT_CONFIG = $(GLOBAL_HSH_APT_CONFIG)
@@ -87,7 +91,11 @@ COPY_TREE =
 # isodata - create a data ISO image.
 # data    - copy $(SUBWORKDIR) as is.
 #
-MKI_PACKTYPE =
+ifdef MKI_PACKTYPE
+    MKI_PACKTYPE =
+else
+    MKI_PACKTYPE = $(PROFILE_MKI_PACKTYPE)
+endif
 
 # Output image name (useful for squash, tarbz2, isoboot and isodata types).
 MKI_OUTNAME =

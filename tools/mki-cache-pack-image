@@ -17,6 +17,9 @@ workdir_change_status() {
 payload() {
 	stat --printf='%A\t%s\t%Y\n' "$makefile"
 
+	printf '%s\n' "${MKI_OUTNAME:-}"
+	printf '%s\n' "${OUTDIR:-}"
+
 	cd "$aptbox/var"
 	find -name '*_release' -exec cat '{}' '+'
 	cd - >/dev/null
