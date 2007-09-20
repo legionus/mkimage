@@ -2,6 +2,9 @@
 
 . "${0%/*}"/mki-sh-functions
 
+cleanup="${CLEANUP_OUTDIR:-}"
+level="${MAKELEVEL:-}"
+
 verbose "has started executing."
 
 [ -d "$chroot" ] ||
@@ -9,7 +12,8 @@ verbose "has started executing."
 
 get_copy_args "$outdir/" "$chroot/.our/"
 
-find "$outdir/" -mindepth 1 -maxdepth 1 -execdir rm $verbose -rf -- '{}' '+'
+[ -z "$cleanup" -o "$level" = "1" ] ||
+	find "$outdir/" -mindepth 1 -maxdepth 1 -execdir rm $verbose -rf -- '{}' '+'
 
 cd "$chroot/.our"
 find -mindepth 1 -maxdepth 1 |

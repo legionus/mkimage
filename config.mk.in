@@ -52,6 +52,7 @@ HSH_CACHEDIR = $(CACHEDIR)/hsh
 ################################################################################
 PROFILE ?=
 SUBDIRS ?=
+CLEANUP_OUTDIR =
 
 TARGET = $(GLOBAL_TARGET)
 
