@@ -1,0 +1,7 @@
+#!/bin/ash -efu
+
+if [ -r '/proc/cpuinfo' ]; then
+	grep '^processor' /proc/cpuinfo |wc -l
+else
+	echo '1'
+fi

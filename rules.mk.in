@@ -11,6 +11,7 @@ TOPDIR ?= $(CURDIR)
 ### Global helpers
 ################################################################################
 RUN_MAKE		= $(TOOLSDIR)/mki-run-make
+COUNT_CPU		= $(TOOLSDIR)/mki-count-cpu
 CHROOT_MKAPTBOX		?= $(TOOLSDIR)/mki-mkaptbox
 CHROOT_CACHE		?= $(TOOLSDIR)/mki-cache
 CHROOT_INVALIDATE_CACHE	?= $(TOOLSDIR)/mki-invalidate-cache
@@ -113,7 +114,7 @@ MKI_PACKTYPE =
 MKI_OUTNAME ?=
 
 # Use <number> processors.
-PACK_SQUASHFS_PROCESSORS =
+PACK_SQUASHFS_PROCESSORS ?= $(shell $(COUNT_CPU))
 
 ###
 ### A variables for 'boot' pack type and 'build-propagator' target.
