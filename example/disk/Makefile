@@ -1,4 +1,4 @@
-include /usr/share/mkimage/config.mk
+include /usr/share/mkimage/rules.mk
 
 CHROOT_PACKAGES = apt-utils rsync
 IMAGE_PACKAGES = ./packages
@@ -14,5 +14,3 @@ INFO_VERSION	= 4.0
 INFO_LABEL	= Server
 
 all: copy-packages pack-image
-
-include $(CONFIGDIR)/rules.mk

@@ -10,7 +10,7 @@ TOUCH_R = touch -r
 
 prefixdir = $(datadir)/$(PROJECT)
 
-TARGETS = config.mk
+TARGETS = rules.mk
 
 all: $(TARGETS)
 

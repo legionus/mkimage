@@ -1,4 +1,4 @@
-include /usr/share/mkimage/config.mk
+include /usr/share/mkimage/rules.mk
 
 SUBDIRS = base disk install2
 
@@ -17,6 +17,4 @@ PROPAGATOR_INITFS = ./initfs
 
 all: copy-tree copy-subdirs run-scripts pack-image
 
-pack-image: OUTDIR = /tmp/out/
-
-include $(CONFIGDIR)/rules.mk
+pack-image: OUTDIR = /tmp
