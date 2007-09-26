@@ -21,7 +21,7 @@ args=
 [ ! -d /.image/.host ]     || args="\$args /.image/.host"
 [ ! -f /.image/.fakedata ] || args="\$args /.image/.fakedata"
 
-exec mksquashfs ${nproc:+-processors $nproc} /.image/ '/.our/$outname' ${args:+-e $args}
+exec mksquashfs /.image/ '/.our/$outname' ${nproc:+-processors $nproc} ${args:+-e $args}
 EOF
 
 mki-exec "$chroot/tmp/packimage.sh"
