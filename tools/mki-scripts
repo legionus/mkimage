@@ -43,7 +43,7 @@ while read script; do
 	[ -x "$script" ] || continue
 
 	cp -f -- "$script" "$dir/chroot/tmp/script.sh"
-	chmod 755 -- "$chroot/tmp/script.sh"
+	chmod 755 -- "$dir/chroot/tmp/script.sh"
 
 	verbose "Run: \`$script'"
 
