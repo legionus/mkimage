@@ -18,6 +18,7 @@ CHROOT_INVALIDATE_CACHE	?= $(TOOLSDIR)/mki-invalidate-cache
 
 CHROOT_BUILD_PROPAGATOR	?= $(TOOLSDIR)/mki-build-propagator
 CHROOT_SCRIPTS		?= $(TOOLSDIR)/mki-scripts
+CHROOT_IMAGE_SCRIPTS	?= $(TOOLSDIR)/mki-image-scripts
 CHROOT_PREPARE 		?= $(TOOLSDIR)/mki-prepare
 CHROOT_IMAGE_PREPARE	?= $(TOOLSDIR)/mki-image-prepare
 CHROOT_PACK 		?= $(TOOLSDIR)/mki-pack
@@ -86,6 +87,7 @@ HSH_APT_PREFIX = $(GLOBAL_HSH_APT_PREFIX)
 NO_CACHE =
 
 MKI_SCRIPTDIR = $(CURDIR)/scripts.d
+MKI_IMAGE_SCRIPTDIR = $(CURDIR)/image-scripts.d
 
 # Instrumental chroot packages list or filename with packages list.
 CHROOT_PACKAGES =
@@ -202,6 +204,15 @@ profile:
 run-scripts: prepare-workdir $(SUBDIRS)
 	if ! $(CHROOT_CACHE) check $@; then \
 	    if ! $(CHROOT_SCRIPTS); then \
+		$(CHROOT_INVALIDATE_CACHE) mki; \
+		exit 1; \
+	    fi; \
+	    $(CHROOT_CACHE) build $@ || exit 1; \
+	fi
+
+run-image-scripts: prepare-workdir $(SUBDIRS)
+	if ! $(CHROOT_CACHE) check $@; then \
+	    if ! $(CHROOT_IMAGE_SCRIPTS); then \
 		$(CHROOT_INVALIDATE_CACHE) mki; \
 		exit 1; \
 	    fi; \

@@ -17,11 +17,13 @@ fi
 
 action="$1"; shift
 
-case "$1" in
-	build-image|copy-packages|copy-subdirs|copy-tree|pack-image|prepare-image-workdir|prepare-workdir|run-scripts) ;;
-	*) fatal "$1: unknown target" ;;
+cache_type="$1"
+case "$cache_type" in
+	build-image|copy-packages|copy-subdirs|copy-tree|pack-image) ;;
+	prepare-image-workdir|prepare-workdir|run-scripts|run-image-scripts) ;;
+	*) fatal "$cache_type: unknown target" ;;
 esac
-cachefile="$cachedir/mki/$1"
+cachefile="$cachedir/mki/$cache_type"
 
 workdir_check_status() {
 	return 0
@@ -32,7 +34,7 @@ workdir_change_status() {
 	mkdir -p -- "$workdir_changed"
 }
 
-. mki-cache-$1
+. mki-cache-$cache_type
 
 sha=
 invalid_cache() {

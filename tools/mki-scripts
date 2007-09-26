@@ -5,7 +5,15 @@
 
 verbose "has started executing."
 
-scriptdir="${MKI_SCRIPTDIR:?Script directory required}"
+case "$PROG" in
+	*-image-*)
+		scriptdir="${MKI_IMAGE_SCRIPTDIR:?Script directory required}"
+		dir="$subdir"
+		;;
+	*)
+		scriptdir="${MKI_SCRIPTDIR:?Script directory required}"
+		;;
+esac
 
 if [ ! -d "$scriptdir" ]; then
 	verbose "$scriptdir: not found ... ignoring!"
@@ -37,8 +45,11 @@ while read script; do
 	cp -f -- "$script" "$chroot/tmp/script.sh"
 	chmod 755 -- "$chroot/tmp/script.sh"
 
-	mki-exec "$chroot/tmp/start.sh" ||
-		fatal "$script: unable to run script."
+	verbose "Run: \`$script'"
+
+	env WORKDIR="$dir" \
+		mki-exec "$chroot/tmp/start.sh" ||
+			fatal "$script: unable to run script."
 done
 
 cd "$chroot/tmp"

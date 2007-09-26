@@ -1,6 +1,9 @@
 #!/bin/ash -efu
 
-scriptdir="${MKI_SCRIPTDIR:?Script directory required}"
+case "$cache_type" in
+	*-image-*)	scriptdir="${MKI_IMAGE_SCRIPTDIR:?Script directory required}" ;;
+	*)		scriptdir="${MKI_SCRIPTDIR:?Script directory required}" ;;
+esac
 
 payload() {
 	stat --printf='%A\t%s\t%Y\n' "$makefile"
