@@ -11,7 +11,6 @@ hsh_initroot() {
 	hsh \
 		--initroot \
 		--without-stuff \
-		--pkg-init-list='+basesystem fakechroot>=2.6' \
 		--pkg-build-list='' \
 		$verbose $quiet $target $apt_config $apt_prefix $save_fakeroot \
 		${HSH_NUMBER:+--number="$HSH_NUMBER"} \
@@ -19,5 +18,14 @@ hsh_initroot() {
 		${HSH_CACHEDIR:+--cache-dir="$HSH_CACHEDIR"} \
 		-- "$1" ||
 	fatal "$1: unable to make initial chroot: rc=$?"
+
+	env -i PATH="$PATH" \
+	hsh-install \
+		$verbose $quiet \
+		${HSH_NUMBER:+--number="$HSH_NUMBER"} \
+		${HSH_EXCLUDE_DOCS:+--excludedocs} \
+		-- "$1" basesystem ||
+	fatal "$1: unable to install packages: rc=$?"
+
 	rm -rf -- "$1/repo" "$1/chroot/.out"
 }
