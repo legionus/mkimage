@@ -27,7 +27,6 @@ cat > "$chroot/tmp/start.sh" <<EOF
 #!/bin/sh -efu
 $(addenv)
 export WORKDIR=/.image
-printf 'alias chroot="fakechroot /sbin/chroot"\n' >> "\$HOME/.bashrc"
 /tmp/script.sh
 EOF
 
