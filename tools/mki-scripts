@@ -31,7 +31,7 @@ addenv() {
 	done
 }
 
-cat > "$chroot/tmp/start.sh" <<EOF
+cat > "$dir/chroot/tmp/start.sh" <<EOF
 #!/bin/sh -efu
 $(addenv)
 export WORKDIR=/.image
