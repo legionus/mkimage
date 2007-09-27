@@ -17,6 +17,8 @@ pkgs='mkisofs'
 mki-install $pkgs ||
 	fatal "faild to install packages: $pkgs."
 
+update_chroot_fakedata
+
 cat >"$chroot/tmp/packimage.sh"<<EOF
 #!/bin/sh -efu
 
