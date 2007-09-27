@@ -5,8 +5,6 @@
 
 verbose "has started executing."
 
-save_fakeroot='--save-fakeroot'
-
 [ -d "$subchroot" ] ||
 	hsh_initroot "$subdir"
 

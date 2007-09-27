@@ -4,7 +4,6 @@ pkgbox="${PKGBOX:?aptbox required}"
 target="${TARGET:+--target="$TARGET"}"
 apt_config="${HSH_APT_CONFIG:+--apt-config="$HSH_APT_CONFIG"}"
 apt_prefix="${HSH_APT_PREFIX:+--apt-prefix="$HSH_APT_PREFIX"}"
-save_fakeroot=
 
 hsh_initroot() {
 	env -i PATH="$PATH" \
@@ -12,7 +11,8 @@ hsh_initroot() {
 		--initroot \
 		--without-stuff \
 		--pkg-build-list='' \
-		$verbose $quiet $target $apt_config $apt_prefix $save_fakeroot \
+		--save-fakeroot \
+		$verbose $quiet $target $apt_config $apt_prefix \
 		${HSH_NUMBER:+--number="$HSH_NUMBER"} \
 		${HSH_EXCLUDE_DOCS:+--excludedocs} \
 		${HSH_CACHEDIR:+--cache-dir="$HSH_CACHEDIR"} \
