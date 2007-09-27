@@ -21,6 +21,9 @@ args=
 [ ! -d /.image/.host ]     || args="\$args /.image/.host"
 [ ! -f /.image/.fakedata ] || args="\$args /.image/.fakedata"
 
+[ ! -e '/.our/$outname' ] ||
+	rm -f -- '/.our/$outname'
+
 exec mksquashfs /.image/ '/.our/$outname' ${nproc:+-processors $nproc} ${args:+-e $args}
 EOF
 
