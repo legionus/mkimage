@@ -36,6 +36,5 @@ rm -f -- .mkisofsrc
 exit \$rc
 EOF
 
-mki-exec "$chroot/tmp/packimage.sh"
-rm -f -- "$chroot/tmp/packimage.sh"
+mki_exec_once "$chroot/tmp/packimage.sh"
 mki-copy-our2out

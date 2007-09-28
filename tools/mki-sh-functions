@@ -72,4 +72,15 @@ update_chroot_fakedata() {
 	rm -f -- "$chroot"/tmp/.fakedata-image "$chroot"/tmp/.fakedata
 }
 
+mki_exec_once() {
+	local rc=0 prog
+	prog="$1"; shift
+
+	mki-exec "$prog" || rc=$?
+	rm -f -- "$prog"
+
+	[ "$rc" -eq 0 ] ||
+		exit $rc
+}
+
 fi

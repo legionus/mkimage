@@ -26,6 +26,5 @@ args=
 exec tar --numeric-owner $args -jcf '/.our/$outname' .
 EOF
 
-mki-exec "$chroot/tmp/packimage.sh"
-rm -f -- "$chroot/tmp/packimage.sh"
+mki_exec_once "$chroot/tmp/packimage.sh"
 mki-copy-our2out

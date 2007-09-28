@@ -30,6 +30,9 @@ else
 	fatal "$type: unknown pack type."
 fi
 
-mki-exec "$chroot/tmp/packimage.sh"
-rm -f -- "$chroot/tmp/packimage.sh" "$chroot/tmp/script.sh"
+mki_exec_once "$chroot/tmp/packimage.sh"
+
+# XXXlegion: /tmp/script.sh will not be removed if /tmp/packimage.sh fail
+rm -f -- "$chroot/tmp/script.sh"
+
 mki-copy-our2out

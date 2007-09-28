@@ -18,17 +18,11 @@ update_chroot_fakedata
 cat >"$chroot/tmp/packimage.sh"<<EOF
 #!/bin/sh -efu
 
-args=
-[ ! -d /.image/.in ]       || args="\$args /.image/.in"
-[ ! -d /.image/.host ]     || args="\$args /.image/.host"
-[ ! -f /.image/.fakedata ] || args="\$args /.image/.fakedata"
-
 [ ! -e '/.our/$outname' ] ||
 	rm -f -- '/.our/$outname'
 
-exec mksquashfs /.image/ '/.our/$outname' ${nproc:+-processors $nproc} ${args:+-e $args}
+mksquashfs /.image/ '/.our/$outname' ${nproc:+-processors $nproc} -e .in .host .fakedata
 EOF
 
-mki-exec "$chroot/tmp/packimage.sh"
-rm -f -- "$chroot/tmp/packimage.sh"
+mki_exec_once "$chroot/tmp/packimage.sh"
 mki-copy-our2out
