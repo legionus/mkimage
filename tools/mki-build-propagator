@@ -37,6 +37,8 @@ sed \
 rm -rf -- /tmp/.VERSION
 EOF
 
-mki-exec "$chroot/tmp/packimage.sh"
+rc=0
+mki-exec "$chroot/tmp/packimage.sh" || rc=$?
 rm -f -- "$chroot/tmp/packimage.sh"
 find "$chroot/.in" -mindepth 1 -maxdepth 1 -exec rm -rf -- '{}' '+'
+exit $rc

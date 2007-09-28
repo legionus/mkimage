@@ -20,5 +20,4 @@ cp -aLf /boot/vmlinuz /.image/syslinux/alt0/vmlinuz
 cp -f /usr/lib/syslinux/pxelinux.0 /.image/syslinux/
 EOF
 
-mki-exec "$chroot/tmp/packimage.sh"
-rm -f -- "$chroot/tmp/packimage.sh"
+mki_exec_once "$chroot/tmp/packimage.sh"

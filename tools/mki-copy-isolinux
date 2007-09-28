@@ -21,5 +21,4 @@ cp -f /usr/lib/syslinux/isolinux.bin /.image/syslinux/
 isolinux-config --base /syslinux /.image/syslinux/isolinux.bin
 EOF
 
-mki-exec "$chroot/tmp/packimage.sh"
-rm -f -- "$chroot/tmp/packimage.sh"
+mki_exec_once "$chroot/tmp/packimage.sh"

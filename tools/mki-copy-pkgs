@@ -82,8 +82,9 @@ cat > "$chroot/tmp/script" <<EOF
 mkdir $verbose -p -- '/.image/$destdir'
 exec /.host/find /.in -mindepth 1 -maxdepth 1 -execdir cp $verbose -alft '/.image/$destdir' -- '{}' '+'
 EOF
-mki-exec "$chroot/tmp/script"
-rm -f -- "$chroot/tmp/script"
 
-find "$chroot/.in/" -mindepth 1 -maxdepth 1 \
-	-execdir rm $verbose -rf -- '{}' '+'
+rc=0
+mki-exec "$chroot/tmp/script" || rc=$?
+rm -f -- "$chroot/tmp/script"
+find "$chroot/.in/" -mindepth 1 -maxdepth 1 -execdir rm $verbose -rf -- '{}' '+'
+exit $rc
