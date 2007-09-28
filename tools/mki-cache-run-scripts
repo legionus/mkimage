@@ -11,7 +11,7 @@ payload() {
 	cd "$scriptdir"
 	find -type f -printf '%p %M %s %T@\n' |
 	while read script stamp; do
-		[ ! -x "$script" ] ||
+		[ ! -x "$script" -o -z "${script##*~}" ] ||
 			printf '%s\n' "$stamp"
 	done
 }
