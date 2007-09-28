@@ -12,8 +12,6 @@ outname="${outname##*/}"
 [ -d "$chroot" ] ||
 	fatal "$dir: not look like a work directory of hasher."
 
-update_chroot_fakedata
-
 if [ -x "$type" ]; then
 	message "$type: executable file."
 

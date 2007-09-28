@@ -55,23 +55,6 @@ get_copy_args() {
 		cp_args='-l'
 }
 
-update_chroot_fakedata() {
-	[ -f "$chroot/.fakedata" -a "$chroot/.image/.fakedata" ] ||
-		return 0
-
-	mki-run chmod a+w "$chroot"/.fakedata
-
-	LC_ALL=C sort -o "$chroot"/tmp/.fakedata       "$chroot"/.fakedata
-	LC_ALL=C sort -o "$chroot"/tmp/.fakedata-image "$chroot"/.fakedata-image
-
-	LC_ALL=C comm -23 \
-		"$chroot"/tmp/.fakedata-image \
-		"$chroot"/tmp/.fakedata |
-		LC_ALL=C grep -v '^[[:space:]]*$' >> "$chroot"/.fakedata
-
-	rm -f -- "$chroot"/tmp/.fakedata-image "$chroot"/tmp/.fakedata
-}
-
 mki_exec_once() {
 	local rc=0 prog
 	prog="$1"; shift

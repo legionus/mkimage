@@ -12,8 +12,6 @@ outname="${outname##*/}"
 
 mki-install mkisofs
 
-update_chroot_fakedata
-
 cat >"$chroot/tmp/packimage.sh"<<EOF
 #!/bin/sh -efu
 cd /tmp

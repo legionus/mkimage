@@ -9,3 +9,14 @@ verbose "has started executing."
 	hsh_initroot "$subdir"
 
 ln $verbose -nsf -- "$WORKDIRNAME/chroot" "$chroot/.image"
+
+[ -f "$chroot/.fakedata" -a "$chroot/.image/.fakedata" ] ||
+	exit 0
+
+mki-run chmod 666 "$chroot"/.fakedata
+cat "$chroot"/.image/.fakedata >> "$chroot"/.fakedata
+mki-run chmod 644 "$chroot"/.fakedata
+
+rm -f -- "$chroot"/.image/.fakedata
+
+ln -- "$chroot"/.fakedata "$chroot"/.image/.fakedata

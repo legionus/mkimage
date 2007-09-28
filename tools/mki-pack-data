@@ -5,8 +5,6 @@
 [ -d "$chroot" ] ||
 	fatal "$dir: not look like a work directory of hasher."
 
-update_chroot_fakedata
-
 cat >"$chroot/tmp/packimage.sh"<<-EOF
 #!/bin/sh -efu
 cd /.our
