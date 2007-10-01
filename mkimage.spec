@@ -1,5 +1,5 @@
 Name: mkimage
-Version: 0.0.2
+Version: 0.0.3
 Release: alt1
 
 Summary: Simple image creator
@@ -28,6 +28,9 @@ Simple image creator
 %doc example
 
 %changelog
+* Mon Oct 01 2007 Alexey Gladkov <legion@altlinux.ru> 0.0.3-alt1
+- New version (0.0.3).
+
 * Fri Sep 21 2007 Alexey Gladkov <legion@altlinux.ru> 0.0.2-alt1
 - New version (0.0.2).
 
