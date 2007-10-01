@@ -12,6 +12,7 @@ hsh_initroot() {
 		--without-stuff \
 		--pkg-build-list='' \
 		--save-fakeroot \
+		${GLOBAL_LANGS:+--install-langs="$GLOBAL_LANGS"} \
 		$verbose $quiet $target $apt_config $apt_prefix \
 		${HSH_NUMBER:+--number="$HSH_NUMBER"} \
 		${HSH_EXCLUDE_DOCS:+--excludedocs} \
