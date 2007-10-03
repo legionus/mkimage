@@ -20,6 +20,8 @@ hsh_initroot() {
 		-- "$1" ||
 	fatal "$1: unable to make initial chroot: rc=$?"
 
+
+
 	env -i PATH="$PATH" \
 	hsh-install \
 		$verbose $quiet \
@@ -27,6 +29,17 @@ hsh_initroot() {
 		${HSH_EXCLUDE_DOCS:+--excludedocs} \
 		-- "$1" basesystem ||
 	fatal "$1: unable to install packages: rc=$?"
+
+        # Create essential tty devices.
+        echo "\
+		600 /dev/console c 5 1
+		600 /dev/tty0 c 4 0
+		666 /dev/tty c 5 0
+		666 /dev/ptmx c 5 2" |
+	while read mode name type major minor ; do
+	        hsh-fakedev $verbose $quiet ${number:+--number="$number"} -o root -m "$mode" -- "$1" "$name" "$type" "$major" "$minor" ||
+                     Fatal 'Failed to create tty devices.'
+        done
 
 	rm -rf -- "$1/repo" "$1/chroot/.out"
 }
