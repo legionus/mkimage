@@ -37,8 +37,13 @@ hsh_initroot() {
 		666 /dev/tty c 5 0
 		666 /dev/ptmx c 5 2" |
 	while read mode name type major minor ; do
-	        hsh-fakedev $verbose $quiet ${number:+--number="$number"} -o root -m "$mode" -- "$1" "$name" "$type" "$major" "$minor" ||
-                     Fatal 'Failed to create tty devices.'
+	        hsh-fakedev \
+			$verbose $quiet \
+			${HSH_NUMBER:+--number="$HSH_NUMBER"} \
+			-o root \
+			-m "$mode" \
+			-- "$1" "$name" "$type" "$major" "$minor" ||
+		fatal 'Failed to create tty devices.'
         done
 
 	rm -rf -- "$1/repo" "$1/chroot/.out"
