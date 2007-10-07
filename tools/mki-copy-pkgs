@@ -1,6 +1,7 @@
 #!/bin/ash -efu
 
 . "${0%/*}"/mki-sh-functions
+. shell-regexp
 
 verbose "has started executing."
 
@@ -17,65 +18,69 @@ exit_handler() {
 }
 
 if [ -z "$REQUIRES" ]; then
-	message "Nothing to do"
+	message "Nothing to do."
 	exit  0
 fi
 
-requires_list=
-
-for r in $REQUIRES; do
-	if [ -f "$r" ]; then
-		requires_list="$requires_list $(grep -h '^[[:space:]]*[^#]' "$r" ||:)"
-	else
-		requires_list="$requires_list $r"
-	fi
-done
-
-if [ -z "$requires_list" ]; then
-	message "Nothing to do"
-	exit 0
-fi
 
 trap exit_handler HUP INT QUIT TERM EXIT
 tempdir="$(mktemp -d "$dir/$PROG.XXXXXXXXX")"
 
 lstfile="$tempdir/lst"
 errfile="$tempdir/err"
+reqfile="$tempdir/req"
+
+for r in $REQUIRES; do
+	if [ -f "$r" ]; then
+		grep -h '^[[:space:]]*[^#]' "$r" ||:
+	else
+		printf '%s\n' "$r"
+	fi
+done > "$reqfile"
+
+if [ ! -s "$reqfile" ]; then
+	message "Nothing to do."
+	exit 0
+fi
 
 > "$lstfile"
 > "$errfile"
 
 rc=0
-printf '%s\n' "$requires_list" |
-	xargs -r mki-print-uris 2>>"$errfile" >>"$lstfile" ||
+xargs -r mki-print-uris 2>>"$errfile" >>"$lstfile" < "$reqfile" ||
 	rc=$?
 
 conflicts=
 if [ "$rc" -ne 0 ]; then
 	if ! conflicts="$(LANG=C fgrep ': Conflicts: ' "$errfile")"; then
 		cat "$errfile" >&2
-		fatal 'could not copy packages.'
+		fatal 'could not copy packages: conflicts found.'
 	fi
 	> "$lstfile"
 fi
 
 if [ ! -s "$lstfile" ]; then
-	verbose "Conflicts packages found in requires list"
+	verbose "Conflicts packages found in requires list: "
 	[ -z "$verbose" ] ||
 		printf '%s\n' "$conflicts" >&2
 
-	printf '%s\n' "$requires_list" |
-		tr ' ' '\n' |
-		xargs -ri mki-print-uris '{}' > "$lstfile"
+	while read -r line; do
+		[ -n "$line" ] ||
+			continue
+
+		line="$(quote_shell "$line")"
+		mki-print-uris $line
+
+	done < "$reqfile" > "$lstfile"
 fi
 
 [ -s "$lstfile" ] ||
-	fatal 'could not copy packages.'
+	fatal 'could not copy packages: empty list.'
 
 sort -u "$lstfile" |
 	tr ' ' '\n' |
 	xargs -r cp $verbose -ut "$chroot/.in/" -- ||
-	fatal 'could not copy packages.'
+	fatal 'could not copy packages: copy failed.'
 
 cat > "$chroot/tmp/script" <<EOF
 #!/bin/sh -efu
