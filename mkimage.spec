@@ -25,7 +25,7 @@ Simple image creator
 
 %files
 %_datadir/%name
-%doc example
+%doc examples
 
 %changelog
 * Mon Oct 08 2007 Alexey Gladkov <legion@altlinux.ru> 0.0.4-alt1
