@@ -1,5 +1,5 @@
 Name: mkimage
-Version: 0.0.3
+Version: 0.0.4
 Release: alt1
 
 Summary: Simple image creator
@@ -28,6 +28,13 @@ Simple image creator
 %doc example
 
 %changelog
+* Mon Oct 08 2007 Alexey Gladkov <legion@altlinux.ru> 0.0.4-alt1
+- New version (0.0.4).
+- Ignore scripts with '~', '.bak', '.rpmnew' and '.rpmsave' suffix.
+- Packages list allow matches grouping.
+- Add support for --install-langs (boyarsh@).
+- Add creating console/tty/tty0 in chroots (boyarsh@).
+
 * Mon Oct 01 2007 Alexey Gladkov <legion@altlinux.ru> 0.0.3-alt1
 - New version (0.0.3).
 
