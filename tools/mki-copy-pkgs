@@ -1,7 +1,6 @@
 #!/bin/ash -efu
 
 . "${0%/*}"/mki-sh-functions
-. shell-regexp
 
 verbose "has started executing."
 
@@ -68,7 +67,6 @@ if [ ! -s "$lstfile" ]; then
 		[ -n "$line" ] ||
 			continue
 
-		line="$(quote_shell "$line")"
 		mki-print-uris $line
 
 	done < "$reqfile" > "$lstfile"
