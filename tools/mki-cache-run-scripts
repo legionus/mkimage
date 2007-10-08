@@ -11,7 +11,13 @@ payload() {
 	cd "$scriptdir"
 	find -type f -printf '%p %M %s %T@\n' |
 	while read script stamp; do
-		[ ! -x "$script" -o -z "${script##*~}" ] ||
-			printf '%s\n' "$stamp"
+		[ -x "$script" ] ||
+			continue
+
+		case "$script" in
+			*~|*.bak|*.rpmnew|*.rpmsave) continue ;;
+		esac
+
+		printf '%s\n' "$stamp"
 	done
 }
