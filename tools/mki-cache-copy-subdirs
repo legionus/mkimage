@@ -6,7 +6,9 @@ subdirs="${SUBDIRS:?subdirectories required}"
 	exit 0
 
 payload() {
-	local d outdir
+	local d
+
+	stat --printf='%A\t%s\t%Y\n' "$makefile"
 
 	for d in $subdirs; do
 		cd "$curdir/$d/$workdirname/$outdirname"
