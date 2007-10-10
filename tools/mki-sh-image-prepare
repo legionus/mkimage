@@ -2,6 +2,7 @@
 
 pkgbox="${PKGBOX:?aptbox required}"
 target="${TARGET:+--target="$TARGET"}"
+with_qemu="${WITH_QEMU:+--with-qemu="$WITH_QEMU"}"
 apt_config="${HSH_APT_CONFIG:+--apt-config="$HSH_APT_CONFIG"}"
 apt_prefix="${HSH_APT_PREFIX:+--apt-prefix="$HSH_APT_PREFIX"}"
 
@@ -12,8 +13,7 @@ hsh_initroot() {
 		--without-stuff \
 		--pkg-build-list='' \
 		--save-fakeroot \
-		${GLOBAL_LANGS:+--install-langs="$GLOBAL_LANGS"} \
-		$verbose $quiet $target $apt_config $apt_prefix \
+		$verbose $quiet $target $with_qemu $apt_config $apt_prefix \
 		${HSH_NUMBER:+--number="$HSH_NUMBER"} \
 		${HSH_EXCLUDE_DOCS:+--excludedocs} \
 		${HSH_CACHEDIR:+--cache-dir="$HSH_CACHEDIR"} \
