@@ -36,15 +36,20 @@ workdir_change_status() {
 
 . mki-cache-$cache_type
 
-sha=
+errlock="$cachedir/mki/$cache_type.error"
+sha="`{ payload || mkdir -- "$errlock" } |sha256sum - |cut -d\  -f1`"
+
+if [ -d "$errlock" ]; then
+	rm -rf -- "$errlock"
+	fatal "Unable to collect payload."
+fi
+
 invalid_cache() {
 	printf '%s\n' "$sha" > "$cachefile"
 	[ "$action" = 'build' ] ||
 		workdir_change_status
 	exit ${1:-1}
 }
-
-sha="`payload |sha256sum - |cut -d\  -f1`"
 
 [ "$action" != 'build' ] ||
 	invalid_cache 0

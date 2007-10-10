@@ -5,8 +5,10 @@ data_tree="${COPY_TREE:?Data tree required}"
 payload() {
 	stat --printf='%A\t%s\t%Y\n' "$makefile"
 
-	for d in $COPY_TREE; do
-		d="$(readlink -ve "$d")"
+	local d dir
+	for dir in $COPY_TREE; do
+		d="$(readlink -ve "$dir")" ||
+			fatal "$dir: not available."
 
 		if [ -d "$d" ]; then
 			cd "$d"

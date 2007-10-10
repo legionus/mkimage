@@ -2,9 +2,6 @@
 
 aptbox="$dir/aptbox"
 
-[ -d "$aptbox" ] ||
-	fatal "$aptbox: not a directory."
-
 workdir_check_status() {
 	[ ! -d "$workdir_changed" ]
 }
@@ -19,16 +16,23 @@ payload() {
 
 	printf '%s\n' "${MKI_OUTNAME:-}"
 
-	cd "$aptbox/var"
-	find -name '*_release' -exec cat '{}' '+'
-	cd - >/dev/null
+	if [ -d "$aptbox/var" ]; then
+		cd "$aptbox/var"
+		find -name '*_release' -exec cat '{}' '+'
+		cd - >/dev/null
+	fi
 
-	cd "$outdir"
-	find -mindepth 1 -printf '%M\t%s\t%T@\t%p\n'
-	cd - >/dev/null
+	if [ -d "$outdir" ]; then
+		cd "$outdir"
+		find -mindepth 1 -printf '%M\t%s\t%T@\t%p\n'
+		cd - >/dev/null
+	fi
 
 	local d outdir
 	for d in ${SUBDIRS:-}; do
+		[ -d "$curdir/$d/$workdirname/$outdirname" ] ||
+			continue
+
 	    	cd "$curdir/$d/$workdirname/$outdirname"
 		find -mindepth 1 -printf '%M\t%s\t%T@\t%p\n'
 		cd - >/dev/null

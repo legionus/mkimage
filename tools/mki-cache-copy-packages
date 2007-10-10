@@ -4,15 +4,14 @@ pkgboxdir="${PKGBOX:?directory required}"
 
 pkgbox="$pkgboxdir/aptbox"
 
-[ -d "$pkgbox" ] ||
-	fatal "$pkgbox: not a directory."
-
 payload() {
 	stat --printf='%A\t%s\t%Y\n' "$makefile"
 
-	cd "$pkgbox/var"
-	find -name '*_release' -exec cat '{}' '+'
-	cd - >/dev/null
+	if [ -d "$pkgbox/var" ]; then
+		cd "$pkgbox/var"
+		find -name '*_release' -exec cat '{}' '+'
+		cd - >/dev/null
+	fi
 
 	local r
 	for r in ${IMAGE_PACKAGES:-}; do

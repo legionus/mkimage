@@ -2,15 +2,15 @@
 
 subdirs="${SUBDIRS:?subdirectories required}"
 
-[ -n "$subdirs" ] ||
-	exit 0
-
 payload() {
 	local d
 
 	stat --printf='%A\t%s\t%Y\n' "$makefile"
 
 	for d in $subdirs; do
+		[ -d "$curdir/$d/$workdirname/$outdirname" ] ||
+			continue
+
 		cd "$curdir/$d/$workdirname/$outdirname"
 		find -mindepth 1 -printf '%M\t%s\t%T@\t%p\n'
 		cd - >/dev/null
