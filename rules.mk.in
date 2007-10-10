@@ -261,10 +261,8 @@ pack-image: prepare-workdir copy-subdirs $(SUBDIRS)
 	fi
 
 clean-current:
-	if [ -d "$(WORKDIR)" ]; then \
-	    $(CHROOT_INVALIDATE_CACHE) mki; \
-	    $(CHROOT_CLEAN); \
-	fi
+	$(CHROOT_INVALIDATE_CACHE) mki; \
+	[ ! -d "$(WORKDIR)" ] || $(CHROOT_CLEAN);
 
 clean: clean-current $(SUBDIRS)
 
