@@ -21,7 +21,7 @@ args=
 [ ! -d .host ]     || args="\$args --exclude .host"
 [ ! -f .fakedata ] || args="\$args --exclude .fakedata"
 
-exec tar --numeric-owner $args -jcf '/.our/$outname' .
+exec tar --numeric-owner \$args -jcf '/.our/$outname' .
 EOF
 
 mki_exec_once "$chroot/tmp/packimage.sh"
