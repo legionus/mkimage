@@ -37,7 +37,7 @@ workdir_change_status() {
 . mki-cache-$cache_type
 
 errlock="$cachedir/mki/$cache_type.error"
-sha="`{ payload || mkdir -- "$errlock" } |sha256sum - |cut -d\  -f1`"
+sha="`{ payload || mkdir -- "$errlock"; } |sha256sum - |cut -d\  -f1`"
 
 if [ -d "$errlock" ]; then
 	rm -rf -- "$errlock"
