@@ -1,5 +1,5 @@
 Name: mkimage
-Version: 0.0.4
+Version: 0.0.5
 Release: alt1
 
 Summary: Simple image creator
@@ -28,6 +28,14 @@ Simple image creator
 %doc examples
 
 %changelog
+* Mon Oct 15 2007 Alexey Gladkov <legion@altlinux.ru> 0.0.5-alt1
+- New version (0.0.5).
+- Added qemu support (kas@).
+- Rename GLOBAL_LANG to GLOBAL_HSH_LANG.
+- Variable CLEANUP_OUTDIR is enabled by default.
+- New method of conflicts resolution in packages list.
+- Fix cache generation.
+
 * Mon Oct 08 2007 Alexey Gladkov <legion@altlinux.ru> 0.0.4-alt1
 - New version (0.0.4).
 - Ignore scripts with '~', '.bak', '.rpmnew' and '.rpmsave' suffix.
