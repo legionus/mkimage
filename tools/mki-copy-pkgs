@@ -50,16 +50,19 @@ buildlist() {
 	xargs -r mki-print-uris 2>"$errfile" >> "$lstfile" < "$1" ||
 		rc=$?
 
-	if [ "$rc" -ne 0 ]; then
-		local conflicts
-		if ! conflicts="$(LANG=C fgrep ': Conflicts: ' "$errfile")"; then
-			cat -- "$errfile" >&2
-			fatal 'could not copy packages.'
-		fi
-
-		printf '%s\n' "$conflicts" > "$errfile"
-		return 1
+	if [ "$rc" -eq 0 ]; then
+		echo >> "$lstfile"
+		return 0
 	fi
+
+	local conflicts
+	if ! conflicts="$(LANG=C fgrep ': Conflicts: ' "$errfile")"; then
+		cat -- "$errfile" >&2
+		fatal 'could not copy packages.'
+	fi
+
+	printf '%s\n' "$conflicts" > "$errfile"
+	return 1
 }
 
 processfile() {
