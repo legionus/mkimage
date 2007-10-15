@@ -14,6 +14,7 @@ hsh_initroot() {
 		--pkg-build-list='' \
 		--save-fakeroot \
 		$verbose $quiet $target $with_qemu $apt_config $apt_prefix \
+		${HSH_LANGS:+--install-langs="$HSH_LANGS"} \
 		${HSH_NUMBER:+--number="$HSH_NUMBER"} \
 		${HSH_EXCLUDE_DOCS:+--excludedocs} \
 		${HSH_CACHEDIR:+--cache-dir="$HSH_CACHEDIR"} \
