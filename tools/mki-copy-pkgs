@@ -21,7 +21,6 @@ if [ -z "$REQUIRES" ]; then
 	exit  0
 fi
 
-
 trap exit_handler HUP INT QUIT TERM EXIT
 tempdir="$(mktemp -d "$dir/$PROG.XXXXXXXXX")"
 
@@ -45,32 +44,73 @@ fi
 > "$lstfile"
 > "$errfile"
 
-rc=0
-xargs -r mki-print-uris 2>>"$errfile" >>"$lstfile" < "$reqfile" ||
-	rc=$?
+buildlist() {
+	local rc=0
 
-conflicts=
-if [ "$rc" -ne 0 ]; then
-	if ! conflicts="$(LANG=C fgrep ': Conflicts: ' "$errfile")"; then
-		cat "$errfile" >&2
-		fatal 'could not copy packages: conflicts found.'
+	xargs -r mki-print-uris 2>"$errfile" >> "$lstfile" < "$1" ||
+		rc=$?
+
+	if [ "$rc" -ne 0 ]; then
+		local conflicts
+		if ! conflicts="$(LANG=C fgrep ': Conflicts: ' "$errfile")"; then
+			cat -- "$errfile" >&2
+			fatal 'could not copy packages.'
+		fi
+
+		printf '%s\n' "$conflicts" > "$errfile"
+		return 1
 	fi
-	> "$lstfile"
-fi
+}
 
-if [ ! -s "$lstfile" ]; then
-	verbose "Conflicts packages found in requires list: "
-	[ -z "$verbose" ] ||
-		printf '%s\n' "$conflicts" >&2
+processfile() {
+	local file size
 
-	while read -r line; do
-		[ -n "$line" ] ||
-			continue
+	file="$1"; shift
+	size="$1"; shift
 
-		mki-print-uris $line
+	! buildlist "$file" ||
+		return 0
 
-	done < "$reqfile" > "$lstfile"
-fi
+	if [ "$size" -eq 1 ]; then
+		verbose 'Conflicts packages found in requires list: '
+		[ -z "$verbose" ] ||
+			cat -- "$errfile" >&2
+
+		error 'could not copy packages: conflicts found.'
+		return 1
+	fi
+
+	local n_head n_tail
+
+	n_head="$(($size/2))"
+	n_tail="$n_head"
+
+	if [ "$size" != "$(($n_head*2))" ]; then
+		n_tail="$n_head"
+		n_head="$(($n_head+1))"
+	fi
+
+	local temp
+	temp="$(mktemp "$tempdir/temp.XXXXXXXXX")" ||
+		fatal "unable to make temporary file."
+
+	head -n $n_head "$file" > "$temp"
+	if ! processfile "$temp" "$n_head"; then
+		rm -f -- "$temp"
+		return 1
+	fi
+
+	tail -n $n_tail "$file" > "$temp"
+	if ! processfile "$temp" "$n_tail"; then
+		rm -f -- "$temp"
+		return 1
+	fi
+
+	rm -f -- "$temp"
+}
+
+processfile "$reqfile" "$(wc -l < "$reqfile")" ||
+	exit "$?"
 
 [ -s "$lstfile" ] ||
 	fatal 'could not copy packages: empty list.'
