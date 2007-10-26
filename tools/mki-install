@@ -16,7 +16,7 @@ hasher_args="${VERBOSE:+-v} ${QUIET:+-q} ${HSH_EXCLUDE_DOCS:+--excludedocs} ${HS
 reqlist=
 for r in "$@"; do
 	if [ -f "$r" ]; then
-		reqlist="$(grep -v '^[[:space:]]*#' "$r")"
+		reqlist="$reqlist $(grep -v '^[[:space:]]*#' "$r")"
 	else
 		reqlist="$reqlist $r"
 	fi
