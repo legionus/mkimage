@@ -1,6 +1,6 @@
 Name: mkimage
 Version: 0.0.5
-Release: alt1
+Release: alt2
 
 Summary: Simple image creator
 License: GPL
@@ -28,6 +28,9 @@ Simple image creator
 %doc examples
 
 %changelog
+* Wed Oct 31 2007 Alexey Gladkov <legion@altlinux.ru> 0.0.5-alt2
+- Fix REQUIRES variable parsing.
+
 * Mon Oct 15 2007 Alexey Gladkov <legion@altlinux.ru> 0.0.5-alt1
 - New version (0.0.5).
 - Added qemu support (kas@).
