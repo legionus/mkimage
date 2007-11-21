@@ -22,7 +22,7 @@ else
 fi
 "$pkgbox"/aptbox/apt-cache --no-generate --names-only --all-names search '' |
 	cut -d\  -f1 |
-	LANG=C sort -o "$pkgbox/var/cache/pkgnames"
+	LANG=C sort -o "$pkgbox"/aptbox/var/cache/pkgnames
 
 
 verbose "Work directory: $subdir."
