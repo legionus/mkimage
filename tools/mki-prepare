@@ -17,7 +17,7 @@ run_mkaptbox() {
 if [ ! -d "$pkgbox/aptbox" ]; then
 	run_mkaptbox
 else
-	env -i PATH="$PATH" "$pkgbox"/apt-get update ||
+	env -i PATH="$PATH" "$pkgbox"/aptbox/apt-get update ||
 		run_mkaptbox # Directory exists, but empty
 fi
 
