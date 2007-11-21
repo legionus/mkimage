@@ -25,5 +25,6 @@ done
 if [ -n "$reqlist" ]; then
 	printf '%s\n' "$reqlist" |
 		tr ' ' '\n' |
+		xargs -r mki-expand-pkgs |
 		xargs -r env -i PATH="$PATH" hsh-install $hasher_args -- "$dir"
 fi

@@ -20,6 +20,10 @@ else
 	env -i PATH="$PATH" "$pkgbox"/aptbox/apt-get update ||
 		run_mkaptbox # Directory exists, but empty
 fi
+"$pkgbox"/aptbox/apt-cache --no-generate --names-only --all-names search '' |
+	cut -d\  -f1 |
+	LANG=C sort -o "$pkgbox/var/cache/pkgnames"
+
 
 verbose "Work directory: $subdir."
 [ -d "$chroot" ] ||

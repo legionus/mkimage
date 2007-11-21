@@ -13,6 +13,8 @@ payload() {
 		cd - >/dev/null
 	fi
 
+	printf 'PACKAGES_EXPAND_METHOD=%s\n' "${PACKAGES_EXPAND_METHOD:-none}"
+
 	local r
 	for r in ${IMAGE_PACKAGES:-}; do
 		if [ -f "$r" ]; then

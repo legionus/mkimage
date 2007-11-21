@@ -50,6 +50,8 @@ ifdef GLOBAL_QUIET
     GLOBAL_VERBOSE =
 endif
 
+GLOBAL_PACKAGES_EXPAND_METHOD ?= none
+
 HSH_CACHEDIR = $(CACHEDIR)/hsh
 
 ################################################################################
@@ -98,6 +100,8 @@ CHROOT_PACKAGES =
 
 # Work chroot packages list.
 IMAGE_PACKAGES =
+
+PACKAGES_EXPAND_METHOD = $(GLOBAL_PACKAGES_EXPAND_METHOD)
 
 MKI_DESTDIR =
 

@@ -34,7 +34,7 @@ for r in $REQUIRES; do
 	else
 		printf '%s\n' "$r"
 	fi
-done > "$reqfile"
+done |xargs -r mki-expand-pkgs > "$reqfile"
 
 if [ ! -s "$reqfile" ]; then
 	message "Nothing to do."

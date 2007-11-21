@@ -1,0 +1,71 @@
+#!/bin/ash -efu
+
+. "${0%/*}"/mki-sh-functions
+
+method="${PACKAGES_EXPAND_METHOD:-none}"
+
+verbose "has started executing. method=$method"
+
+case "$method" in
+	none)
+		printf '%s\n' "$@"
+		exit
+		;;
+	regexp)
+		;;
+	*)
+		fatal "$method: Unknown method"
+		;;
+esac
+
+aptboxdir="${PKGBOX:?global aptbox required}"
+aptbox="$aptboxdir/aptbox"
+[ -d "$aptbox" ] ||
+	fatal "$aptbox: Not a directory"
+
+tempdir=
+exit_handler() {
+	local rc=$?
+		trap - EXIT
+		[ -z "$tempdir" ] || rm -rf -- "$tempdir"
+		exit $rc
+}
+
+trap exit_handler HUP INT QUIT TERM EXIT
+tempdir="$(mktemp -d "$dir/$PROG.XXXXXXXXX")"
+cd "$tempdir"
+> 'add-regexp' > 'rem-regexp' > 'pkg-list'
+
+is_regexp() {
+	case "$1" in
+		*[\[\]\(\)\|\{\}\^\$\*\?]*) return 0 ;;
+	esac
+	return 1
+}
+
+for p in "$@"; do
+	case "$p" in
+		\!*)
+			p="${p#\!}"
+			fn='rem-regexp'
+			is_regexp "$p" ||
+				p="^$p\$"
+			;;
+		*[\<\>=]*)
+			fn='pkg-list'
+			;;
+		*)
+			fn='add-regexp'
+			is_regexp "$p" ||
+				fn='pkg-list'
+			;;
+	esac
+	verbose "EXPAND: pattern='$p' stream='$fn'"
+	printf '%s\n' "$p" >> "$fn"
+done
+
+export LC_ALL=C LANG=C LANGUAGE=C
+
+egrep -f 'add-regexp' "$aptbox/var/cache/pkgnames" |
+	egrep -vf 'rem-regexp' |
+	cat 'pkg-list' -
