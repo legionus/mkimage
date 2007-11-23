@@ -12,6 +12,7 @@ TOPDIR ?= $(CURDIR)
 ################################################################################
 RUN_MAKE		= $(TOOLSDIR)/mki-run-make
 COUNT_CPU		= $(TOOLSDIR)/mki-count-cpu
+EXPAND_PKGS		?= $(TOOLSDIR)/mki-expand-pkgs
 CHROOT_MKAPTBOX		?= $(TOOLSDIR)/mki-mkaptbox
 CHROOT_CACHE		?= $(TOOLSDIR)/mki-cache
 CHROOT_INVALIDATE_CACHE	?= $(TOOLSDIR)/mki-invalidate-cache
@@ -49,8 +50,6 @@ GLOBAL_VERBOSE ?=
 ifdef GLOBAL_QUIET
     GLOBAL_VERBOSE =
 endif
-
-GLOBAL_PACKAGES_EXPAND_METHOD ?= none
 
 HSH_CACHEDIR = $(CACHEDIR)/hsh
 
@@ -97,11 +96,11 @@ MKI_IMAGE_SCRIPTDIR = $(CURDIR)/image-scripts.d
 
 # Instrumental chroot packages list or filename with packages list.
 CHROOT_PACKAGES =
+CHROOT_PACKAGES_REGEXP =
 
 # Work chroot packages list.
 IMAGE_PACKAGES =
-
-PACKAGES_EXPAND_METHOD = $(GLOBAL_PACKAGES_EXPAND_METHOD)
+IMAGE_PACKAGES_REGEXP =
 
 MKI_DESTDIR =
 
@@ -250,13 +249,19 @@ copy-subdirs: prepare-workdir $(SUBDIRS)
 
 copy-packages: prepare-workdir $(SUBDIRS)
 	if ! $(CHROOT_CACHE) check $@; then \
-	    $(CHROOT_COPY_PKGS) && \
+	    { \
+		$(EXPAND_PKGS) simple $(IMAGE_PACKAGES) && \
+		$(EXPAND_PKGS) regexp $(IMAGE_PACKAGES_REGEXP) || exit 1; \
+	    } | xargs -r $(CHROOT_COPY_PKGS) && \
 	    $(CHROOT_CACHE) build $@ || exit 1; \
 	fi
 
 build-image: prepare-image-workdir $(SUBDIRS)
 	if ! $(CHROOT_CACHE) check $@; then \
-	    $(CHROOT_IMAGE_INSTALL) $(IMAGE_PACKAGES) && \
+	    { \
+		$(EXPAND_PKGS) simple $(IMAGE_PACKAGES) && \
+		$(EXPAND_PKGS) regexp $(IMAGE_PACKAGES_REGEXP) || exit 1; \
+	    } | xargs -r $(CHROOT_IMAGE_INSTALL) && \
 	    $(CHROOT_CACHE) build $@ || exit 1; \
 	fi
 

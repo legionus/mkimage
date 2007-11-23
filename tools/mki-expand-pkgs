@@ -2,12 +2,14 @@
 
 . "${0%/*}"/mki-sh-functions
 
-method="${PACKAGES_EXPAND_METHOD:-none}"
-
+method="$1"; shift
 verbose "has started executing. method=$method"
 
+[ "$#" -gt 0 ] ||
+	exit 0
+
 case "$method" in
-	none)
+	simple)
 		printf '%s\n' "$@"
 		exit
 		;;
@@ -33,6 +35,9 @@ exit_handler() {
 
 trap exit_handler HUP INT QUIT TERM EXIT
 tempdir="$(mktemp -d "$dir/$PROG.XXXXXXXXX")"
+
+mki_list_pkgs "$@" > "$tempdir/in-list"
+
 cd "$tempdir"
 > 'add-regexp' > 'rem-regexp' > 'pkg-list'
 
@@ -43,7 +48,7 @@ is_regexp() {
 	return 1
 }
 
-for p in "$@"; do
+while read -r p; do
 	case "$p" in
 		\!*)
 			p="${p#\!}"
@@ -62,7 +67,8 @@ for p in "$@"; do
 	esac
 	verbose "EXPAND: pattern='$p' stream='$fn'"
 	printf '%s\n' "$p" >> "$fn"
-done
+
+done < 'in-list'
 
 export LC_ALL=C LANG=C LANGUAGE=C
 

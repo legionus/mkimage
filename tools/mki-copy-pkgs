@@ -5,7 +5,6 @@
 verbose "has started executing."
 
 destdir="${MKI_DESTDIR:-}"
-REQUIRES="${IMAGE_PACKAGES:-}"
 aptboxdir="${PKGBOX:?global aptbox required}"
 
 tempdir=
@@ -16,11 +15,6 @@ exit_handler() {
     exit $rc
 }
 
-if [ -z "$REQUIRES" ]; then
-	message "Nothing to do."
-	exit  0
-fi
-
 trap exit_handler HUP INT QUIT TERM EXIT
 tempdir="$(mktemp -d "$dir/$PROG.XXXXXXXXX")"
 
@@ -28,13 +22,7 @@ lstfile="$tempdir/lst"
 errfile="$tempdir/err"
 reqfile="$tempdir/req"
 
-for r in $REQUIRES; do
-	if [ -f "$r" ]; then
-		grep -h '^[[:space:]]*[^#]' "$r" ||:
-	else
-		printf '%s\n' "$r"
-	fi
-done |xargs -r mki-expand-pkgs > "$reqfile"
+mki_list_pkgs "$@" > "$reqfile"
 
 if [ ! -s "$reqfile" ]; then
 	message "Nothing to do."

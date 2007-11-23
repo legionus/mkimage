@@ -13,18 +13,5 @@ esac
 
 hasher_args="${VERBOSE:+-v} ${QUIET:+-q} ${HSH_EXCLUDE_DOCS:+--excludedocs} ${HSH_NUMBER:+--number="$HSH_NUMBER"}"
 
-reqlist=
-for r in "$@"; do
-	if [ -f "$r" ]; then
-		reqlist="$reqlist $(grep -v '^[[:space:]]*#' "$r")"
-	else
-		reqlist="$reqlist $r"
-	fi
-done
-
-if [ -n "$reqlist" ]; then
-	printf '%s\n' "$reqlist" |
-		tr ' ' '\n' |
-		xargs -r mki-expand-pkgs |
-		xargs -r env -i PATH="$PATH" hsh-install $hasher_args -- "$dir"
-fi
+mki_list_pkgs "$@" |
+	xargs -r env -i PATH="$PATH" hsh-install $hasher_args -- "$dir"

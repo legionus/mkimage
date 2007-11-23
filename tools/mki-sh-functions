@@ -66,4 +66,16 @@ mki_exec_once() {
 		exit $rc
 }
 
+mki_list_pkgs() {
+	local r
+	for r in "$@"; do
+		if [ -f "$r" ]; then
+			grep -h '^[[:space:]]*[^#]' "$r" |
+				tr ' ' '\n'
+		else
+			printf '%s\n' "$r"
+		fi
+	done
+}
+
 fi

@@ -29,8 +29,13 @@ verbose "Work directory: $subdir."
 [ -d "$chroot" ] ||
 	hsh_initroot "$dir"
 
-[ -z "$CHROOT_PACKAGES" ] ||
-	mki-install $CHROOT_PACKAGES
+if [ -n "$CHROOT_PACKAGES" ]; then
+	{
+		mki-expand-pkgs simple $CHROOT_PACKAGES &&
+		mki-expand-pkgs regexp $CHROOT_PACKAGES_REGEXP ||
+			fatal "Unable expand chroot packages"
+	} |xargs -r mki-install
+fi
 
 ownership="$(stat -c '%u:%g' "$chroot/")" ||
 	fatal "$chroot: unable to get ownership."
