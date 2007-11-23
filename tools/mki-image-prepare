@@ -10,7 +10,7 @@ verbose "has started executing."
 
 ln $verbose -nsf -- "$WORKDIRNAME/chroot" "$chroot/.image"
 
-[ -f "$chroot/.fakedata" -a "$chroot/.image/.fakedata" ] ||
+[ -f "$chroot/.fakedata" -a -f "$chroot/.image/.fakedata" ] ||
 	exit 0
 
 mki-run chmod 666 /.fakedata
