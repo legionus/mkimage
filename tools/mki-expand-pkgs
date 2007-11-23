@@ -3,10 +3,10 @@
 . "${0%/*}"/mki-sh-functions
 
 method="$1"; shift
-verbose "has started executing. method=$method"
-
 [ "$#" -gt 0 ] ||
 	exit 0
+
+verbose "has started executing. method=$method"
 
 case "$method" in
 	simple)
