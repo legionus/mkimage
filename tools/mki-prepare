@@ -29,7 +29,7 @@ verbose "Work directory: $subdir."
 [ -d "$chroot" ] ||
 	hsh_initroot "$dir"
 
-if [ -n "$CHROOT_PACKAGES" ]; then
+if [ -n "$CHROOT_PACKAGES" -o -n "$CHROOT_PACKAGES_REGEXP" ]; then
 	{
 		mki-expand-pkgs simple $CHROOT_PACKAGES &&
 		mki-expand-pkgs regexp $CHROOT_PACKAGES_REGEXP ||
