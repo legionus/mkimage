@@ -12,6 +12,7 @@ TOPDIR ?= $(CURDIR)
 ################################################################################
 RUN_MAKE		= $(TOOLSDIR)/mki-run-make
 COUNT_CPU		= $(TOOLSDIR)/mki-count-cpu
+CHECK_OBSOLETE		= $(TOOLSDIR)/mki-check-obsolete
 EXPAND_PKGS		?= $(TOOLSDIR)/mki-expand-pkgs
 CHROOT_MKAPTBOX		?= $(TOOLSDIR)/mki-mkaptbox
 CHROOT_CACHE		?= $(TOOLSDIR)/mki-cache
@@ -23,6 +24,7 @@ CHROOT_IMAGE_SCRIPTS	?= $(TOOLSDIR)/mki-image-scripts
 CHROOT_PREPARE 		?= $(TOOLSDIR)/mki-prepare
 CHROOT_IMAGE_PREPARE	?= $(TOOLSDIR)/mki-image-prepare
 CHROOT_PACK 		?= $(TOOLSDIR)/mki-pack
+CHROOT_PACK_RESULTS	?= $(TOOLSDIR)/mki-pack-results
 CHROOT_CLEAN 		?= $(TOOLSDIR)/mki-clean
 CHROOT_EXEC 		?= $(TOOLSDIR)/mki-exec
 CHROOT_RUN 		?= $(TOOLSDIR)/mki-run
@@ -117,9 +119,14 @@ COPY_TREE =
 # isodata - create a data ISO image.
 # data    - copy $(SUBWORKDIR) as is.
 #
+
+# Format: <MKI_PACKTYPE>:<MKI_OUTNAME> [<MKI_PACKTYPE1>:<MKI_OUTNAME1> ...]
+MKI_PACK_RESULTS ?=
+
+# Obsolete
 MKI_PACKTYPE =
 
-# Output image name (useful for squash, tarbz2, isoboot and isodata types).
+# Obsolete: Output image name (useful for squash, tarbz2, isoboot and isodata types).
 MKI_OUTNAME ?=
 
 # Use <number> processors.
@@ -266,8 +273,13 @@ build-image: prepare-image-workdir $(SUBDIRS)
 	fi
 
 pack-image: prepare-workdir copy-subdirs $(SUBDIRS)
+	$(CHECK_OBSOLETE) $@; \
 	if ! $(CHROOT_CACHE) check $@; then \
-	    $(CHROOT_PACK) && \
+	    if [ -n "$(MKI_PACK_RESULTS)" ]; then \
+		$(CHROOT_PACK_RESULTS) || exit 1; \
+	    else \
+		$(CHROOT_PACK) || exit 1; \
+	    fi \
 	    $(CHROOT_CACHE) build $@ || exit 1; \
 	fi
 

@@ -1,0 +1,40 @@
+#!/bin/ash -efu
+
+. "${0%/*}"/mki-sh-functions
+
+verbose "has started executing."
+
+typeslist="${MKI_PACK_RESULTS:?pack rules required}"
+
+run_pack() {
+	local type MKI_OUTNAME
+
+	type='custom'
+	MKI_OUTNAME='outname'
+
+	case "$1" in
+		boot:*|isoboot:*|isodata:*|squash:*|tarbz2:*)
+			MKI_OUTNAME="${1#*:}"
+			MKI_OUTNAME="${MKI_OUTNAME##*/}"
+			type="${1%%:*}"
+			;;
+		data)
+			type="$1"
+			;;
+	esac
+
+	mki-pack-$type
+}
+
+set -- $typeslist
+
+if [ "$#" -eq 1 ]; then
+	run_pack "$1"
+	exit
+fi
+
+export CLEANUP_OUTDIR=1
+
+for t in "${@-}"; do
+	run_pack "$t"
+done
