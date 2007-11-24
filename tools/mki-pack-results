@@ -15,7 +15,6 @@ run_pack() {
 	case "$1" in
 		boot:*|isoboot:*|isodata:*|squash:*|tarbz2:*)
 			MKI_OUTNAME="${1#*:}"
-			MKI_OUTNAME="${MKI_OUTNAME##*/}"
 			type="${1%%:*}"
 			;;
 		data)

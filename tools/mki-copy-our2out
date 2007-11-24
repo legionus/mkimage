@@ -7,6 +7,11 @@ level="${MAKELEVEL:-}"
 
 verbose "has started executing."
 
+if [ "$MKI_OUTNAME" != "${MKI_OUTNAME##*/}" ]; then
+	outdir="$(readlink -ev "${MKI_OUTNAME%/*}")"
+	cleanup=1
+fi
+
 [ -d "$chroot" ] ||
 	fatal "$dir: not look like a work directory of hasher."
 
