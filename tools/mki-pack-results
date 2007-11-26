@@ -32,7 +32,7 @@ if [ "$#" -eq 1 ]; then
 	exit
 fi
 
-export CLEANUP_OUTDIR=1
+unset CLEANUP_OUTDIR
 
 for t in "${@-}"; do
 	run_pack "$t"
