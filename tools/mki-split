@@ -1,0 +1,111 @@
+#!/bin/ash -efu
+
+. "${0%/*}"/mki-sh-functions
+
+MKI_DESTDIR="${MKI_DESTDIR:-}"
+MKI_SPLITTYPE="${MKI_SPLITTYPE:-}"
+MKI_SPLIT="${MKI_SPLIT:-}"
+
+verbose "has started executing."
+
+if [ -z "$MKI_DESTDIR" -o -z "$MKI_SPLIT" ]; then
+	message "MKI_DESTDIR or MKI_SPLIT is empty. Nothing to do."
+	return 0
+fi
+
+sortfiles() {
+	sort -r -n -k1,1 -o "$1"
+}
+
+gen_filelist() {	
+	find "./${MKI_DESTDIR#/}" -mindepth 1 -printf '%s\t%p\n'
+}
+
+if [ -n "$MKI_SPLITTYPE" ]; then
+	[ -s "$MKI_SPLITTYPE" ] ||
+		fatal "Unknown split type: $MKI_SPLITTYPE"
+
+	. "$MKI_SPLITTYPE"
+fi
+
+tempdir=
+exit_handler() {
+	local rc=$?
+	trap - EXIT
+	[ -z "$tempdir" ] || rm -rf -- "$tempdir"
+	exit $rc
+}
+
+size_to_bytes() {
+	local iteration=
+	iteration="$1"; shift
+	
+	while [ "$iteration" -gt 0 ]; do
+		bytes="$(($bytes * 1024))"
+		iteration="$(($iteration-1))"
+	done
+}
+
+split_list() {
+	local rest size fn out
+	out="$1"; shift
+
+	rest="$bytes"
+	while read -r size fn; do
+		[ "$rest" -ge $size ] ||
+			continue
+		printf '%s\t%s\n' "$size" "$fn"
+		rest="$(($rest-$size))"
+
+	done < filelist |
+		sortfiles "$out"
+
+	comm -23 filelist "$out" > templist
+	mv -f -- templist filelist
+}
+
+move_files() {
+	[ -s "$1" ] ||
+		return 0
+	local size fn
+
+	mki-run mkdir $verbose -p -- "/.image/$destdir"
+	while read size fn; do
+		mki-run mv -f -- "$fn" "/.image/$destdir"
+	done < "$1"
+}
+
+trap exit_handler HUP INT QUIT TERM EXIT
+tempdir="$(mktemp -d "$dir/$PROG.XXXXXXXXX")"
+
+cd "$subchroot"
+gen_filelist |
+	sortfiles "$tempdir"/filelist
+
+cd "$tempdir"
+for p in $MKI_SPLIT; do
+
+	destdir="${p#*:}"
+	if [ -d "$subchroot/$destdir" ]; then
+		message "$destdir: Already exists."
+		continue
+	fi
+
+	bytes="${p%%:*}"
+	type="${bytes##*[0-9]}"
+	bytes="${bytes%$type}"
+
+	case "$type" in
+		\*)
+			move_files filelist
+			break
+			;;
+		T|Tb) size_to_bytes 4 ;;
+		G|Gb) size_to_bytes 3 ;;
+		M|Mb) size_to_bytes 2 ;;
+		K|Kb) size_to_bytes 1 ;;
+	esac
+
+	split_list part
+	move_files part
+done
