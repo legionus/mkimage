@@ -8,6 +8,9 @@ nproc="$(opt_check_number 'PACK_SQUASHFS_PROCESSORS' "$nproc")"
 outname="${MKI_OUTNAME:-outname}"
 outname="${outname##*/}"
 
+imgsubdir="${MKI_IMAGESUBDIR:-}"
+imgsubdir="${imgsubdir#/}"
+
 [ -d "$chroot" ] ||
 	fatal "$dir: not look like a work directory of hasher."
 
@@ -16,10 +19,14 @@ mki-install squashfsprogs
 cat >"$chroot/tmp/packimage.sh"<<EOF
 #!/bin/sh -efu
 
+imgdir=/.image
+[ -z "$imgsubdir" -o ! -d "/.image/$imgsubdir" ] ||
+	imgdir="/.image/$imgsubdir"
+
 [ ! -e '/.our/$outname' ] ||
 	rm -f -- '/.our/$outname'
 
-mksquashfs /.image/ '/.our/$outname' ${nproc:+-processors $nproc} -e .in .host .fakedata
+mksquashfs "\$imgdir/" '/.our/$outname' ${nproc:+-processors $nproc} -e .in .host .fakedata
 EOF
 
 mki_exec_once "$chroot/tmp/packimage.sh"

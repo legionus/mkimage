@@ -121,7 +121,7 @@ COPY_TREE =
 # data    - copy $(SUBWORKDIR) as is.
 #
 
-# Format: <MKI_PACKTYPE>:<MKI_OUTNAME> [<MKI_PACKTYPE1>:<MKI_OUTNAME1> ...]
+# Format: <MKI_PACKTYPE>:<MKI_OUTNAME>[:<SUBDIR>] [<MKI_PACKTYPE1>:<MKI_OUTNAME1>[:<SUBDIR1>] ...]
 MKI_PACK_RESULTS ?=
 
 # Obsolete
@@ -129,6 +129,8 @@ MKI_PACKTYPE =
 
 # Obsolete: Output image name (useful for squash, tarbz2, isoboot and isodata types).
 MKI_OUTNAME ?=
+
+MKI_IMAGESUBDIR =
 
 # Use <number> processors.
 PACK_SQUASHFS_PROCESSORS ?= $(shell $(COUNT_CPU))
