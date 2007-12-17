@@ -130,7 +130,11 @@ MKI_PACKTYPE =
 # Obsolete: Output image name (useful for squash, tarbz2, isoboot and isodata types).
 MKI_OUTNAME ?=
 
+# Internal variable
 MKI_IMAGESUBDIR =
+
+# Internal variable
+MKI_COMPRESSTYPE =
 
 # Use <number> processors.
 PACK_SQUASHFS_PROCESSORS ?= $(shell $(COUNT_CPU))
