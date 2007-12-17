@@ -8,7 +8,7 @@ type="${MKI_PACKTYPE:?pack type required}"
 
 case "$type" in
 	tarbz2)
-		MKI_COMPRESSTYPE='bzip2'
+		MKI_TAR_COMPRESS='bzip2'
 		type='tar'
 		;;
 	boot|isoboot|isodata|squash|tar|data) ;;

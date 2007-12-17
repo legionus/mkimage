@@ -11,7 +11,7 @@ imgsubdir="${MKI_IMAGESUBDIR:-}"
 imgsubdir="${imgsubdir#/}"
 
 compress=
-case "${MKI_COMPRESSTYPE:-}" in
+case "${MKI_TAR_COMPRESS:-}" in
 	bzip2|bz2|tarbz2|-z) compress='-z' ;;
 	gzip|gz|targz|-j)    compress='-j' ;;
 esac
