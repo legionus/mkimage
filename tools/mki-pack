@@ -7,7 +7,11 @@ verbose "has started executing."
 type="${MKI_PACKTYPE:?pack type required}"
 
 case "$type" in
-	boot|isoboot|isodata|squash|tarbz2|data) ;;
+	tarbz2)
+		MKI_TAR_COMPRESS='bzip2'
+		type='tar'
+		;;
+	boot|isoboot|isodata|squash|tar|data) ;;
 	*) type='custom' ;;
 esac
 exec mki-pack-$type

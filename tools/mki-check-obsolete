@@ -1,0 +1,12 @@
+#!/bin/sh -e
+
+. "${0%/*}"/mki-sh-functions
+
+verbose "has started executing."
+
+case "$1" in
+	pack-image)
+		[ -z "${MKI_OUTNAME:-}" -a -z "${MKI_PACKTYPE:-}" ] ||
+			message 'WARNING: Variables MKI_OUTNAME and MKI_PACKTYPE are obsoletes. Use MKI_PACK_RESULTS instead.'
+		;;
+esac

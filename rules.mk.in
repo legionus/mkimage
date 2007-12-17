@@ -12,17 +12,20 @@ TOPDIR ?= $(CURDIR)
 ################################################################################
 RUN_MAKE		= $(TOOLSDIR)/mki-run-make
 COUNT_CPU		= $(TOOLSDIR)/mki-count-cpu
+CHECK_OBSOLETE		= $(TOOLSDIR)/mki-check-obsolete
 EXPAND_PKGS		?= $(TOOLSDIR)/mki-expand-pkgs
 CHROOT_MKAPTBOX		?= $(TOOLSDIR)/mki-mkaptbox
 CHROOT_CACHE		?= $(TOOLSDIR)/mki-cache
 CHROOT_INVALIDATE_CACHE	?= $(TOOLSDIR)/mki-invalidate-cache
 
 CHROOT_BUILD_PROPAGATOR	?= $(TOOLSDIR)/mki-build-propagator
+CHROOT_SPLIT		?= $(TOOLSDIR)/mki-split
 CHROOT_SCRIPTS		?= $(TOOLSDIR)/mki-scripts
 CHROOT_IMAGE_SCRIPTS	?= $(TOOLSDIR)/mki-image-scripts
 CHROOT_PREPARE 		?= $(TOOLSDIR)/mki-prepare
 CHROOT_IMAGE_PREPARE	?= $(TOOLSDIR)/mki-image-prepare
 CHROOT_PACK 		?= $(TOOLSDIR)/mki-pack
+CHROOT_PACK_RESULTS	?= $(TOOLSDIR)/mki-pack-results
 CHROOT_CLEAN 		?= $(TOOLSDIR)/mki-clean
 CHROOT_EXEC 		?= $(TOOLSDIR)/mki-exec
 CHROOT_RUN 		?= $(TOOLSDIR)/mki-run
@@ -117,13 +120,32 @@ COPY_TREE =
 # isodata - create a data ISO image.
 # data    - copy $(SUBWORKDIR) as is.
 #
+
+# Format: <MKI_PACKTYPE>:<MKI_OUTNAME>[:<SUBDIR>] [<MKI_PACKTYPE1>:<MKI_OUTNAME1>[:<SUBDIR1>] ...]
+MKI_PACK_RESULTS ?=
+
+# Obsolete
 MKI_PACKTYPE =
 
-# Output image name (useful for squash, tarbz2, isoboot and isodata types).
+# Obsolete: Output image name (useful for squash, tarbz2, isoboot and isodata types).
 MKI_OUTNAME ?=
+
+# Internal variable
+MKI_IMAGESUBDIR =
+
+# Internal variable
+MKI_COMPRESSTYPE =
 
 # Use <number> processors.
 PACK_SQUASHFS_PROCESSORS ?= $(shell $(COUNT_CPU))
+
+###
+### Split MKI_DESTDIR by size
+###
+
+# Format: <SIZE1>:<NEW_DESTDIR1> [<SIZE2>:<NEW_DESTDIR2> ...]
+MKI_SPLIT =
+MKI_SPLITTYPE =
 
 ###
 ### A variables for 'boot' pack type and 'build-propagator' target.
@@ -247,6 +269,9 @@ copy-subdirs: prepare-workdir $(SUBDIRS)
 	    $(CHROOT_CACHE) build $@ || exit 1; \
 	fi
 
+split: prepare-workdir $(SUBDIRS)
+	$(CHROOT_SPLIT)
+
 copy-packages: prepare-workdir $(SUBDIRS)
 	if ! $(CHROOT_CACHE) check $@; then \
 	    { \
@@ -266,8 +291,13 @@ build-image: prepare-image-workdir $(SUBDIRS)
 	fi
 
 pack-image: prepare-workdir copy-subdirs $(SUBDIRS)
+	$(CHECK_OBSOLETE) $@; \
 	if ! $(CHROOT_CACHE) check $@; then \
-	    $(CHROOT_PACK) && \
+	    if [ -n "$(MKI_PACK_RESULTS)" ]; then \
+		$(CHROOT_PACK_RESULTS) || exit 1; \
+	    else \
+		$(CHROOT_PACK) || exit 1; \
+	    fi; \
 	    $(CHROOT_CACHE) build $@ || exit 1; \
 	fi
 
