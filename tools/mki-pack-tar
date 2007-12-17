@@ -10,6 +10,12 @@ outname="${outname##*/}"
 imgsubdir="${MKI_IMAGESUBDIR:-}"
 imgsubdir="${imgsubdir#/}"
 
+compress=
+case "${MKI_COMPRESSTYPE:-}" in
+	bzip2|bz2|tarbz2|-z) compress='-z' ;;
+	gzip|gz|targz|-j)    compress='-j' ;;
+esac
+
 [ -d "$chroot" ] ||
 	fatal "$dir: not look like a work directory of hasher."
 
@@ -26,7 +32,7 @@ args=
 [ ! -d .host ]     || args="\$args --exclude .host"
 [ ! -f .fakedata ] || args="\$args --exclude .fakedata"
 
-exec tar --numeric-owner \$args -jcf '/.our/$outname' .
+exec tar --numeric-owner \$args $compress -cf '/.our/$outname' .
 EOF
 
 mki_exec_once "$chroot/tmp/packimage.sh"
