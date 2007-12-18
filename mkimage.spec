@@ -1,6 +1,6 @@
 Name: mkimage
-Version: 0.0.5
-Release: alt2
+Version: 0.0.6
+Release: alt1
 
 Summary: Simple image creator
 License: GPL
@@ -28,6 +28,14 @@ Simple image creator
 %doc examples
 
 %changelog
+* Mon Dec 17 2007 Alexey Gladkov <legion@altlinux.ru> 0.0.6-alt1
+- New version (0.0.6).
+- Add another method to describe 'pack-image' logic. Variables MKI_OUTNAME and
+  MKI_PACKTYPE are obsoletes. Use MKI_PACK_RESULTS instead.
+- Add 'split' target.
+- Add package names expand methods for 'build-image' and 'copy-packages' targets.
+- Rename mki-pack-tarbz2 -> tools/mki-pack-tar.
+
 * Wed Oct 31 2007 Alexey Gladkov <legion@altlinux.ru> 0.0.5-alt2
 - Fix REQUIRES variable parsing.
 
