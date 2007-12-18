@@ -15,7 +15,7 @@ run_pack() {
 	MKI_IMAGESUBDIR=
 
 	case "$1" in
-		boot:*|isoboot:*|isodata:*|squash:*|tarbz2:*)
+		boot:*|isoboot:*|isodata:*|squash:*|tar:*|tarbz2:*)
 			type="${1%%:*}"
 			str="${1#$type:}"
 			MKI_OUTNAME="${str%%:*}"
