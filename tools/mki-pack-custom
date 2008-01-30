@@ -9,6 +9,9 @@ type="${MKI_PACKTYPE:?pack type required}"
 outname="${MKI_OUTNAME:-outname}"
 outname="${outname##*/}"
 
+imgsubdir="${MKI_IMAGESUBDIR:-}"
+imgsubdir="${imgsubdir#/}"
+
 [ -d "$chroot" ] ||
 	fatal "$dir: not look like a work directory of hasher."
 
@@ -21,7 +24,8 @@ if [ -x "$type" ]; then
 	#!/bin/sh -efu
 	WORKDIR=/.image
 	OUTNAME='/.our/$outname'
-	export WORKDIR OUTNAME
+	SUBDIR='$imgsubdir'
+	export WORKDIR OUTNAME SUBDIR
 	/tmp/script.sh
 	EOF
 else

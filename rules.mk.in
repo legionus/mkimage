@@ -19,6 +19,7 @@ CHROOT_CACHE		?= $(TOOLSDIR)/mki-cache
 CHROOT_INVALIDATE_CACHE	?= $(TOOLSDIR)/mki-invalidate-cache
 
 CHROOT_BUILD_PROPAGATOR	?= $(TOOLSDIR)/mki-build-propagator
+CHROOT_SPLIT		?= $(TOOLSDIR)/mki-split
 CHROOT_SCRIPTS		?= $(TOOLSDIR)/mki-scripts
 CHROOT_IMAGE_SCRIPTS	?= $(TOOLSDIR)/mki-image-scripts
 CHROOT_PREPARE 		?= $(TOOLSDIR)/mki-prepare
@@ -120,7 +121,7 @@ COPY_TREE =
 # data    - copy $(SUBWORKDIR) as is.
 #
 
-# Format: <MKI_PACKTYPE>:<MKI_OUTNAME> [<MKI_PACKTYPE1>:<MKI_OUTNAME1> ...]
+# Format: <MKI_PACKTYPE>:<MKI_OUTNAME>[:<SUBDIR>] [<MKI_PACKTYPE1>:<MKI_OUTNAME1>[:<SUBDIR1>] ...]
 MKI_PACK_RESULTS ?=
 
 # Obsolete
@@ -129,8 +130,22 @@ MKI_PACKTYPE =
 # Obsolete: Output image name (useful for squash, tarbz2, isoboot and isodata types).
 MKI_OUTNAME ?=
 
+# Internal variable
+MKI_IMAGESUBDIR =
+
+# Internal variable
+MKI_COMPRESSTYPE =
+
 # Use <number> processors.
 PACK_SQUASHFS_PROCESSORS ?= $(shell $(COUNT_CPU))
+
+###
+### Split MKI_DESTDIR by size
+###
+
+# Format: <SIZE1>:<NEW_DESTDIR1> [<SIZE2>:<NEW_DESTDIR2> ...]
+MKI_SPLIT =
+MKI_SPLITTYPE =
 
 ###
 ### A variables for 'boot' pack type and 'build-propagator' target.
@@ -253,6 +268,9 @@ copy-subdirs: prepare-workdir $(SUBDIRS)
 	    $(CHROOT_COPY_SUBDIRS) && \
 	    $(CHROOT_CACHE) build $@ || exit 1; \
 	fi
+
+split: prepare-workdir $(SUBDIRS)
+	$(CHROOT_SPLIT)
 
 copy-packages: prepare-workdir $(SUBDIRS)
 	if ! $(CHROOT_CACHE) check $@; then \

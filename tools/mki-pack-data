@@ -2,15 +2,20 @@
 
 . "${0%/*}"/mki-sh-functions
 
+imgsubdir="${MKI_IMAGESUBDIR:-}"
+imgsubdir="${imgsubdir#/}"
+
 [ -d "$chroot" ] ||
 	fatal "$dir: not look like a work directory of hasher."
 
 cat >"$chroot/tmp/packimage.sh"<<-EOF
 #!/bin/sh -efu
+imgdir=/.image
+[ -z "$imgsubdir" -o ! -d "/.image/$imgsubdir" ] ||
+	imgdir="/.image/$imgsubdir"
 cd /.our
 /.host/find -mindepth 1 -maxdepth 1 -exec rm -rf -- '{}' '+'
-/.host/find /.image/ -mindepth 1 -maxdepth 1 -exec cp -alt /.our/ -- '{}' '+'
-#/.host/find /.image/ -mindepth 1 -maxdepth 1 -exec rm -rf -- '{}' '+'
+/.host/find "\$imgdir/" -mindepth 1 -maxdepth 1 -exec cp -alt /.our/ -- '{}' '+'
 EOF
 
 mki_exec_once "$chroot/tmp/packimage.sh"

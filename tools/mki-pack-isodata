@@ -7,6 +7,9 @@ verbose "has started executing."
 outname="${MKI_OUTNAME:-outname}"
 outname="${outname##*/}"
 
+imgsubdir="${MKI_IMAGESUBDIR:-}"
+imgsubdir="${imgsubdir#/}"
+
 [ -d "$chroot" ] ||
 	fatal "$dir: not look like a work directory of hasher."
 
@@ -26,9 +29,13 @@ cat > .mkisofsrc <<-__EOF__
 	VOLI="${ISODATA_VOLI:-}"
 	VOLS="${ISODATA_VOLS:-}"
 __EOF__
+
+imgdir=/.image
+[ -z "$imgsubdir" -o ! -d "/.image/$imgsubdir" ] ||
+	imgdir="/.image/$imgsubdir"
 		
 rc=0
-mkisofs $verbose -T -J -l -r -U -o '/.our/$outname' /.image/ || rc=\$?
+mkisofs $verbose -T -J -l -r -U -o '/.our/$outname' "\$imgdir/" || rc=\$?
 
 rm -f -- .mkisofsrc
 exit \$rc

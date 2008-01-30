@@ -67,7 +67,7 @@ processfile() {
 		[ -z "$verbose" ] ||
 			cat -- "$errfile" >&2
 
-		error 'could not copy packages: conflicts found.'
+		message 'could not copy packages: conflicts found.'
 		return 1
 	fi
 
