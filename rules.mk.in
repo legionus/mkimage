@@ -206,7 +206,7 @@ BOOT_VOLS =
 .EXPORT_ALL_VARIABLES:
 .NOTPARALLEL:
 
-all: profile $(SUBDIRS)
+all: __profile $(SUBDIRS)
 
 prepare: $(SUBDIRS)
 	mkdir -p -- $(PKGBOX) $(WORKDIR) $(OUTDIR)
@@ -224,7 +224,7 @@ prepare-image-workdir: prepare-workdir $(SUBDIRS)
 	    $(CHROOT_CACHE) build $@ || exit 1; \
 	fi
 
-profile:
+__profile:
 	if [ -n "$(PROFILE)" ]; then \
 	    $(CHROOT_INVALIDATE_CACHE) mki; \
 	    [ ! -d "$(WORKDIR)" ] || $(CHROOT_CLEAN); \
