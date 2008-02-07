@@ -1,5 +1,5 @@
 PROJECT = mkimage
-VERSION = 0.0.1
+VERSION = 0.0.7
 
 datadir = /usr/share
 DESTDIR =
@@ -10,7 +10,13 @@ TOUCH_R = touch -r
 
 prefixdir = $(datadir)/$(PROJECT)
 
-TARGETS = rules.mk
+EXAMPLES = \
+	examples/example1/Makefile \
+	examples/example1/install2/Makefile \
+	examples/example1/disk/Makefile \
+	examples/example1/base/Makefile
+
+TARGETS = config.mk tools.mk rules.mk targets.mk $(EXAMPLES)
 
 all: $(TARGETS)
 

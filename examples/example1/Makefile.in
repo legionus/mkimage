@@ -1,4 +1,6 @@
-include /usr/share/mkimage/rules.mk
+CONFIGDIR = @PREFIXDIR@
+
+include $(CONFIGDIR)/config.mk
 
 SUBDIRS = base disk install2
 
@@ -14,6 +16,8 @@ BOOT_TYPE = isolinux
 PROPAGATOR_VERSION = ALT Linux Test 1.0
 PROPAGATOR_MAR_MODULES = ./modules
 PROPAGATOR_INITFS = ./initfs
+
+include $(CONFIGDIR)/targets.mk
 
 all: copy-tree copy-subdirs run-scripts pack-image
 

@@ -1,4 +1,6 @@
-include /usr/share/mkimage/rules.mk
+CONFIGDIR = @PREFIXDIR@
+
+include $(CONFIGDIR)/config.mk
 
 CHROOT_PACKAGES = apt-utils rsync
 IMAGE_PACKAGES = ./packages
@@ -12,5 +14,7 @@ INFO_ORIGIN	= ALT Linux Team
 INFO_NAME	= ALT Linux Basesystem
 INFO_VERSION	= 4.0
 INFO_LABEL	= Server
+
+include $(CONFIGDIR)/targets.mk
 
 all: copy-packages run-scripts pack-image

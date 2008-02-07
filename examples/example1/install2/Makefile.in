@@ -1,8 +1,12 @@
-include /usr/share/mkimage/rules.mk
+CONFIGDIR = @PREFIXDIR@
+
+include $(CONFIGDIR)/config.mk
 
 IMAGE_PACKAGES = ./packages
 
 MKI_PACKTYPE = squash
 MKI_OUTNAME = altinst
+
+include $(CONFIGDIR)/targets.mk
 
 all: build-image run-scripts pack-image

@@ -1,0 +1,31 @@
+ifndef INCLUDED_TOOLS_MK
+INCLUDED_TOOLS_MK = 1
+
+RUN_MAKE		= $(TOOLSDIR)/mki-run-make
+COUNT_CPU		= $(TOOLSDIR)/mki-count-cpu
+CHECK_OBSOLETE		= $(TOOLSDIR)/mki-check-obsolete
+EXPAND_PKGS		?= $(TOOLSDIR)/mki-expand-pkgs
+CHROOT_MKAPTBOX		?= $(TOOLSDIR)/mki-mkaptbox
+CHROOT_CACHE		?= $(TOOLSDIR)/mki-cache
+CHROOT_INVALIDATE_CACHE	?= $(TOOLSDIR)/mki-invalidate-cache
+
+CHROOT_BUILD_PROPAGATOR	?= $(TOOLSDIR)/mki-build-propagator
+CHROOT_SPLIT		?= $(TOOLSDIR)/mki-split
+CHROOT_SCRIPTS		?= $(TOOLSDIR)/mki-scripts
+CHROOT_IMAGE_SCRIPTS	?= $(TOOLSDIR)/mki-image-scripts
+CHROOT_PREPARE 		?= $(TOOLSDIR)/mki-prepare
+CHROOT_IMAGE_PREPARE	?= $(TOOLSDIR)/mki-image-prepare
+CHROOT_PACK 		?= $(TOOLSDIR)/mki-pack
+CHROOT_PACK_RESULTS	?= $(TOOLSDIR)/mki-pack-results
+CHROOT_CLEAN 		?= $(TOOLSDIR)/mki-clean
+CHROOT_EXEC 		?= $(TOOLSDIR)/mki-exec
+CHROOT_RUN 		?= $(TOOLSDIR)/mki-run
+CHROOT_COPY_SUBDIRS	?= $(TOOLSDIR)/mki-copy-subdirs
+CHROOT_COPY_PKGS	?= $(TOOLSDIR)/mki-copy-pkgs
+CHROOT_COPY_TREE	?= $(TOOLSDIR)/mki-copy-tree
+CHROOT_COPY_ISOLINUX	?= $(TOOLSDIR)/mki-copy-isolinux
+CHROOT_COPY_PXELINUX	?= $(TOOLSDIR)/mki-copy-pxelinux
+CHROOT_INSTALL		?= $(TOOLSDIR)/mki-install
+CHROOT_IMAGE_INSTALL	?= $(TOOLSDIR)/mki-image-install
+
+endif
