@@ -24,6 +24,9 @@ run_pack() {
 			;;
 	esac
 
+	[ "$type" != 'custom' ] ||
+		MKI_PACKTYPE="${1%%:*}"
+
 	mki-pack-$type
 }
 
