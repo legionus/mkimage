@@ -15,15 +15,12 @@ run_pack() {
 	MKI_IMAGESUBDIR=
 
 	case "$1" in
-		boot:*|isoboot:*|isodata:*|squash:*|tar:*|tarbz2:*)
+		boot:*|data:*|isoboot:*|isodata:*|squash:*|tar:*|tarbz2:*)
 			type="${1%%:*}"
 			str="${1#$type:}"
 			MKI_OUTNAME="${str%%:*}"
 			[ "$str" = "$MKI_OUTNAME" ] ||
 				MKI_IMAGESUBDIR="${str#$MKI_OUTNAME:}"
-			;;
-		data)
-			type="$1"
 			;;
 	esac
 
