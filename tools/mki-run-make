@@ -1,6 +1,33 @@
 #!/bin/ash -efu
 
 . shell-regexp
+. "${0%/*}"/mki-sh-functions
+
+server=
+workdir=
+
+read_config() {
+	local n v l lineno=0
+	while read -r l; do
+		lineno=$(($lineno+1))
+
+		[ -n "$l" -o -n "${l##\#*}" ] ||
+			continue
+
+		n="${l%%=*}"
+		v="${l#$n=}"
+
+		[ "$n" != "$l" ] ||
+			fatal "$1[$lineno]: $l: syntax error"
+
+		n="$(printf %s "$n" |tr '[:upper:]' '[:lower:]')"
+
+		case "$n" in
+			server)  server="$v"  ;;
+			workdir) workdir="$v" ;;
+		esac
+	done < "$1"
+}
 
 showenv() {
 	local n v
@@ -17,8 +44,39 @@ showenv() {
 		eval v="\${$n:-}"
 
 		[ -n "$v" ] || continue
-		printf '%s="%s"\n' "$n" "$(quote_shell "$v")"
+		printf '%s="%s"\n' "${1:+$1 }$n" "$(quote_shell "$v")"
 	done
 }
 
-eval exec env -i $(showenv) $(quote_shell "$@")
+dir="$1"; shift
+
+if [ -z "$NO_REMOTES" -a -z "${dir##*=*}" ]; then
+	conf="${dir#*=}"
+	dir="${dir%%=*}"
+
+	[ -s "$conf" ] ||
+		fatal "$conf: Not found or empty."
+
+	read_config "$conf"
+
+	[ -n "$server" ] ||
+		fatal "server: build server required."
+
+	[ -n "$workdir" ] ||
+		fatal "workdir: build directory required."
+
+	rsync -rplt "$dir" "$server:$workdir/"
+
+	ssh "$server" "env -i sh -efu" <<-EOF
+	$(showenv export)
+	cd "$workdir/$dir"
+	$@
+	EOF
+
+	mkdir -p -- "$cachedir" "$outdir"
+	rsync -rplt "$server:$workdir/$dir/$workdirname/$outdirname/" "$dir/$workdirname/$outdirname/"
+
+	exit
+fi
+
+eval exec env -i $(showenv) $(quote_shell "$@" -C "$dir")

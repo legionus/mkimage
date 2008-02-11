@@ -10,6 +10,10 @@ subdirs="${SUBDIRS:?subdirectories required}"
 	fatal "$dir: not look like a work directory of hasher."
 
 for d in $subdirs; do
+	if [ -z "$NO_REMOTES" -a -z "${d##*=*}" ]; then
+		d="${d%%=*}"
+	fi
+
 	outdir="$curdir/$d/$workdirname/$outdirname"
 
 	get_copy_args "$outdir/" "$chroot/"
