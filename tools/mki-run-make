@@ -73,7 +73,7 @@ if [ -z "$NO_REMOTES" -a -z "${dir##*=*}" ]; then
 	$@
 	EOF
 
-	mkdir -p -- "$cachedir" "$outdir"
+	mkdir -p -- "$dir" "$cachedir" "$outdir"
 	rsync -rplt "$server:$workdir/$dir/$workdirname/$outdirname/" "$dir/$workdirname/$outdirname/"
 
 	exit
