@@ -16,17 +16,18 @@ outdirname=${OUTDIRNAME:?Out directory name required}
 bindir="${TOOLSDIR:?Helper directory required}"
 bindir="$(opt_check_dir 'TOOLSDIR' "$bindir")"
 
-cachedir="${CACHEDIR:?cache required}"
-cachedir="$(opt_check_dir 'CACHEDIR' "$cachedir")"
-
 curdir="${CURDIR:?Current directory required}"
 curdir="$(opt_check_dir 'CURDIR' "$curdir")"
 
+cachedir="${CACHEDIR:?cache required}"
 outdir="${OUTDIR:?Output directory required}"
-outdir="$(opt_check_dir 'OUTDIR' "$outdir")"
-
 dir="${WORKDIR:?Work directory required}"
-dir="$(opt_check_dir 'WORKDIR' "$dir")"
+
+if [ -z "${include_without_workdir_check-}" ]; then
+	cachedir="$(opt_check_dir 'CACHEDIR' "$cachedir")"
+	outdir="$(opt_check_dir 'OUTDIR' "$outdir")"
+	dir="$(opt_check_dir 'WORKDIR' "$dir")"
+fi
 
 chroot="$dir/chroot"
 
