@@ -9,10 +9,20 @@ COPY_TREE="${COPY_TREE:?Data required}"
 [ -d "$chroot" ] ||
 	fatal "$dir: not look like a work directory of hasher."
 
+exit_handler() {
+	local rc=$?
+	trap - EXIT
+	find "$chroot/.in/" -mindepth 1 -maxdepth 1 \
+		-execdir rm -rf -- '{}' '+'
+	exit $rc
+}
+
+trap exit_handler HUP INT QUIT TERM EXIT
+
 for d in $COPY_TREE; do
 	d="$(readlink -ve "$d")"
 
-	get_copy_args "$d" "$chroot/"
+	get_copy_args "$d" "$chroot/.in"
 
 	if [ -d "$d" ]; then
 		find "$d" -mindepth 1 -maxdepth 1 \
@@ -24,6 +34,3 @@ done
 
 mki-run -- /.host/find /.in -mindepth 1 -maxdepth 1 \
 	-execdir cp $verbose -alft /.image/ -- '{}' '+'
-
-find "$chroot/.in/" -mindepth 1 -maxdepth 1 \
-	-execdir rm -rf -- '{}' '+'

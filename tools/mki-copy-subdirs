@@ -9,22 +9,30 @@ subdirs="${SUBDIRS:?subdirectories required}"
 [ -d "$chroot" ] ||
 	fatal "$dir: not look like a work directory of hasher."
 
+exit_handler() {
+	local rc=$?
+	trap - EXIT
+	find "$chroot/.in/" -mindepth 1 -maxdepth 1 \
+		-execdir rm -rf -- '{}' '+'
+	exit $rc
+}
+
+trap exit_handler HUP INT QUIT TERM EXIT
+
 for d in $subdirs; do
 	if [ -z "$NO_REMOTES" -a -z "${d##*=*}" ]; then
 		d="${d%%=*}"
 	fi
 
-	outdir="$curdir/$d/$workdirname/$outdirname"
+	outsubdir="$curdir/$d/$workdirname/$outdirname"
 
-	get_copy_args "$outdir/" "$chroot/"
+	get_copy_args "$outsubdir" "$chroot/.in"
 
 	mkdir -p -- "$chroot/.in/$d"
-	find "$outdir" -mindepth 1 -maxdepth 1 \
+	find "$outsubdir" -mindepth 1 -maxdepth 1 \
 		-execdir cp $cp_args -at "$chroot/.in/$d/" -- '{}' '+'
 
-	mki-run -- /.host/find "/.in/$d" -mindepth 1 -maxdepth 1 \
-		-execdir cp $verbose -alft /.image/ -- '{}' '+'
-
-	find "$chroot/.in/" -mindepth 1 -maxdepth 1 \
-		-execdir rm -rf -- '{}' '+'
 done
+
+mki-run -- /.host/find "/.in/" -mindepth 2 -maxdepth 2 \
+	-execdir cp $verbose -alft /.image/ -- '{}' '+'

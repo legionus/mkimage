@@ -41,18 +41,15 @@ makefile="$(opt_check_read 'MYMAKEFILE' "$makefile")"
 
 export PATH="$bindir:$PATH"
 
+cp_args=
 get_copy_args() {
-	[ "$#" -eq 2 ] ||
+	[ "$#" -ge 2 ] ||
 		fatal "get_copy_args(): more arguments required"
 
 	cp_args=
-
-	local dev_number1 dev_number2
-	dev_number1="$(stat -c '%d' "$1")"
-	dev_number2="$(stat -c '%d' "$2")"
-
-	[ "$dev_number1" -ne "$dev_number2" ] ||
-		cp_args='-l'
+	[ $(find "$@" -printf '%D\n' 2>/dev/null |sort -u |wc -l) -eq 1 ] ||
+		return 0
+	cp_args='-l'
 }
 
 mki_exec_once() {

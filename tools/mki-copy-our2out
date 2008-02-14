@@ -15,7 +15,7 @@ fi
 [ -d "$chroot" ] ||
 	fatal "$dir: not look like a work directory of hasher."
 
-get_copy_args "$outdir/" "$chroot/.our/"
+get_copy_args "$outdir" "$chroot/.our"
 
 [ -z "$cleanup" -o "$level" = "1" ] ||
 	find "$outdir/" -mindepth 1 -maxdepth 1 -execdir rm $verbose -rf -- '{}' '+'
