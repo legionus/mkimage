@@ -28,6 +28,9 @@ for d in $subdirs; do
 
 	get_copy_args "$outsubdir" "$chroot/.in"
 
+	[ -n "${d##*/*}" ] ||
+		d="$(printf '%s\n' "$d" |sed -e 's@/@_@g')"
+
 	mkdir -p -- "$chroot/.in/$d"
 	find "$outsubdir" -mindepth 1 -maxdepth 1 \
 		-execdir cp $cp_args -at "$chroot/.in/$d/" -- '{}' '+'
