@@ -2,6 +2,7 @@ ifndef INCLUDED_TOOLS_MK
 INCLUDED_TOOLS_MK = 1
 
 RUN_MAKE		= $(TOOLSDIR)/mki-run-make
+GET_MAKEFILE            = $(TOOLSDIR)/mki-get-makefile
 COUNT_CPU		= $(TOOLSDIR)/mki-count-cpu
 CHECK_OBSOLETE		= $(TOOLSDIR)/mki-check-obsolete
 EXPAND_PKGS		?= $(TOOLSDIR)/mki-expand-pkgs
