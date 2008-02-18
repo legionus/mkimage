@@ -28,6 +28,11 @@ if [ ! -f /.image/syslinux/isolinux.bin ]; then
 	exit 1
 fi
 
+if [ -n "${BOOT_LANG-}" ]; then
+	mkdir -p -- /.image/syslinux
+	printf '%s\n' "${BOOT_LANG-}" > /.image/syslinux/lang
+fi
+
 cd /tmp
 cat > .mkisofsrc <<-__EOF__
 	APPI="${BOOT_APPI:-}"

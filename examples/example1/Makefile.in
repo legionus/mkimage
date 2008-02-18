@@ -2,10 +2,7 @@ CONFIGDIR = @PREFIXDIR@
 
 include $(CONFIGDIR)/config.mk
 
-SUBDIRS = base=/tmp disk install2
-REMOTE_BUILD = \
-	disk:$(CURDIR)/.ssh/armor1 \
-	install2:$(CURDIR)/.ssh/armor1
+SUBDIRS = base disk install2
 
 INFO_THEME = server
 
