@@ -10,12 +10,12 @@ verbose "has started executing."
 [ "$#" -eq 2 ] ||
 	fatal "Usage: $PROG <check | build> <target>"
 
-if [ -n "${NO_CACHE:-}" ]; then
-	verbose "Cache disabled"
-	exit 0
-fi
-
 action="$1"; shift
+
+if [ -n "${NO_CACHE:-}" -a "$action" = 'check' ]; then
+	verbose "Cache disabled"
+	exit 1
+fi
 
 cache_type="$1"
 case "$cache_type" in
