@@ -1,6 +1,6 @@
 #!/bin/ash -efu
 
-. shell-regexp
+. shell-quote
 
 include_without_workdir_check=1
 . "${0%/*}"/mki-sh-functions

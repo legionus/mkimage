@@ -9,7 +9,7 @@ Group: Development/Other
 Packager: Alexey Gladkov <legion@altlinux.ru>
 BuildArch: noarch
 
-Requires: libshell
+Requires: libshell >= 0.0.2
 
 Source: %name-%version.tar
 
