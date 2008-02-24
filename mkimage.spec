@@ -1,6 +1,6 @@
 Name: mkimage
-Version: 0.0.6
-Release: alt2
+Version: 0.0.7
+Release: alt1
 
 Summary: Simple image creator
 License: GPL
@@ -27,9 +27,21 @@ Simple image creator
 
 %files
 %_datadir/%name
-%doc examples
+%doc examples doc/README.ru
 
 %changelog
+* Sun Feb 24 2008 Alexey Gladkov <legion@altlinux.ru> 0.0.7-alt1
+- New version (0.0.7).
+- Allow stage remote build.
+- Allow subdirectories in SUBDIRS.
+- Add BOOT_LANG variable to able set default boot language.
+- Split rules.mk into separate files: config.mk, tools.mk and targets.mk.
+- Fix .fakedata check.
+- Fix 'data' and 'custom' methods.
+- Fix makefile hardcode.
+- Fix NO_CACHE option.
+- Update README.ru.
+
 * Wed Jan 09 2008 Alexey Gladkov <legion@altlinux.ru> 0.0.6-alt2
 - Fix requires.
 
