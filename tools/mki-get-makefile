@@ -1,0 +1,8 @@
+#!/bin/sh -e
+
+for f in GNUmakefile makefile Makefile; do
+	[ -s "$1/$f" ] ||
+		continue
+	printf '%s\n' "$1/$f"
+	break
+done
