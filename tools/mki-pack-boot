@@ -12,7 +12,7 @@ outname="${outname##*/}"
 types=
 for b in ${BOOT_TYPE:-}; do
 	case "$b" in
-		isolinux|pxelinux) types="$types $b " ;;
+		isolinux|pxelinux|syslinux) types="$types $b " ;;
 		*) fatal "Unknown boot type" ;;
 	esac
 done

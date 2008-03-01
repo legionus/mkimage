@@ -57,6 +57,9 @@ copy-isolinux: prepare-workdir $(SUBDIRS)
 copy-pxelinux: prepare-workdir $(SUBDIRS)
 	$(CHROOT_COPY_PXELINUX)
 
+copy-syslinux: prepare-workdir $(SUBDIRS)
+	$(CHROOT_COPY_SYSLINUX)
+
 copy-tree: prepare-workdir $(SUBDIRS)
 	if ! $(CHROOT_CACHE) check $@; then \
 	    $(CHROOT_COPY_TREE) && \
