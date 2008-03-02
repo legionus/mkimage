@@ -1,4 +1,4 @@
-INCLUDED_TARGERS_MK = 1
+INCLUDED_TARGETS_MK = 1
 
 include $(CONFIGDIR)/tools.mk
 
