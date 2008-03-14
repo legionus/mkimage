@@ -1,6 +1,6 @@
 Name: mkimage
 Version: 0.0.7
-Release: alt2
+Release: alt3
 
 Summary: Simple image creator
 License: GPL
@@ -30,6 +30,10 @@ Simple image creator
 %doc examples doc/README.ru
 
 %changelog
+* Fri Mar 14 2008 Alexey Gladkov <legion@altlinux.ru> 0.0.7-alt3
+- mki-build-propagator: adapted for both mkmar & mkmodpack.
+- targets.mk: Fix typo.
+
 * Sun Mar 02 2008 Alexey Gladkov <legion@altlinux.ru> 0.0.7-alt2
 - mki-pack: Add 'cpio' pack method.
 - mki-pack-boot: Add 'syslinux' boot method.
