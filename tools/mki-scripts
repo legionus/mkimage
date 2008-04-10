@@ -25,7 +25,7 @@ fi
 
 addenv() {
 	printenv |
-		sed -ne 's/^\(INFO_[^=]\+\)=/\1\t/p' |
+		sed -ne 's/^\(\(GLOBAL\|INFO\)_[^=]\+\)=/\1\t/p' |
 	while read n v; do
 		printf 'export %s="%s"\n' "$n" "$(quote_shell "$v")"
 	done
