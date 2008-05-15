@@ -12,8 +12,8 @@ imgsubdir="${imgsubdir#/}"
 
 compress=
 case "${MKI_TAR_COMPRESS:-}" in
-	bzip2|bz2|tarbz2|-z) compress='-z' ;;
-	gzip|gz|targz|-j)    compress='-j' ;;
+	bzip2|bz2|tarbz2|-j) compress='-j' ;;
+	gzip|gz|targz|-z)    compress='-z' ;;
 esac
 
 [ -d "$chroot" ] ||
