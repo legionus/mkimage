@@ -18,6 +18,7 @@ hsh_initroot() {
 		${HSH_NUMBER:+--number="$HSH_NUMBER"} \
 		${HSH_EXCLUDE_DOCS:+--excludedocs} \
 		${HSH_CACHEDIR:+--cache-dir="$HSH_CACHEDIR"} \
+		${IMAGE_INIT_LIST:+--pkg-init-list="$IMAGE_INIT_LIST"} \
 		-- "$1" ||
 	fatal "$1: unable to make initial chroot: rc=$?"
 
