@@ -8,7 +8,12 @@ esac
 payload() {
 	stat --printf='%A\t%s\t%Y\n' "$makefile"
 
-	cd "$scriptdir"
+	[ -d "$scriptdir" ] ||
+		return 0
+
+	cd "$scriptdir" ||
+		return 1
+
 	find -type f -printf '%p %M %s %T@\n' |
 	while read script stamp; do
 		[ -x "$script" ] ||
