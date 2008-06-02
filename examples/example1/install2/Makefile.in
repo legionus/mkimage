@@ -3,9 +3,7 @@ CONFIGDIR = @PREFIXDIR@
 include $(CONFIGDIR)/config.mk
 
 IMAGE_PACKAGES = ./packages
-
-MKI_PACKTYPE = squash
-MKI_OUTNAME = altinst
+MKI_PACK_RESULTS = squash:altinst
 
 include $(CONFIGDIR)/targets.mk
 

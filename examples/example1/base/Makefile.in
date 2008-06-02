@@ -6,8 +6,7 @@ CHROOT_PACKAGES = apt-utils rsync
 IMAGE_PACKAGES = ./packages
 
 MKI_DESTDIR = ALTLinux/RPMS.base
-
-MKI_PACKTYPE = data
+MKI_PACK_RESULTS = data
 
 INFO_ARCH	= $(TARGET)
 INFO_ORIGIN	= ALT Linux Team

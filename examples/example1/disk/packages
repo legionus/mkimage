@@ -444,7 +444,6 @@ apache2-mod_auth_mysql mod_auth_mysql
 pflogsumm-cgi
 pfqueue
 policyd-weight
-postgrey-dogwatch
 pptpd
 redirector-dbl
 #seiroswiki

@@ -2,7 +2,6 @@ kernel-image-std-smp
 udev
 
 #design-bootloader-installer-server
-#memtest86+
 
 e2fsprogs
 reiserfsprogs
