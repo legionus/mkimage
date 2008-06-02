@@ -6,10 +6,7 @@ glibc-nss
 glibc-utils
 interactivesystem
 kbd
-kernel-image-ovz-smp
-kernel-modules-atl1-std-smp
 kernel-image-std-smp
-kernel-modules-atl1-ovz-smp
 lilo
 setarch
 shadow-suite
@@ -20,7 +17,6 @@ udev
 vim-console
 
 # network tools
-elinks-utf8-hack
 hostinfo
 iptables
 iputils
@@ -56,9 +52,5 @@ strace
 # docs
 man-pages
 
-# ve
-ve-build-scripts
-ve-base
-
 # alterator
-alterator-install3-server
+installer-server-stage3

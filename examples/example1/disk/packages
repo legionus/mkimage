@@ -1,14 +1,3 @@
-# ve
-ve-caching-nameserver
-ve-ftp-server
-ve-imap-server
-ve-kerberos-server
-ve-list-server
-ve-ntp-server
-ve-print-server
-ve-proxy-server
-ve-smtp-server
-
 # servers
 acpid
 cmdproxyd
@@ -298,14 +287,11 @@ lilo-doc
 look
 lua5
 lua5-doc
-nfs-clients
-nfs-server
 openssh-askpass-common
 openssl-doc
 pam0_timestamp
 pam-doc
 pam_userpass-devel
-pciutils-devel-static
 perl-full
 python-dev
 setproctitle-devel
@@ -352,10 +338,6 @@ ipsec-tools
 nagios-doc nagios-full
 openldap-clients openldap-servers openldap-doc
 rrd-perl rrd-python rrd-tcl rrd-utils
-
-# enp@
-#drbd
-#heartbeat
 
 # force@
 bonnie
@@ -426,7 +408,7 @@ dev MAKEDEV
 dstat
 enca
 mod_limitipconn
-mod_ssl mod_ssl-doc
+mod_ssl
 monit
 webalizer
 wget
