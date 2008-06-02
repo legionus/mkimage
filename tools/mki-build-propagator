@@ -14,7 +14,7 @@ pkgs='mar propagator glibc-utils'
 mki-install $pkgs ||
 	fatal "faild to install packages: $pkgs."
 
-cp -aft "$chroot/.in/" -- "$mar_modules" "$initfs"
+cp -pLft "$chroot/.in/" -- "$mar_modules" "$initfs"
 
 cat >"$chroot/tmp/packimage.sh"<<EOF
 #!/bin/sh -efu${verbose:+x}
