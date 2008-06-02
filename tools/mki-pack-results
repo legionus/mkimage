@@ -8,20 +8,24 @@ verbose "has started executing."
 typeslist="${MKI_PACK_RESULTS:?pack rules required}"
 
 run_pack() {
-	local str type MKI_OUTNAME MKI_IMAGESUBDIR=
+	local str= type= MKI_OUTNAME= MKI_IMAGESUBDIR=
 
 	case "$1" in
 		boot:*|data:*|isoboot:*|isodata:*|squash:*|tar:*|tarbz2:*)
 			type="${1%%:*}"
+			str="${1#*:}"
+			MKI_OUTNAME="${str%%:*}"
+			;;
+		data)
+			type='data'
 			;;
 		*) # custom
 			type='custom'
+			str="${1#*:}"
+			MKI_OUTNAME="${str%%:*}"
 			MKI_PACKTYPE="${1%%:*}"
 			;;
 	esac
-
-	str="${1#*:}"
-	MKI_OUTNAME="${str%%:*}"
 
 	[ "$str" = "$MKI_OUTNAME" ] ||
 		MKI_IMAGESUBDIR="${str#*:}"
