@@ -4,7 +4,7 @@
 
 verbose "has started executing."
 
-hasher_args="--clean ${VERBOSE:+-v} ${QUIET:+-q} ${HSH_NUMBER:+--number="$HSH_NUMBER"}"
+hasher_args="--clean $verbose $quiet ${HSH_NUMBER:+--number="$HSH_NUMBER"}"
 
 if [ -d "$subchroot" ]; then
 	env -i PATH="$PATH" hsh $hasher_args "$subdir" ||

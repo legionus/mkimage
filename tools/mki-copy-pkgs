@@ -7,16 +7,20 @@ verbose "has started executing."
 destdir="${MKI_DESTDIR:-}"
 aptboxdir="${PKGBOX:?global aptbox required}"
 
-tempdir=
+tempdir="$dir/$PROG.verbose"
 exit_handler() {
     local rc=$?
     trap - EXIT
-    [ -z "$tempdir" ] || rm -rf -- "$tempdir"
+    [ ! -d "$tempdir" ] || rm -rf -- "$tempdir"
     exit $rc
 }
 
-trap exit_handler HUP INT QUIT TERM EXIT
-tempdir="$(mktemp -d "$dir/$PROG.XXXXXXXXX")"
+if [ -n "$verbose" ]; then
+	[ ! -d "$tempdir" ] || rm -rf -- "$tempdir"
+else
+	trap exit_handler HUP INT QUIT TERM EXIT
+fi
+mkdir $verbose -- "$tempdir"
 
 lstfile="$tempdir/lst"
 errfile="$tempdir/err"

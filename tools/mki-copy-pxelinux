@@ -15,9 +15,9 @@ mki-install syslinux ||
 
 cat >"$chroot/tmp/packimage.sh"<<EOF
 #!/bin/sh -efu
-mkdir -p -- /.image/syslinux/alt0
-cp -aLf /boot/vmlinuz /.image/syslinux/alt0/vmlinuz
-cp -f /usr/lib/syslinux/pxelinux.0 /.image/syslinux/
+mkdir $verbose -p -- /.image/syslinux/alt0
+cp $verbose -aLf /boot/vmlinuz /.image/syslinux/alt0/vmlinuz
+cp $verbose -f /usr/lib/syslinux/pxelinux.0 /.image/syslinux/
 EOF
 
 mki_exec_once "$chroot/tmp/packimage.sh"

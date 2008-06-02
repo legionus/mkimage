@@ -25,16 +25,20 @@ aptbox="$aptboxdir/aptbox"
 [ -d "$aptbox" ] ||
 	fatal "$aptbox: Not a directory"
 
-tempdir=
+tempdir="$dir/$PROG.verbose"
 exit_handler() {
 	local rc=$?
-		trap - EXIT
-		[ -z "$tempdir" ] || rm -rf -- "$tempdir"
-		exit $rc
+	trap - EXIT
+	[ ! -d "$tempdir" ] || rm -rf -- "$tempdir"
+	exit $rc
 }
 
-trap exit_handler HUP INT QUIT TERM EXIT
-tempdir="$(mktemp -d "$dir/$PROG.XXXXXXXXX")"
+if [ -n "$verbose" ]; then
+	[ ! -d "$tempdir" ] || rm -rf -- "$tempdir"
+else
+	trap exit_handler HUP INT QUIT TERM EXIT
+fi
+mkdir $verbose -- "$tempdir"
 
 mki_list_pkgs "$@" > "$tempdir/in-list"
 

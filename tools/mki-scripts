@@ -24,9 +24,11 @@ fi
 	fatal "$dir: not look like a hasher work directory."
 
 addenv() {
+	verbose "Translate variables from Makefile to scripts:"
 	printenv |
 		sed -ne 's/^\(\(GLOBAL\|INFO\)_[^=]\+\)=/\1\t/p' |
 	while read n v; do
+		verbose "export $n='$v'"
 		printf 'export %s="%s"\n' "$n" "$(quote_shell "$v")"
 	done
 }

@@ -15,9 +15,9 @@ mki-install syslinux ||
 
 cat >"$chroot/tmp/packimage.sh"<<EOF
 #!/bin/sh -efu
-mkdir -p -- /.image/syslinux/alt0
-cp -aLf /boot/vmlinuz /.image/syslinux/alt0/vmlinuz
-cp -f /usr/lib/syslinux/isolinux.bin /.image/syslinux/
+mkdir $verbose -p -- /.image/syslinux/alt0
+cp $verbose -aLf /boot/vmlinuz /.image/syslinux/alt0/vmlinuz
+cp $verbose -f /usr/lib/syslinux/isolinux.bin /.image/syslinux/
 isolinux-config --base /syslinux /.image/syslinux/isolinux.bin
 EOF
 

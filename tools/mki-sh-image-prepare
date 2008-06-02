@@ -22,8 +22,6 @@ hsh_initroot() {
 		-- "$1" ||
 	fatal "$1: unable to make initial chroot: rc=$?"
 
-
-
 	env -i PATH="$PATH" \
 	hsh-install \
 		$verbose $quiet \
