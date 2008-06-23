@@ -1,6 +1,6 @@
 Name: mkimage
-Version: 0.0.7
-Release: alt3
+Version: 0.0.8
+Release: alt1
 
 Summary: Simple image creator
 License: GPL
@@ -30,6 +30,24 @@ Simple image creator
 %doc examples doc/README.ru
 
 %changelog
+* Mon Jun 23 2008 Alexey Gladkov <legion@altlinux.ru> 0.0.8-alt1
+- Increase verbosity.
+- Update examples.
+- Update documentation.
+- Add IMAGE_INIT_LIST to change hasher init list.
+- mki-build-propagator: Always follow symlinks in
+  PROPAGATOR_MAR_MODULES and PROPAGATOR_INITFS.
+- mki-scripts: Allow to read to scripts GLOBAL_* env variables.
+- mki-cache-run-scripts: Check scriptdir existence.
+- mki-pack-tar:
+  + Fix compress options.
+  + Add lzma compress method.
+  + Install compess program into the chroot.
+- mki-pack-data:
+  + Ignore hasher directories.
+  + Return error if MKI_IMAGESUBDIR not found.
+- mki-pack-results: Allow MKI_PACK_RESULTS=data.
+
 * Fri Mar 14 2008 Alexey Gladkov <legion@altlinux.ru> 0.0.7-alt3
 - mki-build-propagator: adapted for both mkmar & mkmodpack.
 - targets.mk: Fix typo.
