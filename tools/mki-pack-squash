@@ -5,6 +5,8 @@
 nproc="${PACK_SQUASHFS_PROCESSORS:-}"
 nproc="$(opt_check_number 'PACK_SQUASHFS_PROCESSORS' "$nproc")"
 
+opts="${PACK_SQUASHFS_OPTS:-}"
+
 outname="${MKI_OUTNAME:-outname}"
 outname="${outname##*/}"
 
@@ -26,7 +28,7 @@ imgdir=/.image
 [ ! -e '/.our/$outname' ] ||
 	rm -f -- '/.our/$outname'
 
-mksquashfs "\$imgdir/" '/.our/$outname' ${nproc:+-processors $nproc} -e .in .host .fakedata
+mksquashfs "\$imgdir/" '/.our/$outname' $opts ${nproc:+-processors $nproc} -e .in .host .fakedata
 EOF
 
 mki_exec_once "$chroot/tmp/packimage.sh"
