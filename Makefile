@@ -1,5 +1,5 @@
 PROJECT = mkimage
-VERSION = 0.0.7
+VERSION = 0.0.8
 
 datadir = /usr/share
 DESTDIR =
