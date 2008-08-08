@@ -7,4 +7,4 @@ MKI_PACK_RESULTS = squash:altinst
 
 include $(CONFIGDIR)/targets.mk
 
-all: build-image run-scripts pack-image
+all: build-image run-image-scripts pack-image
