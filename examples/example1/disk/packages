@@ -147,9 +147,9 @@ isoutils
 kbdrate
 kernel-doc-std
 kernel-headers-modules-ovz-smp
-kernel-headers-modules-std-smp
+kernel-headers-modules-std-def
 kernel-headers-ovz-smp
-kernel-headers-std-smp
+kernel-headers-std-def
 libacl-devel
 libalsa-devel
 libalsa-docs

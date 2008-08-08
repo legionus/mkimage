@@ -1,4 +1,4 @@
-kernel-image-std-smp
+kernel-image-std-def
 udev
 
 #design-bootloader-installer-server

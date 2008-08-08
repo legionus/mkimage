@@ -6,7 +6,7 @@ SUBDIRS = base disk install2
 
 INFO_THEME = server
 
-CHROOT_PACKAGES = kernel-image-std-smp apt-utils design-bootloader-installer-$(INFO_THEME)
+CHROOT_PACKAGES = kernel-image-std-def apt-utils design-bootloader-installer-$(INFO_THEME)
 MKI_PACK_RESULTS = boot:legion-test.iso
 
 COPY_TREE = ./isodata

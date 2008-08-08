@@ -6,7 +6,7 @@ glibc-nss
 glibc-utils
 interactivesystem
 kbd
-kernel-image-std-smp
+kernel-image-std-def
 lilo
 setarch
 shadow-suite
