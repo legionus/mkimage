@@ -9,28 +9,32 @@ include $(CONFIGDIR)/tools.mk
 all: $(SUBDIRS)
 
 __profile_internal_rule:
-	if [ -n "$(PROFILE)" ]; then \
+	@if [ -n "$(PROFILE)" ]; then \
 	    $(CHROOT_INVALIDATE_CACHE) mki; \
 	    [ ! -d "$(WORKDIR)" ] || $(CHROOT_CLEAN); \
 	fi
 
 prepare: $(SUBDIRS)
-	$(MAKE_WORKDIR)
+	@echo "mkimage: Processing '$@' ..."
+	@$(MAKE_WORKDIR)
 
 prepare-workdir: prepare $(SUBDIRS)
-	if ! $(CHROOT_CACHE) check $@; then \
+	@echo "mkimage: Processing '$@' ..."
+	@if ! $(CHROOT_CACHE) check $@; then \
 	    $(CHROOT_PREPARE) && \
 	    $(CHROOT_CACHE) build $@ || exit 1; \
 	fi
 
 prepare-image-workdir: prepare-workdir $(SUBDIRS)
-	if ! $(CHROOT_CACHE) check $@; then \
+	@echo "mkimage: Processing '$@' ..."
+	@if ! $(CHROOT_CACHE) check $@; then \
 	    $(CHROOT_IMAGE_PREPARE) && \
 	    $(CHROOT_CACHE) build $@ || exit 1; \
 	fi
 
 run-scripts: prepare-workdir $(SUBDIRS)
-	if ! $(CHROOT_CACHE) check $@; then \
+	@echo "mkimage: Processing '$@' ..."
+	@if ! $(CHROOT_CACHE) check $@; then \
 	    if ! $(CHROOT_SCRIPTS); then \
 		$(CHROOT_INVALIDATE_CACHE) mki; \
 		exit 1; \
@@ -39,7 +43,8 @@ run-scripts: prepare-workdir $(SUBDIRS)
 	fi
 
 run-image-scripts: prepare-workdir $(SUBDIRS)
-	if ! $(CHROOT_CACHE) check $@; then \
+	@echo "mkimage: Processing '$@' ..."
+	@if ! $(CHROOT_CACHE) check $@; then \
 	    if ! $(CHROOT_IMAGE_SCRIPTS); then \
 		$(CHROOT_INVALIDATE_CACHE) mki; \
 		exit 1; \
@@ -48,34 +53,41 @@ run-image-scripts: prepare-workdir $(SUBDIRS)
 	fi
 
 build-propagator: prepare-workdir $(SUBDIRS)
-	$(CHROOT_BUILD_PROPAGATOR)
+	@echo "mkimage: Processing '$@' ..."
+	@$(CHROOT_BUILD_PROPAGATOR)
 
 copy-isolinux: prepare-workdir $(SUBDIRS)
-	$(CHROOT_COPY_ISOLINUX)
+	@echo "mkimage: Processing '$@' ..."
+	@$(CHROOT_COPY_ISOLINUX)
 
 copy-pxelinux: prepare-workdir $(SUBDIRS)
-	$(CHROOT_COPY_PXELINUX)
+	@echo "mkimage: Processing '$@' ..."
+	@$(CHROOT_COPY_PXELINUX)
 
 copy-syslinux: prepare-workdir $(SUBDIRS)
-	$(CHROOT_COPY_SYSLINUX)
+	@$(CHROOT_COPY_SYSLINUX)
 
 copy-tree: prepare-workdir $(SUBDIRS)
-	if ! $(CHROOT_CACHE) check $@; then \
+	@echo "mkimage: Processing '$@' ..."
+	@if ! $(CHROOT_CACHE) check $@; then \
 	    $(CHROOT_COPY_TREE) && \
 	    $(CHROOT_CACHE) build $@ || exit 1; \
 	fi
 
 copy-subdirs: prepare-workdir $(SUBDIRS)
-	if [ -n "$(SUBDIRS)" ] && ! $(CHROOT_CACHE) check $@; then \
+	@echo "mkimage: Processing '$@' ..."
+	@if [ -n "$(SUBDIRS)" ] && ! $(CHROOT_CACHE) check $@; then \
 	    $(CHROOT_COPY_SUBDIRS) && \
 	    $(CHROOT_CACHE) build $@ || exit 1; \
 	fi
 
 split: prepare-workdir $(SUBDIRS)
-	$(CHROOT_SPLIT)
+	@echo "mkimage: Processing '$@' ..."
+	@$(CHROOT_SPLIT)
 
 copy-packages: prepare-workdir $(SUBDIRS)
-	if ! $(CHROOT_CACHE) check $@; then \
+	@echo "mkimage: Processing '$@' ..."
+	@if ! $(CHROOT_CACHE) check $@; then \
 	    { \
 		$(EXPAND_PKGS) simple $(IMAGE_PACKAGES) && \
 		$(EXPAND_PKGS) regexp $(IMAGE_PACKAGES_REGEXP) || exit 1; \
@@ -84,7 +96,8 @@ copy-packages: prepare-workdir $(SUBDIRS)
 	fi
 
 build-image: prepare-image-workdir $(SUBDIRS)
-	if ! $(CHROOT_CACHE) check $@; then \
+	@echo "mkimage: Processing '$@' ..."
+	@if ! $(CHROOT_CACHE) check $@; then \
 	    { \
 		$(EXPAND_PKGS) simple $(IMAGE_PACKAGES) && \
 		$(EXPAND_PKGS) regexp $(IMAGE_PACKAGES_REGEXP) || exit 1; \
@@ -93,7 +106,8 @@ build-image: prepare-image-workdir $(SUBDIRS)
 	fi
 
 pack-image: prepare-workdir copy-subdirs $(SUBDIRS)
-	$(CHECK_OBSOLETE) $@; \
+	@echo "mkimage: Processing '$@' ..."
+	@$(CHECK_OBSOLETE) $@; \
 	if ! $(CHROOT_CACHE) check $@; then \
 	    if [ -n "$(MKI_PACK_RESULTS)" ]; then \
 		$(CHROOT_PACK_RESULTS) || exit 1; \
@@ -104,14 +118,16 @@ pack-image: prepare-workdir copy-subdirs $(SUBDIRS)
 	fi
 
 clean-current:
-	[ ! -d "$(CACHEDIR)" ] || $(CHROOT_INVALIDATE_CACHE) mki;
-	[ ! -d "$(WORKDIR)" ]  || $(CHROOT_CLEAN);
+	@echo "mkimage: Processing '$@' ..."
+	@[ ! -d "$(CACHEDIR)" ] || $(CHROOT_INVALIDATE_CACHE) mki;
+	@[ ! -d "$(WORKDIR)" ]  || $(CHROOT_CLEAN);
 
 clean: clean-current $(SUBDIRS)
 
 distclean-current: clean-current
-	[ ! -h $(WORKDIR) ] || rm -rf -- $$(readlink -ev -- $(WORKDIR));
-	rm -rf -- $(WORKDIR) $(OUTDIR) $(CACHEDIR) $(PKGBOX)
+	@echo "mkimage: Processing '$@' ..."
+	@[ ! -h $(WORKDIR) ] || rm -rf -- $$(readlink -ev -- $(WORKDIR));
+	@rm -rf -- $(WORKDIR) $(OUTDIR) $(CACHEDIR) $(PKGBOX)
 
 distclean: distclean-current $(SUBDIRS)
 
