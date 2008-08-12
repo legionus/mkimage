@@ -14,32 +14,8 @@ __profile_internal_rule:
 	    [ ! -d "$(WORKDIR)" ] || $(CHROOT_CLEAN); \
 	fi
 
-create_workdir:
-	if [ -n "$(WORKSTORAGEDIR)" ]; then \
-	    if [ -d $(WORKDIR) ]; then \
-	        $(CHROOT_CLEAN); \
-		rm -rf -- $(WORKDIR); \
-	    fi; \
-	    if [ -h $(WORKDIR) -a \
-	        $(shell realpath $(WORKDIR)/..) = \
-		$(shell realpath $(WORKSTORAGEDIR)) ]; then \
-	        $(CHROOT_CLEAN); \
-	        rm -rf -- $(shell realpath $(WORKDIR)) $(WORKDIR); \
-	    fi; \
-	    [ -h $(WORKDIR) ] || ln -sf \
-		$(shell mktemp -d $(WORKSTORAGEDIR)/mkimage.XXXXXXXXXX) \
-		$(WORKDIR); \
-	else \
-	    if [ -h $(WORKDIR) ]; then \
-	        $(CHROOT_CLEAN); \
-	        rm -rf -- $(shell realpath $(WORKDIR)) $(WORKDIR); \
-	    fi; \
-	    mkdir -p -- $(WORKDIR); \
-	fi
-
-prepare: create_workdir $(SUBDIRS)
-	mkdir -p -- $(PKGBOX) $(OUTDIR)
-	mkdir -p -- $(CACHEDIR)/mki $(CACHEDIR)/hsh
+prepare: $(SUBDIRS)
+	$(MAKE_WORKDIR)
 
 prepare-workdir: prepare $(SUBDIRS)
 	if ! $(CHROOT_CACHE) check $@; then \
@@ -134,7 +110,7 @@ clean-current:
 clean: clean-current $(SUBDIRS)
 
 distclean-current: clean-current
-	[ ! -h $(WORKDIR) ] || rm -rf -- $(shell readlink $(WORKDIR))
+	[ ! -h $(WORKDIR) ] || rm -rf -- $$(readlink -ev -- $(WORKDIR));
 	rm -rf -- $(WORKDIR) $(OUTDIR) $(CACHEDIR) $(PKGBOX)
 
 distclean: distclean-current $(SUBDIRS)

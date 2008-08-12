@@ -1,0 +1,42 @@
+#!/bin/ash -efu
+
+include_without_workdir_check=1
+. "${0%/*}"/mki-sh-functions
+
+verbose "has started executing."
+
+workroot="${GLOBAL_WORKROOT-}"
+pkgboxdir="${PKGBOX:?directory required}"
+
+relocation_warning() {
+	message "WARNING: '$dir' will change location. We should cleanup old location."
+	"$bindir/mki-clean"
+}
+
+if [ -d "$workroot" ]; then
+	workroot="$(readlink -ev -- "$workroot")"
+
+	if [ -h "$dir" ]; then
+		[ "$workroot" = "$(readlink -ev -- "$dir/..")" ] ||
+			fatal "$dir does not points into $workroot."
+	fi
+
+	if [ -d "$dir" ]; then
+		relocation_warning
+		rm $verbose -rf -- "$dir"
+	fi
+
+	if [ ! -h "$dir" ]; then
+		tempdir="$(mktemp -d -- "$workroot/mkimage.${curdir##*/}.XXXXXXXXX")" &&
+			ln $verbose -sf -- "$tempdir" "$dir"
+	fi
+else
+	if [ -h "$dir" ]; then
+		relocation_warning
+		target="$(readlink -ev -- "$dir")" ||:
+		rm $verbose -rf -- "$target" "$dir"
+	fi
+	mkdir $verbose -p -- "$dir"
+fi
+
+mkdir $verbose -p -- "$pkgboxdir" "$outdir" "$cachedir/mki" "$cachedir/hsh"
