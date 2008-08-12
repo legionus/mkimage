@@ -19,5 +19,3 @@ PROPAGATOR_INITFS = ./initfs
 include $(CONFIGDIR)/targets.mk
 
 all: copy-tree copy-subdirs run-scripts pack-image
-
-pack-image: OUTDIR = /tmp
