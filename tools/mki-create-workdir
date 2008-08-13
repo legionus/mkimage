@@ -17,11 +17,12 @@ if [ -d "$workroot" ]; then
 	workroot="$(readlink -ev -- "$workroot")"
 
 	if [ -h "$dir" ]; then
-		[ "$workroot" = "$(readlink -ev -- "$dir/..")" ] ||
-			fatal "$dir does not points into $workroot."
-	fi
-
-	if [ -d "$dir" ]; then
+		if [ "$workroot" != "$(readlink -ev -- "$dir/..")" ]; then
+			relocation_warning
+			target="$(readlink -ev -- "$dir")" ||:
+			rm $verbose -rf -- "$target" "$dir"
+		fi
+	elif [ -d "$dir" ]; then
 		relocation_warning
 		rm $verbose -rf -- "$dir"
 	fi
