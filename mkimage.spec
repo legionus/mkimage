@@ -14,7 +14,9 @@ Requires: libshell >= 0.0.2
 Source: %name-%version.tar
 
 %description
-Simple image creator
+mkimage is a tool for building ALT Linux distribution
+ISO images out of a user-supplied set of configuration
+files (called `templates').
 
 %prep
 %setup -q
