@@ -1,5 +1,5 @@
 Name: mkimage
-Version: 0.0.8
+Version: 0.0.9
 Release: alt1
 
 Summary: Simple image creator
@@ -30,6 +30,20 @@ Simple image creator
 %doc examples doc/README.ru
 
 %changelog
+* Wed Aug 13 2008 Alexey Gladkov <legion@altlinux.ru> 0.0.9-alt1
+- mki-pack-squash: Add PACK_SQUASHFS_OPTS to be able to use the
+  mksquashfs with additional options.
+- targets.mk.in:
+  + Add debug rule.
+  + Disable command echoing.
+  + New option GLOBAL_WORKROOT (legion, kas, #14502).
+- examples/example1:
+  + Do not overwrite OUTDIR (kas).
+  + Update script 999-system and use target run-image-scripts
+    instead of run-scripts (kas).
+  + Update modules (kas).
+  + Use std-def kernel instead of std-smp to fix building on Sisyphus (kas).
+
 * Mon Jun 23 2008 Alexey Gladkov <legion@altlinux.ru> 0.0.8-alt1
 - Increase verbosity.
 - Update examples.
