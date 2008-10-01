@@ -22,7 +22,6 @@ cat >"$chroot/tmp/packimage.sh"<<EOF
 libdir="\$(getconf LIBDIR)"
 kver="\$(readlink -ev /boot/vmlinuz |sed -e 's,/boot/vmlinuz-,,')"
 
-mkdir -p -- /.image/syslinux/alt0
 if type mkmodpack >/dev/null 2>&1; then
 	mkmodpack -p '/.in/${mar_modules##*/}' -o /tmp/modules -k "\$kver"
 else
@@ -31,17 +30,17 @@ fi
 
 printf '%s\n' "${PROPAGATOR_VERSION:-}" > /tmp/.VERSION
 
-rm -f /.image/syslinux/alt0/full.cz
+rm -f /boot/full.cz
 
 [ ! -f /tmp/modules ] ||
-	cat "\$libdir/propagator/initfs" /tmp/modules > /.image/syslinux/alt0/full.cz
+	cat "\$libdir/propagator/initfs" /tmp/modules > /boot/full.cz
 
 sed \
 	-e "s,@LIBDIR@,\$libdir," \
 	-e "s,@TMPDIR@,/tmp,g" \
 	< '/.in/${initfs##*/}' |
 	gencpio - |
-	gzip -c >> /.image/syslinux/alt0/full.cz
+	gzip -c >> /boot/full.cz
 
 rm -rf -- /tmp/.VERSION
 EOF
