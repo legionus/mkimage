@@ -11,7 +11,7 @@ case "$type" in
 		MKI_TAR_COMPRESS='bzip2'
 		type='tar'
 		;;
-	boot|isoboot|isodata|squash|tar|cpio|data) ;;
+	boot|isoboot|isodata|yaboot|squash|tar|cpio|data) ;;
 	*) type='custom' ;;
 esac
 exec mki-pack-$type
