@@ -27,7 +27,7 @@ esac
 
 mki-install cpio
 
-cat >"$chroot/tmp/packimage.sh"<<EOF
+cat >"$chroot/.host/packimage.sh"<<EOF
 #!/bin/sh -efu
 cd /.image/
 
@@ -43,5 +43,5 @@ find . \$args -print0 |
 	$compress > '/.our/$outname'
 EOF
 
-mki_exec_once "$chroot/tmp/packimage.sh"
+mki_exec_once "$chroot/.host/packimage.sh"
 mki-copy-our2out

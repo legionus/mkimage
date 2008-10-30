@@ -13,7 +13,7 @@ mki-install syslinux ||
 [ -f "$chroot/.image/syslinux/isolinux.cfg" ] ||
 	message 'Warning: /.image/syslinux/isolinux.cfg: not found.'
 
-cat >"$chroot/tmp/packimage.sh"<<EOF
+cat >"$chroot/.host/packimage.sh"<<EOF
 #!/bin/sh -efu
 mkdir $verbose -p -- /.image/syslinux/alt0
 cp $verbose -aLf /boot/vmlinuz /.image/syslinux/alt0/vmlinuz
@@ -23,4 +23,4 @@ cp $verbose -f /usr/lib/syslinux/isolinux.bin /.image/syslinux/
 isolinux-config --base /syslinux /.image/syslinux/isolinux.bin
 EOF
 
-mki_exec_once "$chroot/tmp/packimage.sh"
+mki_exec_once "$chroot/.host/packimage.sh"

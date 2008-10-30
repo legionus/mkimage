@@ -23,7 +23,7 @@ esac
 
 mki-install tar $compress_prog
 
-cat >"$chroot/tmp/packimage.sh"<<EOF
+cat >"$chroot/.host/packimage.sh"<<EOF
 #!/bin/sh -efu
 cd /.image/
 
@@ -37,5 +37,5 @@ args=
 exec tar --numeric-owner \$args $method -cf '/.our/$outname' .
 EOF
 
-mki_exec_once "$chroot/tmp/packimage.sh"
+mki_exec_once "$chroot/.host/packimage.sh"
 mki-copy-our2out

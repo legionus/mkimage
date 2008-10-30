@@ -15,7 +15,7 @@ imgsubdir="${imgsubdir#/}"
 
 mki-install mkisofs
 
-cat >"$chroot/tmp/packimage.sh"<<EOF
+cat >"$chroot/.host/packimage.sh"<<EOF
 #!/bin/sh -efu
 cd /tmp
 cat > .mkisofsrc <<-__EOF__
@@ -41,5 +41,5 @@ rm -f -- .mkisofsrc
 exit \$rc
 EOF
 
-mki_exec_once "$chroot/tmp/packimage.sh"
+mki_exec_once "$chroot/.host/packimage.sh"
 mki-copy-our2out
