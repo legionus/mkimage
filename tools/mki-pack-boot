@@ -12,7 +12,7 @@ outname="${outname##*/}"
 types=
 for b in ${BOOT_TYPE:-}; do
 	case "$b" in
-		isolinux|pxelinux|syslinux) types="$types $b " ;;
+		isolinux|pxelinux|syslinux|yaboot) types="$types $b " ;;
 		*) fatal "Unknown boot type" ;;
 	esac
 done
@@ -30,5 +30,8 @@ for b in $types; do
 done
 
 [ -z "${types##* isolinux *}" ] &&
-	exec mki-pack-isoboot ||
-	exec mki-pack-data
+	exec mki-pack-isoboot || {
+		[ -z "${types##* yaboot *}" ] &&
+			exec mki-pack-yaboot ||
+			exec mki-pack-data
+	}

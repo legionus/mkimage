@@ -1,0 +1,27 @@
+#!/bin/ash -efu
+
+. "${0%/*}"/mki-sh-functions
+
+verbose "has started executing."
+
+[ -d "$chroot" ] ||
+	fatal "$dir: not look like a work directory of hasher."
+
+pkgs='yaboot kernel-bootwrapper binutils'
+mki-install $pkgs ||
+	fatal "failed to install packages: $pkgs."
+
+[ -f "$chroot/.image/etc/yaboot.conf" ] ||
+	message 'Warning: /.image/etc/yaboot.conf: not found.'
+
+cat >"$chroot/tmp/packimage.sh"<<EOF
+#!/bin/sh -efu
+mkdir $verbose -p -- /.image/etc /.image/ppc/chrp /.image/ps3/otheros
+[ ! -f /boot/full.cz ] || initrd=/boot/full.cz
+cp $verbose -aLf /boot/vmlinuz \${initrd:+\$initrd} /usr/lib/yaboot/yaboot /.image/ppc/chrp/
+cd /tmp
+wrapper -p ps3 \${initrd:+-i \$initrd} -o /.image/ps3/otheros/otheros.bld /boot/vmlinuz
+rm -f -- /.image/ps3/otheros/otheros.bld.bin
+EOF
+
+mki_exec_once "$chroot/tmp/packimage.sh"
