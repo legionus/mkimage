@@ -10,6 +10,9 @@ outname="${outname##*/}"
 imgsubdir="${MKI_IMAGESUBDIR:-}"
 imgsubdir="${imgsubdir#/}"
 
+[ "$MKI_OUTNAME" = "${MKI_OUTNAME##*/}" ] ||
+	outdir="$(readlink -ev "${MKI_OUTNAME%/*}")"
+
 [ -d "$chroot" ] ||
 	fatal "$dir: not look like a work directory of hasher."
 
@@ -35,11 +38,10 @@ imgdir=/.image
 	imgdir="/.image/$imgsubdir"
 		
 rc=0
-mkisofs $verbose -T -J -l -r -U -o '/.our/$outname' "\$imgdir/" || rc=\$?
+mkisofs $verbose -T -J -l -r -U "\$imgdir/" || rc=\$?
 
 rm -f -- .mkisofsrc
 exit \$rc
 EOF
 
-mki_exec_once "$chroot/.host/packimage.sh"
-mki-copy-our2out
+mki_exec_once "$chroot/.host/packimage.sh" > "$outdir/$outname"

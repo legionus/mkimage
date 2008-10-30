@@ -10,6 +10,9 @@ outname="${outname##*/}"
 imgsubdir="${MKI_IMAGESUBDIR:-}"
 imgsubdir="${imgsubdir#/}"
 
+[ "$MKI_OUTNAME" = "${MKI_OUTNAME##*/}" ] ||
+	outdir="$(readlink -ev "${MKI_OUTNAME%/*}")"
+
 compress='cat'
 case "${MKI_CPIO_COMPRESS:-}" in
 	bzip2|bz2)
@@ -40,8 +43,7 @@ args=
 
 find . \$args -print0 |
 	cpio $verbose -0 -o |
-	$compress > '/.our/$outname'
+	$compress
 EOF
 
-mki_exec_once "$chroot/.host/packimage.sh"
-mki-copy-our2out
+mki_exec_once "$chroot/.host/packimage.sh" > "$outdir/$outname"

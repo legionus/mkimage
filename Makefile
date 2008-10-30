@@ -8,7 +8,7 @@ CP = cp -a
 MKDIR_P = mkdir -p
 TOUCH_R = touch -r
 
-prefixdir = $(datadir)/$(PROJECT)
+prefixdir ?= $(datadir)/$(PROJECT)
 
 EXAMPLES = \
 	examples/example1/Makefile \

@@ -10,6 +10,9 @@ outname="${outname##*/}"
 imgsubdir="${MKI_IMAGESUBDIR:-}"
 imgsubdir="${imgsubdir#/}"
 
+[ "$MKI_OUTNAME" = "${MKI_OUTNAME##*/}" ] ||
+	outdir="$(readlink -ev "${MKI_OUTNAME%/*}")"
+
 method=
 compress_prog=
 case "${MKI_TAR_COMPRESS:-}" in
@@ -34,8 +37,7 @@ args=
 [ ! -d .host ]     || args="\$args --exclude .host"
 [ ! -f .fakedata ] || args="\$args --exclude .fakedata"
 
-exec tar --numeric-owner \$args $method -cf '/.our/$outname' .
+exec tar --numeric-owner \$args $method -cf - .
 EOF
 
-mki_exec_once "$chroot/.host/packimage.sh"
-mki-copy-our2out
+mki_exec_once "$chroot/.host/packimage.sh" > "$outdir/$outname"

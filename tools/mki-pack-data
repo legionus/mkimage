@@ -35,5 +35,4 @@ cd /.our
 EOF
 
 mki_exec_once "$chroot/.host/packimage.sh"
-echo here
 mki-copy-our2out
