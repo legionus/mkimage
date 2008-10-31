@@ -41,7 +41,7 @@ args=
 [ ! -d .host ]     || args="\${args:+\$args -a} ! -wholename ./.host"
 [ ! -f .fakedata ] || args="\${args:+\$args -a} ! -wholename ./.fakedata"
 
-find . -mindepth 1 \$args -print0 |
+find . -mindepth 1 \$args -print0 -o -prune |
 	cpio $verbose -0 -o -c |
 	$compress
 EOF
