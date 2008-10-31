@@ -29,9 +29,10 @@ for b in $types; do
 	mki-copy-$b
 done
 
-[ -z "${types##* isolinux *}" ] &&
-	exec mki-pack-isoboot || {
-		[ -z "${types##* yaboot *}" ] &&
-			exec mki-pack-yaboot ||
-			exec mki-pack-data
-	}
+[ -n "${types##* isolinux *}" ] ||
+	exec mki-pack-isoboot
+
+[ -n "${types##* yaboot *}" ] ||
+	exec mki-pack-yaboot
+
+exec mki-pack-data

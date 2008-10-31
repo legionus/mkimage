@@ -14,13 +14,24 @@ mki-install $pkgs ||
 [ -f "$chroot/.image/etc/yaboot.conf" ] ||
 	message 'Warning: /.image/etc/yaboot.conf: not found.'
 
-cat >"$chroot/tmp/packimage.sh"<<EOF
+cat >"$chroot/.host/packimage.sh"<<EOF
 #!/bin/sh -efu
+
 mkdir $verbose -p -- /.image/etc /.image/ppc/chrp /.image/ps3/otheros
-[ ! -f /boot/full.cz ] || initrd=/boot/full.cz
-cp $verbose -aLf /boot/vmlinuz \${initrd:+\$initrd} /usr/lib/yaboot/yaboot /.image/ppc/chrp/
+
+[ ! -f /boot/full.cz ] ||
+	initrd=/boot/full.cz
+
+cp $verbose -aLf \
+	/boot/vmlinuz \${initrd:+\$initrd} /usr/lib/yaboot/yaboot \
+	/.image/ppc/chrp/
 cd /tmp
-wrapper -p ps3 \${initrd:+-i \$initrd} -o /.image/ps3/otheros/otheros.bld /boot/vmlinuz
+
+wrapper -p ps3 \
+	\${initrd:+-i \$initrd} \
+	-o /.image/ps3/otheros/otheros.bld \
+	/boot/vmlinuz
+
 rm -f -- /.image/ps3/otheros/otheros.bld.bin
 EOF
 

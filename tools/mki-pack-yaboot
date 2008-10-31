@@ -10,6 +10,9 @@ outname="${outname##*/}"
 imgsubdir="${MKI_IMAGESUBDIR:-}"
 imgsubdir="${imgsubdir#/}"
 
+[ "$MKI_OUTNAME" = "${MKI_OUTNAME##*/}" ] ||
+	outdir="$(readlink -ev "${MKI_OUTNAME%/*}")"
+
 [ -d "$chroot" ] ||
 	fatal "$dir: not look like a work directory of hasher."
 
@@ -20,11 +23,11 @@ pkgs='mkisofs'
 mki-install $pkgs ||
 	fatal "faild to install packages: $pkgs."
 
-cat >"$chroot/tmp/packimage.sh"<<EOF
+cat >"$chroot/.host/packimage.sh"<<EOF
 #!/bin/sh -efu
 
 if [ ! -f /.image/ppc/chrp/yaboot ]; then
-	printf '%s\\n' "$PROG: /.image/ppc/chrp/yaboot: not found"
+	printf '%s\\n' "$PROG: /.image/ppc/chrp/yaboot: not found" >&2
 	exit 1
 fi
 
@@ -42,14 +45,14 @@ cat > .mkisofsrc <<-__EOF__
 __EOF__
 
 cat > hfs.map <<-__EOF__
-# ext.  xlate  creator  type    comment
-.rpm	Raw	'ALTL'	'bina'	"RPM package"
-.conf	Raw	'UNIX'	'conf'	"bootstrap"
-.cz	Raw	'UNIX'	'boot'	"bootstrap"
-.b	Raw	'UNIX'	'tbxi'	"bootstrap"
-yaboot	Raw	'UNIX'	'boot'	"bootstrap"
-vmlinuz	Raw	'UNIX'	'boot'	"bootstrap"
-*       Ascii	'????'	'????'	"Text file"
+	# ext.  xlate  creator  type    comment
+	.rpm	Raw	'ALTL'	'bina'	"RPM package"
+	.conf	Raw	'UNIX'	'conf'	"bootstrap"
+	.cz	Raw	'UNIX'	'boot'	"bootstrap"
+	.b	Raw	'UNIX'	'tbxi'	"bootstrap"
+	yaboot	Raw	'UNIX'	'boot'	"bootstrap"
+	vmlinuz	Raw	'UNIX'	'boot'	"bootstrap"
+	*	Ascii	'????'	'????'	"Text file"
 __EOF__
 
 imgdir=/.image
@@ -57,14 +60,17 @@ imgdir=/.image
 	imgdir="/.image/$imgsubdir"
 
 rc=0
-mkisofs $verbose -J -l -r \
-	-hfs -part -probe -map hfs.map -hfs-bless /.image/ppc -hfs-volid "${BOOT_VOLI}" \
-	-prep-boot ppc/chrp/yaboot -chrp-boot -iso-level 2 \
-	-o '/.our/$outname' "\$imgdir/" || rc=\$?
+mkisofs $verbose -J -l -r -hfs -part -probe \
+	-map hfs.map \
+	-hfs-bless /.image/ppc \
+	-hfs-volid "${BOOT_VOLI:-}" \
+	-prep-boot /.image/ppc/chrp/yaboot \
+	-chrp-boot \
+	-iso-level 2 \
+	"\$imgdir/" || rc=\$?
 
 rm -f -- .mkisofsrc hfs.map
 exit \$rc
 EOF
 
-mki_exec_once "$chroot/tmp/packimage.sh"
-mki-copy-our2out
+mki_exec_once "$chroot/tmp/packimage.sh" > "$outdir/$outname"
