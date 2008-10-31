@@ -15,7 +15,7 @@ cat >"$chroot/.host/packimage.sh"<<EOF
 imgdir=/.image
 if [ -n "$imgsubdir" ]; then
 	if [ ! -d "/.image/$imgsubdir" ]; then
-		printf '%s: %s: Directory not found\n' '$PROG' '/$imgsubdir' >&2
+		printf '%s: %s: Directory not found\\n' '$PROG' '/$imgsubdir' >&2
 		exit 1
 	fi
 	imgdir="/.image/$imgsubdir"

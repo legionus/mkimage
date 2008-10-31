@@ -36,7 +36,7 @@ __EOF__
 imgdir=/.image
 [ -z "$imgsubdir" -o ! -d "/.image/$imgsubdir" ] ||
 	imgdir="/.image/$imgsubdir"
-		
+
 rc=0
 mkisofs $verbose -T -J -l -r -U "\$imgdir/" || rc=\$?
 
