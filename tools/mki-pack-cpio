@@ -37,12 +37,12 @@ cd /.image/
 [ -z "$imgsubdir" -o ! -d "./$imgsubdir" ] || cd "./$imgsubdir"
 
 args=
-[ ! -d .in ]       || args="\${args:+\$args -o} ! -wholename ./.in"
-[ ! -d .host ]     || args="\${args:+\$args -o} ! -wholename ./.host"
-[ ! -f .fakedata ] || args="\${args:+\$args -o} ! -wholename ./.fakedata"
+[ ! -d .in ]       || args="\${args:+\$args -a} ! -wholename ./.in"
+[ ! -d .host ]     || args="\${args:+\$args -a} ! -wholename ./.host"
+[ ! -f .fakedata ] || args="\${args:+\$args -a} ! -wholename ./.fakedata"
 
-find . \$args -print0 |
-	cpio $verbose -0 -o |
+find . -mindepth 1 \$args -print0 |
+	cpio $verbose -0 -o -c |
 	$compress
 EOF
 
