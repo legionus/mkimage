@@ -16,8 +16,8 @@ imgsubdir="${imgsubdir#/}"
 [ -d "$chroot" ] ||
 	fatal "$dir: not look like a work directory of hasher."
 
-[ -f "$chroot/.image/syslinux/isolinux.cfg" ] ||
-	fatal '/.image/syslinux/isolinux.cfg: not found.'
+[ -f "$chroot/.image/$imgsubdir/syslinux/isolinux.cfg" ] ||
+	fatal "/.image/$imgsubdir/syslinux/isolinux.cfg: not found."
 
 pkgs='mkisofs'
 mki-install $pkgs ||
@@ -26,14 +26,18 @@ mki-install $pkgs ||
 cat >"$chroot/.host/packimage.sh"<<EOF
 #!/bin/sh -efu
 
-if [ ! -f /.image/syslinux/isolinux.bin ]; then
-	printf '%s\\n' "$PROG: /.image/syslinux/isolinux.bin: not found" >&2
+imgdir=/.image
+[ -z "$imgsubdir" -o ! -d "/.image/$imgsubdir" ] ||
+	imgdir="/.image/$imgsubdir"
+
+if [ ! -f \$imgdir/syslinux/isolinux.bin ]; then
+	printf '%s\\n' "$PROG: \$imgdir/syslinux/isolinux.bin: not found" >&2
 	exit 1
 fi
 
 if [ -n "${BOOT_LANG-}" ]; then
-	mkdir -p -- /.image/syslinux
-	printf '%s\\n' "${BOOT_LANG-}" > /.image/syslinux/lang
+	mkdir -p -- \$imgdir/syslinux
+	printf '%s\\n' "${BOOT_LANG-}" > \$imgdir/syslinux/lang
 fi
 
 cd /tmp
@@ -48,10 +52,6 @@ cat > .mkisofsrc <<-__EOF__
 	VOLI="${BOOT_VOLI:-}"
 	VOLS="${BOOT_VOLS:-}"
 __EOF__
-
-imgdir=/.image
-[ -z "$imgsubdir" -o ! -d "/.image/$imgsubdir" ] ||
-	imgdir="/.image/$imgsubdir"
 
 rc=0
 mkisofs $verbose -J -l -r \

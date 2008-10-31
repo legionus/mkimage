@@ -2,6 +2,9 @@
 
 . "${0%/*}"/mki-sh-functions
 
+imgsubdir="${MKI_IMAGESUBDIR:-}"
+imgsubdir="${imgsubdir#/}"
+
 verbose "has started executing."
 
 [ -d "$chroot" ] ||
@@ -10,17 +13,24 @@ verbose "has started executing."
 mki-install syslinux ||
 	fatal "faild to install 'syslinux'."
 
-[ -f "$chroot/.image/syslinux/isolinux.cfg" ] ||
-	message 'Warning: /.image/syslinux/isolinux.cfg: not found.'
+[ -f "$chroot/.image/$imgsubdir/syslinux/isolinux.cfg" ] ||
+	message "Warning: /.image/$imgsubdir/syslinux/isolinux.cfg: not found."
 
 cat >"$chroot/.host/packimage.sh"<<EOF
 #!/bin/sh -efu
-mkdir $verbose -p -- /.image/syslinux/alt0
-cp $verbose -aLf /boot/vmlinuz /.image/syslinux/alt0/vmlinuz
+
+mkdir $verbose -p -- /.image/$imgsubdir/syslinux/alt0
+
+cd /.image/$imgsubdir/syslinux
+
+cp $verbose -aLf /boot/vmlinuz ./alt0/vmlinuz
+
 [ ! -f /boot/full.cz ] ||
-	cp $verbose -aLf /boot/full.cz /.image/syslinux/alt0/full.cz
-cp $verbose -f /usr/lib/syslinux/isolinux.bin /.image/syslinux/
-isolinux-config --base /syslinux /.image/syslinux/isolinux.bin
+	cp $verbose -aLf /boot/full.cz ./alt0/full.cz
+
+cp $verbose -f /usr/lib/syslinux/isolinux.bin .
+
+isolinux-config --base /syslinux ./isolinux.bin
 EOF
 
 mki_exec_once "$chroot/.host/packimage.sh"

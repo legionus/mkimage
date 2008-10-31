@@ -16,8 +16,8 @@ imgsubdir="${imgsubdir#/}"
 [ -d "$chroot" ] ||
 	fatal "$dir: not look like a work directory of hasher."
 
-[ -f "$chroot/.image/etc/yaboot.conf" ] ||
-	fatal '/.image/etc/yaboot.conf: not found.'
+[ -f "$chroot/.image/$imgsubdir/etc/yaboot.conf" ] ||
+	fatal "/.image/$imgsubdir/etc/yaboot.conf: not found."
 
 pkgs='mkisofs'
 mki-install $pkgs ||
@@ -26,8 +26,12 @@ mki-install $pkgs ||
 cat >"$chroot/.host/packimage.sh"<<EOF
 #!/bin/sh -efu
 
-if [ ! -f /.image/ppc/chrp/yaboot ]; then
-	printf '%s\\n' "$PROG: /.image/ppc/chrp/yaboot: not found" >&2
+imgdir=/.image
+[ -z "$imgsubdir" -o ! -d "/.image/$imgsubdir" ] ||
+	imgdir="/.image/$imgsubdir"
+
+if [ ! -f \$imgdir/ppc/chrp/yaboot ]; then
+	printf '%s\\n' "$PROG: \$imgdir/ppc/chrp/yaboot: not found" >&2
 	exit 1
 fi
 
@@ -55,16 +59,12 @@ cat > hfs.map <<-__EOF__
 	*	Ascii	'????'	'????'	"Text file"
 __EOF__
 
-imgdir=/.image
-[ -z "$imgsubdir" -o ! -d "/.image/$imgsubdir" ] ||
-	imgdir="/.image/$imgsubdir"
-
 rc=0
 mkisofs $verbose -J -l -r -hfs -part -probe \
 	-map hfs.map \
-	-hfs-bless /.image/ppc \
+	-hfs-bless \$imgdir/ppc \
 	-hfs-volid "${BOOT_VOLI:-}" \
-	-prep-boot /.image/ppc/chrp/yaboot \
+	-prep-boot ppc/chrp/yaboot \
 	-chrp-boot \
 	-iso-level 2 \
 	"\$imgdir/" || rc=\$?

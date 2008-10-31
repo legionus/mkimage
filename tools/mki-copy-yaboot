@@ -2,6 +2,9 @@
 
 . "${0%/*}"/mki-sh-functions
 
+imgsubdir="${MKI_IMAGESUBDIR:-}"
+imgsubdir="${imgsubdir#/}"
+
 verbose "has started executing."
 
 [ -d "$chroot" ] ||
@@ -11,28 +14,34 @@ pkgs='yaboot kernel-bootwrapper binutils'
 mki-install $pkgs ||
 	fatal "failed to install packages: $pkgs."
 
-[ -f "$chroot/.image/etc/yaboot.conf" ] ||
-	message 'Warning: /.image/etc/yaboot.conf: not found.'
+[ -f "$chroot/.image/$imgsubdir/etc/yaboot.conf" ] ||
+	message "Warning: /.image/$imgsubdir/etc/yaboot.conf: not found."
 
 cat >"$chroot/.host/packimage.sh"<<EOF
 #!/bin/sh -efu
 
-mkdir $verbose -p -- /.image/etc /.image/ppc/chrp /.image/ps3/otheros
+mkdir $verbose -p -- \
+	/.image/$imgsubdir/etc \
+	/.image/$imgsubdir/ppc/chrp \
+	/.image/$imgsubdir/ps3/otheros
 
+cd /.image/$imgsubdir/
+
+initrd=
 [ ! -f /boot/full.cz ] ||
 	initrd=/boot/full.cz
 
 cp $verbose -aLf \
-	/boot/vmlinuz \${initrd:+\$initrd} /usr/lib/yaboot/yaboot \
-	/.image/ppc/chrp/
+	/boot/vmlinuz /usr/lib/yaboot/yaboot \$initrd \
+	./ppc/chrp/
 cd /tmp
 
 wrapper -p ps3 \
 	\${initrd:+-i \$initrd} \
-	-o /.image/ps3/otheros/otheros.bld \
+	-o ./ps3/otheros/otheros.bld \
 	/boot/vmlinuz
 
-rm -f -- /.image/ps3/otheros/otheros.bld.bin
+rm -f -- ./ps3/otheros/otheros.bld.bin
 EOF
 
-mki_exec_once "$chroot/tmp/packimage.sh"
+mki_exec_once "$chroot/.host/packimage.sh"
