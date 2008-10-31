@@ -15,11 +15,11 @@ imgsubdir="${imgsubdir#/}"
 
 compress='cat'
 case "${MKI_CPIO_COMPRESS:-}" in
-	bzip2|bz2)
+	gzip|gz)
 		compress='gzip'
 		mki-install gzip
 		;;
-	gzip|gz)
+	bzip2|bz2)
 		compress='bzip2'
 		mki-install bzip2
 		;;
