@@ -34,7 +34,6 @@ initrd=
 cp $verbose -aLf \
 	/boot/vmlinuz /usr/lib/yaboot/yaboot \$initrd \
 	./ppc/chrp/
-cd /tmp
 
 wrapper -p ps3 \
 	\${initrd:+-i \$initrd} \
