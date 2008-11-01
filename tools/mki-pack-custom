@@ -18,23 +18,23 @@ imgsubdir="${imgsubdir#/}"
 if [ -x "$type" ]; then
 	message "$type: executable file."
 
-	install -m755 -- "$type" "$chroot/tmp/script.sh"
+	install -m755 -- "$type" "$chroot/.host/script.sh"
 
-	cat >"$chroot/tmp/packimage.sh"<<-EOF
+	cat >"$chroot/.host/packimage.sh"<<-EOF
 	#!/bin/sh -efu
 	WORKDIR=/.image
 	OUTNAME='/.our/$outname'
 	SUBDIR='$imgsubdir'
 	export WORKDIR OUTNAME SUBDIR
-	/tmp/script.sh
+	/.host/script.sh
 	EOF
 else
 	fatal "$type: unknown pack type."
 fi
 
 rc=0
-mki-exec "$chroot/tmp/packimage.sh" || rc=$?
-rm -f -- "$chroot/tmp/packimage.sh" "$chroot/tmp/script.sh"
+mki-exec "$chroot/.host/packimage.sh" || rc=$?
+rm -f -- "$chroot/.host/packimage.sh" "$chroot/.host/script.sh"
 [ "$rc" -eq 0 ] ||
 	exit $rc
 mki-copy-our2out

@@ -73,4 +73,4 @@ rm -f -- .mkisofsrc hfs.map
 exit \$rc
 EOF
 
-mki_exec_once "$chroot/tmp/packimage.sh" > "$outdir/$outname"
+mki_exec_once "$chroot/.host/packimage.sh" > "$outdir/$outname"
