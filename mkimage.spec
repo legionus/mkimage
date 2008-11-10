@@ -1,5 +1,5 @@
 Name: mkimage
-Version: 0.0.9
+Version: 0.1.0
 Release: alt1
 
 Summary: Simple image creator
@@ -33,6 +33,17 @@ files (called `templates').
 %doc examples doc/README.ru
 
 %changelog
+* Mon Nov 10 2008 Alexey Gladkov <legion@altlinux.ru> 0.1.0-alt1
+- Targets:
+  + Fix error handler for copy-packages and build-image.
+  + Add rule for invalidate cache of defined targets.
+- Add support for PPC bootable images (thx Sergey Bolshakov).
+- Write stage result into outdir directly.
+- Move all temp scripts into /.host directory.
+- mki-build-propagator: Move /.image/syslinux/alt0/full.cz -> /boot/full.cz.
+- mki-pack-cpio: Suppress EPERM messages.
+- mki-pack-cpio: Fix compress methods.
+
 * Wed Aug 13 2008 Alexey Gladkov <legion@altlinux.ru> 0.0.9-alt1
 - mki-pack-squash: Add PACK_SQUASHFS_OPTS to be able to use the
   mksquashfs with additional options.
