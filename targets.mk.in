@@ -88,20 +88,36 @@ split: prepare-workdir $(SUBDIRS)
 copy-packages: prepare-workdir $(SUBDIRS)
 	@echo "mkimage: Processing '$@' ..."
 	@if ! $(CHROOT_CACHE) check $@; then \
+	    pkgs=$$($(EXPAND_PKGS) simple $(IMAGE_PACKAGES))        && \
+	    printf '%s\n' "$$pkgs" | xargs -r $(CHROOT_COPY_PKGS) || \
 	    { \
-		$(EXPAND_PKGS) simple $(IMAGE_PACKAGES) && \
-		$(EXPAND_PKGS) regexp $(IMAGE_PACKAGES_REGEXP) || exit 1; \
-	    } | xargs -r $(CHROOT_COPY_PKGS) && \
+		$(CHROOT_INVALIDATE_CACHE) mki/$@; \
+		exit 1; \
+	    }; \
+	    pkgs=$$($(EXPAND_PKGS) regexp $(IMAGE_PACKAGES_REGEXP)) && \
+	    printf '%s\n' "$$pkgs" | xargs -r $(CHROOT_COPY_PKGS) || \
+	    { \
+		$(CHROOT_INVALIDATE_CACHE) mki/$@; \
+		exit 1; \
+	    }; \
 	    $(CHROOT_CACHE) build $@ || exit 1; \
 	fi
 
 build-image: prepare-image-workdir $(SUBDIRS)
 	@echo "mkimage: Processing '$@' ..."
 	@if ! $(CHROOT_CACHE) check $@; then \
+	    pkgs=$$($(EXPAND_PKGS) simple $(IMAGE_PACKAGES))        && \
+	    printf '%s\n' "$$pkgs" | xargs -r $(CHROOT_IMAGE_INSTALL) || \
 	    { \
-		$(EXPAND_PKGS) simple $(IMAGE_PACKAGES) && \
-		$(EXPAND_PKGS) regexp $(IMAGE_PACKAGES_REGEXP) || exit 1; \
-	    } | xargs -r $(CHROOT_IMAGE_INSTALL) && \
+		$(CHROOT_INVALIDATE_CACHE) mki/$@; \
+		exit 1; \
+	    }; \
+	    pkgs=$$($(EXPAND_PKGS) regexp $(IMAGE_PACKAGES_REGEXP)) && \
+	    printf '%s\n' "$$pkgs" | xargs -r $(CHROOT_IMAGE_INSTALL) || \
+	    { \
+		$(CHROOT_INVALIDATE_CACHE) mki/$@; \
+		exit 1; \
+	    }; \
 	    $(CHROOT_CACHE) build $@ || exit 1; \
 	fi
 
