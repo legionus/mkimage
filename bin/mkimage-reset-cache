@@ -1,0 +1,9 @@
+#!/bin/ash -efu
+
+if [ "$#" -eq 0 ]; then
+	printf 'Usage: %s target [target1 ...]\n' "${0##*/}" >&2
+	exit
+fi
+
+export TARGET_STAGES="$*"
+exec make reset-cache

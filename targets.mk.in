@@ -117,6 +117,15 @@ pack-image: prepare-workdir copy-subdirs $(SUBDIRS)
 	    $(CHROOT_CACHE) build $@ || exit 1; \
 	fi
 
+reset-cache:
+	@if [ -n "$(TARGET_STAGES)" ]; then \
+		stages="$$(printf '%s' "$(TARGET_STAGES)" |tr '[,:]' ' ')"; \
+		echo "mkimage: Processing '$@' for $$stages ..."; \
+		for t in $$stages; do \
+			$(CHROOT_INVALIDATE_CACHE) "mki/$$t"; \
+		done; \
+	fi
+
 clean-current:
 	@echo "mkimage: Processing '$@' ..."
 	@[ ! -d "$(CACHEDIR)" ] || $(CHROOT_INVALIDATE_CACHE) mki;

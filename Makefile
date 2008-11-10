@@ -1,6 +1,7 @@
 PROJECT = mkimage
 VERSION = 0.0.9
 
+bindir  = /usr/bin
 datadir = /usr/share
 DESTDIR =
 
@@ -16,9 +17,11 @@ EXAMPLES = \
 	examples/example1/disk/Makefile \
 	examples/example1/base/Makefile
 
+bin_TARGETS = bin/mkimage-reset-cache
+
 TARGETS = config.mk tools.mk rules.mk targets.mk $(EXAMPLES)
 
-all: $(TARGETS)
+all: $(TARGETS) $(bin_TARGETS)
 
 %: %.in
 	sed \
@@ -29,9 +32,10 @@ all: $(TARGETS)
 	chmod --reference=$< $@
 
 install: all
-	$(MKDIR_P) -m755 $(DESTDIR)$(prefixdir) $(DESTDIR)$(datadir)
+	$(MKDIR_P) -m755 $(DESTDIR)$(prefixdir) $(DESTDIR)$(bindir)
 	$(CP) -- tools $(DESTDIR)$(prefixdir)/
 	$(CP) -- *.mk $(DESTDIR)$(prefixdir)/
+	$(CP) -- bin/* $(DESTDIR)$(bindir)/
 
 clean:
 	$(RM) $(TARGETS) *~

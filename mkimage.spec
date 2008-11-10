@@ -28,6 +28,7 @@ files (called `templates').
 %make_install install DESTDIR=%buildroot
 
 %files
+%_bindir/*
 %_datadir/%name
 %doc examples doc/README.ru
 
