@@ -1,6 +1,6 @@
 Name: mkimage
 Version: 0.1.0
-Release: alt1
+Release: alt2
 
 Summary: Simple image creator
 License: GPL
@@ -10,6 +10,7 @@ Packager: Alexey Gladkov <legion@altlinux.ru>
 BuildArch: noarch
 
 Requires: libshell >= 0.0.2
+Requires: hasher >= 1.3.7-alt1
 
 Source: %name-%version.tar
 
@@ -33,6 +34,9 @@ files (called `templates').
 %doc examples doc/README.ru
 
 %changelog
+* Tue Nov 11 2008 Alexey Gladkov <legion@altlinux.ru> 0.1.0-alt2
+- Fix requires.
+
 * Mon Nov 10 2008 Alexey Gladkov <legion@altlinux.ru> 0.1.0-alt1
 - Targets:
   + Fix error handler for copy-packages and build-image.
