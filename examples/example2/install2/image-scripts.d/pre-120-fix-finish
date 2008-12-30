@@ -1,0 +1,11 @@
+#!/bin/sh -efu
+
+cat >/usr/share/install2/preinstall.d/120-fix-finish <<EOF
+#!/bin/sh
+
+. install2-init-functions
+
+sed -i -e '/System management server/,+1d' -e 's/text-wrap #t))$/)/' \
+   \$destdir/usr/share/alterator/ui/server/finish.scm
+EOF
+chmod +x /usr/share/install2/preinstall.d/120-fix-finish

@@ -1,0 +1,41 @@
+# kernel
+kernel-image-std-def
+kernel-modules-igb-std-def
+kernel-modules-gnbd-std-def
+kernel-modules-rt2860-std-def
+
+# interactivesystem
+apt
+altlinux-release-sisyphus
+glibc-gconv-modules
+glibc-locales
+glibc-nss
+glibc-utils
+interactivesystem
+kbd
+lilo
+shadow-suite
+sysklogd
+udev
+
+# editor
+vim-console
+
+hal
+dbus
+installer-server-stage3
+
+# target packages
+# keepalived
+ipvsadm
+quagga
+tcpdump
+telnet
+openssh-server
+mdadm
+procmail
+bash
+vixie-cron
+bind
+syslogd
+openntpd

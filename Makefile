@@ -15,7 +15,10 @@ EXAMPLES = \
 	examples/example1/Makefile \
 	examples/example1/install2/Makefile \
 	examples/example1/disk/Makefile \
-	examples/example1/base/Makefile
+	examples/example1/base/Makefile \
+	examples/example2/Makefile \
+	examples/example2/base/Makefile \
+	examples/example2/install2/Makefile
 
 bin_TARGETS = bin/mkimage-reset-cache
 
