@@ -1,8 +1,6 @@
 kernel-image-std-def
 udev
 
-#design-bootloader-installer-server
-
 e2fsprogs
 reiserfsprogs
 xfsprogs
@@ -23,4 +21,3 @@ strace
 PolicyKit
 
 installer-server-stage2
-#installer-desktop-stage2
