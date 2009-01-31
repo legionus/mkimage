@@ -42,7 +42,7 @@ run-scripts: prepare-workdir $(SUBDIRS)
 	    $(CHROOT_CACHE) build $@ || exit 1; \
 	fi
 
-run-image-scripts: prepare-workdir $(SUBDIRS)
+run-image-scripts: prepare-image-workdir $(SUBDIRS)
 	@echo "mkimage: Processing '$@' ..."
 	@if ! $(CHROOT_CACHE) check $@; then \
 	    if ! $(CHROOT_IMAGE_SCRIPTS); then \
