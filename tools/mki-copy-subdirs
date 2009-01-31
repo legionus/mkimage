@@ -37,5 +37,5 @@ for d in $subdirs; do
 
 done
 
-mki-run -- /.host/find "/.in/" -mindepth 2 -maxdepth 2 \
+mki-run /.host/find "/.in/" -mindepth 2 -maxdepth 2 \
 	-execdir cp -alft /.image/ -- '{}' '+'

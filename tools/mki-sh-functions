@@ -53,15 +53,17 @@ get_copy_args() {
 	cp_args='-l'
 }
 
-mki_exec_once() {
-	local rc=0 prog
-	prog="$1"; shift
+make_exec() {
+	cat > "$1"
+	chmod +x -- "$1"
+}
 
-	mki-exec "$prog" || rc=$?
-	rm -f -- "$prog"
-
-	[ "$rc" -eq 0 ] ||
-		exit $rc
+run_chrooted() {
+	local rc=0
+	make_exec "$1/.host/run_chrooted.sh"
+	mki-run "/.host/run_chrooted.sh" || rc=$?
+	rm -f -- "$1/.host/run_chrooted.sh"
+	return $rc
 }
 
 mki_list_pkgs() {

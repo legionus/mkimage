@@ -24,4 +24,4 @@ cd "$chroot/.our"
 find -mindepth 1 -maxdepth 1 |
 	xargs -r cp $cp_args $verbose -aft "$outdir" --
 
-mki-run -- /.host/find /.our -mindepth 1 -maxdepth 1 -execdir rm -rf -- '{}' '+'
+mki-run /.host/find /.our -mindepth 1 -maxdepth 1 -execdir rm -rf -- '{}' '+'

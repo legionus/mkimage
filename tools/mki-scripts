@@ -33,11 +33,11 @@ addenv() {
 	done
 }
 
-cat > "$dir/chroot/tmp/start.sh" <<EOF
+make_exec "$dir/chroot/.host/start.sh" <<EOF
 #!/bin/sh -efu
 $(addenv)
 export WORKDIR=/.image
-/tmp/script.sh
+/.host/script.sh
 EOF
 
 find "$scriptdir" -mindepth 1 -maxdepth 1 -type f |
@@ -49,15 +49,15 @@ while read script; do
 		*~|*.bak|*.rpmnew|*.rpmsave) continue ;;
 	esac
 
-	cp -f -- "$script" "$dir/chroot/tmp/script.sh"
-	chmod 755 -- "$dir/chroot/tmp/script.sh"
+	cp -f -- "$script" "$dir/chroot/.host/script.sh"
+	chmod 755 -- "$dir/chroot/.host/script.sh"
 
 	verbose "Run: \`$script'"
 
 	env WORKDIR="$dir" \
-		mki-exec "$dir/chroot/tmp/start.sh" ||
+		mki-run "/.host/start.sh" ||
 			fatal "$script: unable to run script."
 done
 
-cd "$dir/chroot/tmp"
+cd "$dir/chroot/.host"
 rm -rf -- "start.sh" "script.sh"

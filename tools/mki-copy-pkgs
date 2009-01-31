@@ -115,14 +115,14 @@ sort -u "$lstfile" |
 	xargs -r cp $verbose -ut "$chroot/.in/" -- ||
 	fatal 'could not copy packages: copy failed.'
 
-cat > "$chroot/.host/script" <<EOF
+make_exec "$chroot/.host/script.sh" <<EOF
 #!/bin/sh -efu
 mkdir $verbose -p -- '/.image/$destdir'
-exec /.host/find /.in -mindepth 1 -maxdepth 1 -execdir cp $verbose -alft '/.image/$destdir' -- '{}' '+'
+/.host/find /.in -mindepth 1 -maxdepth 1 -execdir cp $verbose -alft '/.image/$destdir' -- '{}' '+'
 EOF
 
 rc=0
-mki-exec "$chroot/.host/script" || rc=$?
-rm -f -- "$chroot/.host/script"
+mki-run "/.host/script.sh" || rc=$?
+rm -f -- "$chroot/.host/script.sh"
 find "$chroot/.in/" -mindepth 1 -maxdepth 1 -execdir rm $verbose -rf -- '{}' '+'
 exit $rc

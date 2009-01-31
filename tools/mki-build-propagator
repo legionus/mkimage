@@ -16,7 +16,7 @@ mki-install $pkgs ||
 
 cp -pLft "$chroot/.in/" -- "$mar_modules" "$initfs"
 
-cat >"$chroot/.host/packimage.sh"<<EOF
+make_exec "$chroot/.host/packimage.sh" <<EOF
 #!/bin/sh -efu${verbose:+x}
 
 libdir="\$(getconf LIBDIR)"
@@ -46,7 +46,7 @@ rm -rf -- /tmp/.VERSION
 EOF
 
 rc=0
-mki-exec "$chroot/.host/packimage.sh" || rc=$?
+mki-run "/.host/packimage.sh" || rc=$?
 rm -f -- "$chroot/.host/packimage.sh"
 find "$chroot/.in" -mindepth 1 -maxdepth 1 -exec rm -rf -- '{}' '+'
 exit $rc

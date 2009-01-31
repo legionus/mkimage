@@ -18,7 +18,7 @@ imgsubdir="${imgsubdir#/}"
 
 mki-install squashfsprogs
 
-cat >"$chroot/.host/packimage.sh"<<EOF
+run_chrooted "$chroot" <<EOF
 #!/bin/sh -efu
 
 imgdir=/.image
@@ -31,5 +31,4 @@ imgdir=/.image
 mksquashfs "\$imgdir/" '/.our/$outname' $opts ${nproc:+-processors $nproc} -e .in .host .fakedata
 EOF
 
-mki_exec_once "$chroot/.host/packimage.sh"
 mki-copy-our2out

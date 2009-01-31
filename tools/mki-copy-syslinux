@@ -13,12 +13,10 @@ mki-install syslinux ||
 [ -f "$chroot/.image/syslinux/syslinux.cfg" ] ||
 	message 'Warning: /.image/syslinux/syslinux.cfg: not found.'
 
-cat >"$chroot/.host/packimage.sh"<<EOF
+run_chrooted "$chroot" <<EOF
 #!/bin/sh -efu
 mkdir $verbose -p -- /.image/syslinux/alt0
 cp $verbose -aLf /boot/vmlinuz /.image/syslinux/alt0/vmlinuz
 [ ! -f /boot/full.cz ] ||
 	cp $verbose -aLf /boot/full.cz /.image/syslinux/alt0/full.cz
 EOF
-
-mki_exec_once "$chroot/.host/packimage.sh"

@@ -30,7 +30,7 @@ esac
 
 mki-install cpio
 
-cat >"$chroot/.host/packimage.sh"<<EOF
+run_chrooted "$chroot" > "$outdir/$outname" <<EOF
 #!/bin/sh -efu
 cd /.image/
 
@@ -45,5 +45,3 @@ find . -mindepth 1 \$args -print0 -o -prune |
 	cpio $verbose -0 -o -c |
 	$compress
 EOF
-
-mki_exec_once "$chroot/.host/packimage.sh" > "$outdir/$outname"

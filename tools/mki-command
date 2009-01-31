@@ -7,7 +7,7 @@ verbose "has started executing."
 case "$PROG" in
 	*-run)
 		exec env -i PATH="$PATH" \
-		hsh-run --rooter $verbose $quiet ${HSH_NUMBER:+--number="$HSH_NUMBER"} "$dir" "$@"
+		hsh-run --rooter $verbose $quiet ${HSH_NUMBER:+--number="$HSH_NUMBER"} "$dir" -- "$@"
 		;;
 	*-exec)
 		exec env -i PATH="$PATH" \

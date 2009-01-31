@@ -32,5 +32,5 @@ for d in $COPY_TREE; do
 	fi
 done
 
-mki-run -- /.host/find /.in -mindepth 1 -maxdepth 1 \
+mki-run /.host/find /.in -mindepth 1 -maxdepth 1 \
 	-execdir cp $verbose -aft /.image/ -- '{}' '+'

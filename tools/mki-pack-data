@@ -10,7 +10,7 @@ outname="${outname##*/}"
 [ -d "$chroot" ] ||
 	fatal "$dir: not look like a work directory of hasher."
 
-cat >"$chroot/.host/packimage.sh"<<EOF
+run_chrooted "$chroot" <<EOF
 #!/bin/sh -efu
 imgdir=/.image
 if [ -n "$imgsubdir" ]; then
@@ -34,5 +34,4 @@ cd /.our
 	-exec cp -alt '/.our/$outname' -- '{}' '+'
 EOF
 
-mki_exec_once "$chroot/.host/packimage.sh"
 mki-copy-our2out

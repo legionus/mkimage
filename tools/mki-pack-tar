@@ -26,7 +26,7 @@ esac
 
 mki-install tar $compress_prog
 
-cat >"$chroot/.host/packimage.sh"<<EOF
+run_chrooted "$chroot" >"$outdir/$outname" <<EOF
 #!/bin/sh -efu
 cd /.image/
 
@@ -39,5 +39,3 @@ args=
 
 exec tar --numeric-owner \$args $method -cf - .
 EOF
-
-mki_exec_once "$chroot/.host/packimage.sh" > "$outdir/$outname"

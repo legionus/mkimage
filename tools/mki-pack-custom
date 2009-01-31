@@ -33,7 +33,7 @@ else
 fi
 
 rc=0
-mki-exec "$chroot/.host/packimage.sh" || rc=$?
+mki-run "/.host/packimage.sh" || rc=$?
 rm -f -- "$chroot/.host/packimage.sh" "$chroot/.host/script.sh"
 [ "$rc" -eq 0 ] ||
 	exit $rc

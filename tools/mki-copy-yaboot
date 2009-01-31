@@ -17,7 +17,7 @@ mki-install $pkgs ||
 [ -f "$chroot/.image/$imgsubdir/etc/yaboot.conf" ] ||
 	message "Warning: /.image/$imgsubdir/etc/yaboot.conf: not found."
 
-cat >"$chroot/.host/packimage.sh"<<EOF
+make_exec "$chroot/.host/packimage.sh" <<EOF
 #!/bin/sh -efu
 
 mkdir $verbose -p -- \
@@ -43,4 +43,4 @@ wrapper -p ps3 \
 rm -f -- ./ps3/otheros/otheros.bld.bin
 EOF
 
-mki_exec_once "$chroot/.host/packimage.sh"
+mki_run_once "$chroot" "/.host/packimage.sh"

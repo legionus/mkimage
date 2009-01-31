@@ -23,7 +23,7 @@ pkgs='mkisofs'
 mki-install $pkgs ||
 	fatal "faild to install packages: $pkgs."
 
-cat >"$chroot/.host/packimage.sh"<<EOF
+run_chrooted "$chroot" >"$outdir/$outname" <<EOF
 #!/bin/sh -efu
 
 imgdir=/.image
@@ -72,5 +72,3 @@ mkisofs $verbose -J -l -r -hfs -part -probe \
 rm -f -- .mkisofsrc hfs.map
 exit \$rc
 EOF
-
-mki_exec_once "$chroot/.host/packimage.sh" > "$outdir/$outname"
