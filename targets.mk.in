@@ -145,6 +145,9 @@ reset-cache:
 clean-current:
 	@echo "mkimage: Processing '$@' ..."
 	@[ ! -d "$(CACHEDIR)" ] || $(CHROOT_INVALIDATE_CACHE) mki;
+	@[ ! -h "$(WORKDIR)" ] || \
+		readlink -eqs -- "$(WORKDIR)" >/dev/null || \
+		rm -f -- "$(WORKDIR)";
 	@[ ! -d "$(WORKDIR)" ]  || $(CHROOT_CLEAN);
 
 clean: clean-current $(SUBDIRS)
