@@ -1,0 +1,9 @@
+#!/bin/sh -e
+
+dir="$1"
+topdir="$dir"
+
+while [ -n "$topdir" -a ! -d "$topdir/.mki" ]; do
+	topdir="${topdir%/*}"
+done
+printf '%s\n' "${topdir:-$dir}"

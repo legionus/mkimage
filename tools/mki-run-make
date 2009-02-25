@@ -81,4 +81,5 @@ if [ -z "$NO_REMOTES" -a -z "${dir##*=*}" ]; then
 	exit
 fi
 
-eval exec env -i $(showenv) $(quote_shell "$@" -C "$dir")
+cd "$dir"
+eval exec env -i $(showenv) $(quote_shell "$@")
