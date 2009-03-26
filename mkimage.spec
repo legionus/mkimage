@@ -1,6 +1,6 @@
 Name: mkimage
-Version: 0.1.0
-Release: alt2
+Version: 0.1.1
+Release: alt1
 
 Summary: Simple image creator
 License: GPL
@@ -34,6 +34,12 @@ files (called `templates').
 %doc examples doc/README.ru
 
 %changelog
+* Fri Mar 27 2009 Alexey Gladkov <legion@altlinux.ru> 0.1.1-alt1
+- targets.mk: clean-current: remove .work symlink, if it's broken.
+- Add TOPDIR and PREVDIR into config.mk.
+- Add another example.
+- Update README.ru.
+
 * Tue Nov 11 2008 Alexey Gladkov <legion@altlinux.ru> 0.1.0-alt2
 - Fix requires.
 
