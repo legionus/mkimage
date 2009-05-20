@@ -20,7 +20,7 @@ if [ -x "$type" ]; then
 
 	install -m755 -- "$type" "$chroot/.host/script.sh"
 
-	cat >"$chroot/.host/packimage.sh"<<-EOF
+	run_chrooted "$chroot" <<-EOF
 	#!/bin/sh -efu
 	WORKDIR=/.image
 	OUTNAME='/.our/$outname'
@@ -32,9 +32,4 @@ else
 	fatal "$type: unknown pack type."
 fi
 
-rc=0
-mki-run "/.host/packimage.sh" || rc=$?
-rm -f -- "$chroot/.host/packimage.sh" "$chroot/.host/script.sh"
-[ "$rc" -eq 0 ] ||
-	exit $rc
 mki-copy-our2out
