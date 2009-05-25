@@ -1,9 +1,9 @@
 Name: mkimage
-Version: 0.1.1
+Version: 0.1.2
 Release: alt1
 
 Summary: Simple image creator
-License: GPL
+License: GPL3
 Group: Development/Other
 
 Packager: Alexey Gladkov <legion@altlinux.ru>
@@ -34,6 +34,11 @@ files (called `templates').
 %doc examples doc/README.ru
 
 %changelog
+* Mon May 25 2009 Alexey Gladkov <legion@altlinux.ru> 0.1.2-alt1
+- mki-pack-custom: Fix execution (ALT#20093)
+- Add examples/example2/.mki/.gitignore
+- Add COPYING
+
 * Fri Mar 27 2009 Alexey Gladkov <legion@altlinux.ru> 0.1.1-alt1
 - targets.mk: clean-current: remove .work symlink, if it's broken.
 - Add TOPDIR and PREVDIR into config.mk.
