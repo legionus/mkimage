@@ -1,4 +1,13 @@
 #!/bin/ash -efu
+#
+# mki-cache-copy-tree
+#
+# This file is part of mkimage
+# Copyright (C) 2007-2009  Alexey Gladkov <gladkov.alexey@gmail.com>
+#
+# This file is covered by the GNU General Public License,
+# which should be included with mkimage as the file COPYING.
+#
 
 data_tree="${COPY_TREE:?Data tree required}"
 
