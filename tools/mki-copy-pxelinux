@@ -11,13 +11,15 @@
 
 . "${0%/*}"/mki-sh-functions
 
+pkgs="${PACKAGES_REQUIRED_COPY_PXELINUX:-}"
+
 verbose "has started executing."
 
 [ -d "$chroot" ] ||
 	fatal "$dir: not look like a work directory of hasher."
 
-mki-install syslinux ||
-	fatal "faild to install 'syslinux'."
+mki-install $pkgs ||
+	fatal "faild to install packages: $pkgs."
 
 [ -d "$chroot/.image/syslinux/pxelinux.cfg" ] ||
 	message 'Warning: /.image/tftpboot/pxelinux.cfg: not found.'

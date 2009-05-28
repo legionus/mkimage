@@ -12,13 +12,15 @@
 
 . "${0%/*}"/mki-sh-functions
 
+pkgs="${PACKAGES_REQUIRED_COPY_SYSLINUX:-}"
+
 verbose "has started executing."
 
 [ -d "$chroot" ] ||
 	fatal "$dir: not look like a work directory of hasher."
 
-mki-install syslinux ||
-	fatal "faild to install 'syslinux'."
+mki-install $pkgs ||
+	fatal "faild to install packages: $pkgs."
 
 [ -f "$chroot/.image/syslinux/syslinux.cfg" ] ||
 	message 'Warning: /.image/syslinux/syslinux.cfg: not found.'

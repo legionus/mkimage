@@ -13,6 +13,8 @@
 
 verbose "has started executing."
 
+pkgs="${PACKAGES_REQUIRED_PACK_TAR:-}"
+
 outname="${MKI_OUTNAME:-outname}"
 outname="${outname##*/}"
 
@@ -23,17 +25,17 @@ imgsubdir="${imgsubdir#/}"
 	outdir="$(readlink -ev "${MKI_OUTNAME%/*}")"
 
 method=
-compress_prog=
 case "${MKI_TAR_COMPRESS:-}" in
-	lzma)                method='--lzma';  compress_prog='lzma' ;;
-	bzip2|bz2|tarbz2|-j) method='--bzip2'; compress_prog='bzip2' ;;
-	gzip|gz|targz|-z)    method='--gzip';  compress_prog='gzip' ;;
+	lzma)                method='--lzma';  pkgs="$pkgs lzma" ;;
+	bzip2|bz2|tarbz2|-j) method='--bzip2'; pkgs="$pkgs bzip2" ;;
+	gzip|gz|targz|-z)    method='--gzip';  pkgs="$pkgs gzip" ;;
 esac
 
 [ -d "$chroot" ] ||
 	fatal "$dir: not look like a work directory of hasher."
 
-mki-install tar $compress_prog
+mki-install $pkgs ||
+	fatal "faild to install packages: $pkgs."
 
 run_chrooted "$chroot" >"$outdir/$outname" <<EOF
 #!/bin/sh -efu

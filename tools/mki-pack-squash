@@ -11,9 +11,11 @@
 
 . "${0%/*}"/mki-sh-functions
 
+verbose "has started executing."
+
 nproc="${PACK_SQUASHFS_PROCESSORS:-}"
 nproc="$(opt_check_number 'PACK_SQUASHFS_PROCESSORS' "$nproc")"
-
+pkgs="${PACKAGES_REQUIRED_PACK_SQUASHFS:-}"
 opts="${PACK_SQUASHFS_OPTS:-}"
 
 outname="${MKI_OUTNAME:-outname}"
@@ -25,7 +27,8 @@ imgsubdir="${imgsubdir#/}"
 [ -d "$chroot" ] ||
 	fatal "$dir: not look like a work directory of hasher."
 
-mki-install squashfsprogs
+mki-install $pkgs ||
+	fatal "faild to install packages: $pkgs."
 
 run_chrooted "$chroot" <<EOF
 #!/bin/sh -efu

@@ -13,6 +13,8 @@
 
 verbose "has started executing."
 
+pkgs="${PACKAGES_REQUIRED_PACK_ISOBOOT:-}"
+
 outname="${MKI_OUTNAME:-outname}"
 outname="${outname##*/}"
 
@@ -28,7 +30,6 @@ imgsubdir="${imgsubdir#/}"
 [ -f "$chroot/.image/$imgsubdir/syslinux/isolinux.cfg" ] ||
 	fatal "/.image/$imgsubdir/syslinux/isolinux.cfg: not found."
 
-pkgs='mkisofs'
 mki-install $pkgs ||
 	fatal "faild to install packages: $pkgs."
 

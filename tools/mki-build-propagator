@@ -13,13 +13,13 @@
 
 verbose "has started executing."
 
+pkgs="${PACKAGES_REQUIRED_BUILD_PROPAGATOR:-}"
 mar_modules="${PROPAGATOR_MAR_MODULES:?Mar morules required}"
 initfs="${PROPAGATOR_INITFS:?initfs required}"
 
 [ -d "$chroot" ] ||
 	fatal "$dir: not look like a work directory of hasher."
 
-pkgs='mar propagator glibc-utils'
 mki-install $pkgs ||
 	fatal "faild to install packages: $pkgs."
 
