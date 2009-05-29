@@ -22,7 +22,8 @@ EXAMPLES = \
 
 bin_TARGETS = bin/mkimage-reset-cache
 
-TARGETS = config.mk tools.mk rules.mk targets.mk $(EXAMPLES)
+TARGETS = actions.mk config.mk config-hsh.mk config-requires.mk config-squash.mk \
+	tools.mk rules.mk targets.mk $(EXAMPLES)
 
 all: $(TARGETS) $(bin_TARGETS)
 

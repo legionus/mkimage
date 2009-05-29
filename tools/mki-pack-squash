@@ -17,6 +17,7 @@ nproc="${PACK_SQUASHFS_PROCESSORS:-}"
 nproc="$(opt_check_number 'PACK_SQUASHFS_PROCESSORS' "$nproc")"
 pkgs="${PACKAGES_REQUIRED_PACK_SQUASHFS:-}"
 opts="${PACK_SQUASHFS_OPTS:-}"
+mksquashfs_prog="${MKSQUASHFS:?MKSQUASHFS must be specified}"
 
 outname="${MKI_OUTNAME:-outname}"
 outname="${outname##*/}"
@@ -40,7 +41,7 @@ imgdir=/.image
 [ ! -e '/.our/$outname' ] ||
 	rm -f -- '/.our/$outname'
 
-mksquashfs "\$imgdir/" '/.our/$outname' $opts ${nproc:+-processors $nproc} -e .in .host .fakedata
+$mksquashfs_prog "\$imgdir/" '/.our/$outname' $opts ${nproc:+-processors $nproc} -e .in .host .fakedata
 EOF
 
 mki-copy-our2out

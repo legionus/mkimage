@@ -11,6 +11,7 @@
 INCLUDED_TARGETS_MK = 1
 
 include $(CONFIGDIR)/tools.mk
+include $(CONFIGDIR)/actions.mk
 
 .PHONY: $(SUBDIRS)
 .EXPORT_ALL_VARIABLES:

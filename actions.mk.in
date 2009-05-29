@@ -1,0 +1,24 @@
+#
+# actions.mk
+#
+# This file is part of mkimage
+# Copyright (C) 2007-2009  Alexey Gladkov <gladkov.alexey@gmail.com>
+#
+# This file is covered by the GNU General Public License,
+# which should be included with mkimage as the file COPYING.
+#
+
+INCLUDED_ACTIONS_MK = 1
+
+MKSQUASHFS				=
+PACKAGES_REQUIRED_PACK_SQUASHFS		=
+
+ifeq "$(SQUASHFS_VERSION)" "3"
+    MKSQUASHFS				= $(MKSQUASHFS3)
+    PACKAGES_REQUIRED_PACK_SQUASHFS	= $(PACKAGES_REQUIRED_PACK_SQUASHFS3)
+endif
+
+ifeq "$(SQUASHFS_VERSION)" "4"
+    MKSQUASHFS				= $(MKSQUASHFS3)
+    PACKAGES_REQUIRED_PACK_SQUASHFS	= $(PACKAGES_REQUIRED_PACK_SQUASHFS4)
+endif

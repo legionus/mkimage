@@ -1,0 +1,28 @@
+#
+# config-hsh.mk
+#
+# This file is part of mkimage
+# Copyright (C) 2007-2009  Alexey Gladkov <gladkov.alexey@gmail.com>
+#
+# This file is covered by the GNU General Public License,
+# which should be included with mkimage as the file COPYING.
+#
+
+INCLUDED_CONFIG_HSH_MK = 1
+
+HSH_CACHEDIR = $(CACHEDIR)/hsh
+
+GLOBAL_HSH_NUMBER ?=
+HSH_NUMBER = $(GLOBAL_HSH_NUMBER)
+
+GLOBAL_HSH_APT_CONFIG ?=
+HSH_APT_CONFIG = $(GLOBAL_HSH_APT_CONFIG)
+
+GLOBAL_HSH_APT_PREFIX ?=
+HSH_APT_PREFIX = $(GLOBAL_HSH_APT_PREFIX)
+
+GLOBAL_HSH_USE_QEMU ?=
+HSH_USE_QEMU = $(GLOBAL_HSH_USE_QEMU)
+
+GLOBAL_HSH_LANGS ?=
+HSH_LANGS = $(GLOBAL_HSH_LANGS)

@@ -1,0 +1,22 @@
+#
+# config-requires.mk
+#
+# This file is part of mkimage
+# Copyright (C) 2007-2009  Alexey Gladkov <gladkov.alexey@gmail.com>
+#
+# This file is covered by the GNU General Public License,
+# which should be included with mkimage as the file COPYING.
+#
+
+INCLUDED_CONFIG_REQUIRES_MK = 1
+
+PACKAGES_REQUIRED_BUILD_PROPAGATOR	?= mar propagator glibc-utils
+PACKAGES_REQUIRED_PACK_CPIO		?= cpio
+PACKAGES_REQUIRED_PACK_YABOOT		?= mkisofs
+PACKAGES_REQUIRED_PACK_ISOBOOT		?= mkisofs
+PACKAGES_REQUIRED_PACK_ISODATA		?= mkisofs
+PACKAGES_REQUIRED_PACK_TAR		?= tar
+PACKAGES_REQUIRED_COPY_YABOOT		?= yaboot kernel-bootwrapper binutils
+PACKAGES_REQUIRED_COPY_ISOLINUX		?= syslinux
+PACKAGES_REQUIRED_COPY_SYSLINUX		?= syslinux
+PACKAGES_REQUIRED_COPY_PXELINUX		?= syslinux

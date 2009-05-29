@@ -1,0 +1,25 @@
+#
+# config-squash.mk
+#
+# This file is part of mkimage
+# Copyright (C) 2007-2009  Alexey Gladkov <gladkov.alexey@gmail.com>
+#
+# This file is covered by the GNU General Public License,
+# which should be included with mkimage as the file COPYING.
+#
+
+INCLUDED_CONFIG_SQUASH_MK = 1
+
+# Idiotic utilities in the idiotic package requires an idiotic wrappers.
+# Why not use one tool? Because the authors is idiots.
+
+SQUASHFS_VERSION			?= 4
+
+PACK_SQUASHFS_PROCESSORS		?= $(shell $(COUNT_CPU))
+PACK_SQUASHFS_OPTS			?=
+
+MKSQUASHFS3				= mksquashfs3
+PACKAGES_REQUIRED_PACK_SQUASHFS3	= squashfsprogs3
+
+MKSQUASHFS4				= mksquashfs
+PACKAGES_REQUIRED_PACK_SQUASHFS4	= squashfsprogs
