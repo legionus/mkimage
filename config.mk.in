@@ -101,7 +101,7 @@ BOOT_SYSI =
 BOOT_VOLI =
 BOOT_VOLS =
 
-include	$(CONFIGDIR)/config-hsh.mk
+include	$(CONFIGDIR)/config-hasher.mk
 include	$(CONFIGDIR)/config-requires.mk
 include	$(CONFIGDIR)/config-squash.mk
 
