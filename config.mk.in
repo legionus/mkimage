@@ -80,10 +80,6 @@ MKI_COMPRESSTYPE =
 MKI_SPLIT =
 MKI_SPLITTYPE =
 
-PROPAGATOR_MAR_MODULES =
-PROPAGATOR_INITFS =
-PROPAGATOR_VERSION =
-
 MKI_TAR_COMPRESS =
 MKI_CPIO_COMPRESS =
 
@@ -104,5 +100,6 @@ BOOT_VOLS =
 include	$(CONFIGDIR)/config-requires.mk
 include	$(CONFIGDIR)/config-hasher.mk
 include	$(CONFIGDIR)/config-squash.mk
+include	$(CONFIGDIR)/config-propagator.mk
 
 all: __profile_internal_rule

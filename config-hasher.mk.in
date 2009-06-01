@@ -1,5 +1,5 @@
 #
-# config-hsh.mk
+# config-hasher.mk
 #
 # This file is part of mkimage
 # Copyright (C) 2007-2009  Alexey Gladkov <gladkov.alexey@gmail.com>
@@ -8,7 +8,7 @@
 # which should be included with mkimage as the file COPYING.
 #
 
-INCLUDED_CONFIG_HSH_MK = 1
+INCLUDED_CONFIG_HASHER_MK = 1
 
 HSH_CACHEDIR = $(CACHEDIR)/hsh
 
