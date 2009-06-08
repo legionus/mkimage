@@ -1,5 +1,5 @@
 Name: mkimage
-Version: 0.1.2
+Version: 0.1.3
 Release: alt1
 
 Summary: Simple image creator
@@ -34,6 +34,13 @@ files (called `templates').
 %doc examples doc/README.ru
 
 %changelog
+* Mon Jun 08 2009 Alexey Gladkov <legion@altlinux.ru> 0.1.3-alt1
+- Make a configurable list of packages for each stage
+- Workaround for stupid squashfsprogs
+- Move propagator variables to standalone file
+- Dont quote strings in .mkisofsrc
+- Update README.ru
+
 * Mon May 25 2009 Alexey Gladkov <legion@altlinux.ru> 0.1.2-alt1
 - mki-pack-custom: Fix execution (ALT#20093)
 - Add examples/example2/.mki/.gitignore
