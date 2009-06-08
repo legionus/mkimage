@@ -52,15 +52,15 @@ fi
 
 cd /tmp
 cat > .mkisofsrc <<-__EOF__
-	APPI="${BOOT_APPI:-}"
-	COPY="${BOOT_COPY:-}"
-	ABST="${BOOT_ABST:-}"
-	BIBL="${BOOT_BIBL:-}"
-	PREP="${BOOT_PREP:-}"
-	PUBL="${BOOT_PUBL:-}"
-	SYSI="${BOOT_SYSI:-}"
-	VOLI="${BOOT_VOLI:-}"
-	VOLS="${BOOT_VOLS:-}"
+	APPI=${BOOT_APPI:-}
+	COPY=${BOOT_COPY:-}
+	ABST=${BOOT_ABST:-}
+	BIBL=${BOOT_BIBL:-}
+	PREP=${BOOT_PREP:-}
+	PUBL=${BOOT_PUBL:-}
+	SYSI=${BOOT_SYSI:-}
+	VOLI=${BOOT_VOLI:-}
+	VOLS=${BOOT_VOLS:-}
 __EOF__
 
 rc=0
