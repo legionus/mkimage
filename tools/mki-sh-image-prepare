@@ -31,13 +31,16 @@ hsh_initroot() {
 		-- "$1" ||
 	fatal "$1: unable to make initial chroot: rc=$?"
 
-	env -i PATH="$PATH" \
-	hsh-install \
-		$verbose $quiet \
-		${HSH_NUMBER:+--number="$HSH_NUMBER"} \
-		${HSH_EXCLUDE_DOCS:+--excludedocs} \
-		-- "$1" basesystem ||
-	fatal "$1: unable to install packages: rc=$?"
+	local pkgs="${PACKAGES_REQUIRED_INITROOT:-}"
+	if [ -n "$pkgs" ]; then
+		env -i PATH="$PATH" \
+		hsh-install \
+			$verbose $quiet \
+			${HSH_NUMBER:+--number="$HSH_NUMBER"} \
+			${HSH_EXCLUDE_DOCS:+--excludedocs} \
+			-- "$1" $pkgs ||
+		fatal "$1: unable to install packages: rc=$?"
+	fi
 
         # Create essential tty devices.
         echo "\

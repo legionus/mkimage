@@ -26,9 +26,9 @@ imgsubdir="${imgsubdir#/}"
 
 method=
 case "${MKI_TAR_COMPRESS:-}" in
-	lzma)                method='--lzma';  pkgs="$pkgs lzma" ;;
-	bzip2|bz2|tarbz2|-j) method='--bzip2'; pkgs="$pkgs bzip2" ;;
-	gzip|gz|targz|-z)    method='--gzip';  pkgs="$pkgs gzip" ;;
+	lzma)                method='--lzma';  pkgs="$pkgs ${PACKAGES_REQUIRED_PACK_LZMA:-}" ;;
+	bzip2|bz2|tarbz2|-j) method='--bzip2'; pkgs="$pkgs ${PACKAGES_REQUIRED_PACK_BZIP2:-}" ;;
+	gzip|gz|targz|-z)    method='--gzip';  pkgs="$pkgs ${PACKAGES_REQUIRED_PACK_GZIP:-}" ;;
 esac
 
 [ -d "$chroot" ] ||

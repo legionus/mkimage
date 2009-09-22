@@ -28,11 +28,11 @@ compress='cat'
 case "${MKI_CPIO_COMPRESS:-}" in
 	gzip|gz)
 		compress='gzip'
-		pkgs="$pkgs gzip"
+		pkgs="$pkgs ${PACKAGES_REQUIRED_PACK_GZIP:-}"
 		;;
 	bzip2|bz2)
 		compress='bzip2'
-		pkgs="$pkgs bzip2"
+		pkgs="$pkgs  ${PACKAGES_REQUIRED_PACK_BZIP2:-}"
 		;;
 esac
 
