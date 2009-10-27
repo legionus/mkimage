@@ -343,10 +343,10 @@ BOOT_TYPE              - Описывает, каким образом буде�
                          несколько значений сразу, в этом случае на образ попадут
                          конфигурации для всех перечисленных методов.
 
-Специфичные переменные
-----------------------
+Специфичные переменные (config-hasher.mk)
+-----------------------------------------
 
-Переменные для управления поведением hasher (config-hasher.mk):
+Переменные для управления поведением hasher:
 
 HSH_APT_CONFIG,
 GLOBAL_HSH_APT_CONFIG  - Позволяет переопределять конфигурационный файл apt.
@@ -355,16 +355,22 @@ GLOBAL_HSH_APT_CONFIG  - Позволяет переопределять кон�
 HSH_APT_PREFIX,
 GLOBAL_HSH_APT_PREFIX  - apt prefix.
 
-GLOBAL_HSH_NUMBER      -
+GLOBAL_HSH_NUMBER      - Choose subconfig identifier.
 
 HSH_USE_QEMU,
-GLOBAL_HSH_USE_QEMU    -
+GLOBAL_HSH_USE_QEMU    - Copy qemu executable into the chroot .host directory.
 
 HSH_LANGS,
 GLOBAL_HSH_LANGS       - Список языков, которые будут установлены в рабочий и
                          инструментальный чрут.
 
-Переменные для управления squashfs (config-squash.mk):
+
+Переменные для управления squashfs (config-squash.mk)
+-----------------------------------------------------
+
+SQUASHFS_VERSION       - Этот параметр определяет версию squashfs. Возможные
+                         варианты: 3, 4, 4LZMA.
+                         По умолчанию используется: 4.
 
 PACK_SQUASHFS_PROCESSORS - Определяет количество процессоров, задействуемых при
                            запаковке squashfs образа.  По умолчанию этот параметр
@@ -374,7 +380,9 @@ PACK_SQUASHFS_PROCESSORS - Определяет количество проце�
 PACK_SQUASHFS_OPTS     - С помощью этого параметра можно передавать дополнительные
                          опции программе mksquashfs при запаковке образа.
 
-Переменные для управления propagator (config-propagator.mk):
+
+Переменные для управления propagator (config-propagator.mk)
+-----------------------------------------------------------
 
 PROPAGATOR_MAR_MODULES - Список модулей, которые будут помещены в образ.
 
@@ -383,37 +391,51 @@ PROPAGATOR_INITFS      - Файл с описанием, какие катало
 
 PROPAGATOR_VERSION     - Указывает версию продукта.
 
-Переменные для управлния mkisofs:
+
+Переменные для управлния mkisofs
+--------------------------------
 
 BOOT_APPI, BOOT_COPY, BOOT_ABST, BOOT_BIBL, BOOT_PREP, BOOT_PUBL, BOOT_SYSI,
 BOOT_VOLI, BOOT_VOLS
                        - Эти переменные используются при запаковке ISO-образа
                          утилитой mkisofs и соответствуют переменным, которые
                          указываются в .mkisofsrc: APPI, COPY, ABST, BIBL, PREP,
-                         PUBL, SYSI, VOLI, VOLS.
-                         См. mkisofs(8).
+                         PUBL, SYSI, VOLI, VOLS. См. mkisofs(8).
+                         Эти переменные используются для запаковки isoboot
+                         образа.
 
-Необходимые пакеты
-------------------
+ISODATA_APPI, ISODATA_COPY, ISODATA_ABST, ISODATA_BIBL, ISODATA_PREP,
+ISODATA_PUBL, ISODATA_SYSI, ISODATA_VOLI, ISODATA_VOLS
+                       - Эти переменные используются также как и BOOT_*, но
+                         только для запаковки isodata образа.
+
+
+Необходимые пакеты (config-requires.mk)
+---------------------------------------
 
 Для некоторых стадий могут понадобиться дополнительные пакеты внутри чрута.
 Их имена могут отличаться от системы к системе. Список пакетов устанавливаемых
 в чрут определяется переменными:
 
-PACKAGES_REQUIRED_BUILD_PROPAGATOR = mar propagator glibc-utils
-PACKAGES_REQUIRED_PACK_CPIO        = cpio
-PACKAGES_REQUIRED_PACK_YABOOT      = mkisofs
-PACKAGES_REQUIRED_PACK_ISOBOOT     = mkisofs
-PACKAGES_REQUIRED_PACK_ISODATA     = mkisofs
-PACKAGES_REQUIRED_PACK_TAR         = tar
-PACKAGES_REQUIRED_COPY_YABOOT      = yaboot kernel-bootwrapper binutils
-PACKAGES_REQUIRED_COPY_ISOLINUX    = syslinux
-PACKAGES_REQUIRED_COPY_SYSLINUX    = syslinux
-PACKAGES_REQUIRED_COPY_PXELINUX    = syslinux
-PACKAGES_REQUIRED_PACK_SQUASHFS3   = squashfsprogs3
-PACKAGES_REQUIRED_PACK_SQUASHFS4   = squashfsprogs
+PACKAGES_REQUIRED_INITROOT           = basesystem
+PACKAGES_REQUIRED_BUILD_PROPAGATOR   = mar propagator glibc-utils
+PACKAGES_REQUIRED_PACK_CPIO          = cpio
+PACKAGES_REQUIRED_PACK_YABOOT        = mkisofs
+PACKAGES_REQUIRED_PACK_ISOBOOT       = mkisofs
+PACKAGES_REQUIRED_PACK_ISODATA       = mkisofs
+PACKAGES_REQUIRED_PACK_TAR           = tar
+PACKAGES_REQUIRED_PACK_GZIP          = gzip
+PACKAGES_REQUIRED_PACK_BZIP2         = bzip2
+PACKAGES_REQUIRED_PACK_LZMA          = lzma
+PACKAGES_REQUIRED_COPY_YABOOT        = yaboot kernel-bootwrapper binutils
+PACKAGES_REQUIRED_COPY_ISOLINUX      = syslinux
+PACKAGES_REQUIRED_COPY_SYSLINUX      = syslinux
+PACKAGES_REQUIRED_COPY_PXELINUX      = syslinux
+PACKAGES_REQUIRED_PACK_SQUASHFS3     = squashfsprogs3
+PACKAGES_REQUIRED_PACK_SQUASHFS4     = squashfsprogs
+PACKAGES_REQUIRED_PACK_SQUASHFS4LZMA = squashfsprogs-lzma
 
-Вы можете добавлять или полностью изменять эти переменные по своему осмотрению.
+Вы можете добавлять или полностью изменять эти переменные по своему усмотрению.
 Конечно, если вы знаете что делаете.
 
 ################################################################################

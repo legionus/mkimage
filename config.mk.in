@@ -97,6 +97,16 @@ BOOT_SYSI =
 BOOT_VOLI =
 BOOT_VOLS =
 
+ISODATA_APPI =
+ISODATA_COPY =
+ISODATA_ABST =
+ISODATA_BIBL =
+ISODATA_PREP =
+ISODATA_PUBL =
+ISODATA_SYSI =
+ISODATA_VOLI =
+ISODATA_VOLS =
+
 include	$(CONFIGDIR)/config-requires.mk
 include	$(CONFIGDIR)/config-hasher.mk
 include	$(CONFIGDIR)/config-squash.mk
