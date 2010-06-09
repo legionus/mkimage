@@ -136,11 +136,7 @@ pack-image: prepare-workdir copy-subdirs $(SUBDIRS)
 	@echo "mkimage: Processing '$@' ..."
 	@$(CHECK_OBSOLETE) $@; \
 	if ! $(CHROOT_CACHE) check $@; then \
-	    if [ -n "$(MKI_PACK_RESULTS)" ]; then \
-		$(CHROOT_PACK_RESULTS) || exit 1; \
-	    else \
-		$(CHROOT_PACK) || exit 1; \
-	    fi; \
+	    $(CHROOT_PACK_RESULTS) || exit 1; \
 	    $(CHROOT_CACHE) build $@ || exit 1; \
 	fi
 

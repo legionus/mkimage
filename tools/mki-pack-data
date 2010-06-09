@@ -19,6 +19,11 @@ outname="${outname##*/}"
 [ -d "$chroot" ] ||
 	fatal "$dir: not look like a work directory of hasher."
 
+args=
+for d in ${MKI_EXCLUDE:-}; do
+	args="$args -a \\\\! -wholename '$d'"
+done
+
 run_chrooted "$chroot" <<EOF
 #!/bin/sh -efu
 imgdir=/.image
@@ -39,6 +44,7 @@ cd /.our
 		\\! -wholename '/.image/.in'  -a \\
 		\\! -wholename '/.image/.out' -a \\
 		\\! -wholename '/.image/.host'   \\
+		$args \\
 	\\) \\
 	-exec cp -alt '/.our/$outname' -- '{}' '+'
 EOF

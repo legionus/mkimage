@@ -48,5 +48,11 @@ args=
 [ ! -d .host ]     || args="\$args --exclude .host"
 [ ! -f .fakedata ] || args="\$args --exclude .fakedata"
 
+if [ -n "${MKI_EXCLUDE:-}" ]; then
+	for d in ${MKI_EXCLUDE:-}; do
+		args="\$args --exclude \${d#/}"
+	done
+if
+
 exec tar --numeric-owner \$args $method -cf - .
 EOF

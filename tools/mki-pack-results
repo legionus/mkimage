@@ -13,33 +13,65 @@
 
 verbose "has started executing."
 
-# Format: <MKI_PACKTYPE>:<MKI_OUTNAME>[:<SUBDIR>]
 typeslist="${MKI_PACK_RESULTS:?pack rules required}"
 
+# Format: <MKI_PACKTYPE>[:<MKI_OUTNAME>[:[!]<SUBDIR>,...]]
+# Format: custom[:<MKI_OUTNAME>:<MKI_HANDLER>[:[!]<SUBDIR>,...]]
+parse() {
+	local OLD_IFS="$IFS"
+	local IFS=:
+	local mode
+
+	mode="$1"
+	shift
+
+	set -- $1
+	IFS="$OLD_IFS"
+
+	if [ "$#" -eq 0 ]; then
+		fatal "More arguments required"
+	fi
+
+	MKI_PACKMOD="$1"; shift
+	MKI_OUTNAME=
+	MKI_HANDLER=
+	MKI_IMAGESUBDIRS=
+	MKI_EXCLUDE=
+
+	[ "$#" -gt 0 ] ||
+		return 0
+
+	MKI_OUTNAME="$1"
+	shift
+
+	if [ "$mode" = 'custom' ]; then
+		MKI_HANDLER="$1"
+		shift
+	fi
+
+	for a; do
+		[ -n "${a##[\!]*}" ] &&
+			MKI_IMAGESUBDIRS="$MKI_IMAGESUBDIRS $a" ||
+			MKI_EXCLUDE="$MKI_EXCLUDE ${a#[\!]}"
+	done
+
+	MKI_IMAGESUBDIRS="${MKI_IMAGESUBDIRS# }"
+	MKI_EXCLUDE="${MKI_EXCLUDE# }"
+}
+
 run_pack() {
-	local str= type= MKI_OUTNAME= MKI_IMAGESUBDIR=
+	local MKI_PACKMOD= MKI_PACKTYPE= MKI_OUTNAME= MKI_IMAGESUBDIR= MKI_EXCLUDE=
 
 	case "$1" in
-		boot:*|cpio:*|data:*|isoboot:*|isodata:*|yaboot:*|squash:*|tar:*|tarbz2:*)
-			type="${1%%:*}"
-			str="${1#*:}"
-			MKI_OUTNAME="${str%%:*}"
+		custom|custom:*)
+			parse 'custom' "$1"
 			;;
-		data)
-			type='data'
-			;;
-		*) # custom
-			type='custom'
-			str="${1#*:}"
-			MKI_OUTNAME="${str%%:*}"
-			MKI_PACKTYPE="${1%%:*}"
+		*)
+			parse 'type' "$1"
 			;;
 	esac
 
-	[ "$str" = "$MKI_OUTNAME" ] ||
-		MKI_IMAGESUBDIR="${str#*:}"
-
-	mki-pack-$type
+	mki-pack-$MKI_PACKMOD
 }
 
 set -- $typeslist

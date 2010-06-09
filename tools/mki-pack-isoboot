@@ -63,15 +63,22 @@ cat > .mkisofsrc <<-__EOF__
 	VOLS=${BOOT_VOLS:-}
 __EOF__
 
+if [ -n "${MKI_EXCLUDE:-}" ]; then
+	for d in ${MKI_EXCLUDE:-}; do
+		printf '%s\\n' "\$d"
+	done
+fi > .exclude
+
 rc=0
 mkisofs $verbose -J -l -r \
 	-b syslinux/isolinux.bin \
 	-c syslinux/boot.cat \
+	-exclude-list /tmp/.exclude \
 	-no-emul-boot \
 	-boot-info-table \
 	-boot-load-size 4 \
 	"\$imgdir/" || rc=\$?
 
-rm -f -- .mkisofsrc
+rm -f -- .mkisofsrc .exclude
 exit \$rc
 EOF

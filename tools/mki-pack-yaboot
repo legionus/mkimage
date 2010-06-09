@@ -70,9 +70,16 @@ cat > hfs.map <<-__EOF__
 	*	Ascii	'????'	'????'	"Text file"
 __EOF__
 
+if [ -n "${MKI_EXCLUDE:-}" ]; then
+	for d in ${MKI_EXCLUDE:-}; do
+		printf '%s\\n' "\$d"
+	done
+fi > .exclude
+
 rc=0
 mkisofs $verbose -J -l -r -hfs -part -probe \
 	-map hfs.map \
+	-exclude-list .exclude \
 	-hfs-bless \$imgdir/ppc \
 	-hfs-volid "${BOOT_VOLI:-}" \
 	-prep-boot ppc/chrp/yaboot \
@@ -80,6 +87,6 @@ mkisofs $verbose -J -l -r -hfs -part -probe \
 	-iso-level 2 \
 	"\$imgdir/" || rc=\$?
 
-rm -f -- .mkisofsrc hfs.map
+rm -f -- .mkisofsrc .exclude hfs.map
 exit \$rc
 EOF

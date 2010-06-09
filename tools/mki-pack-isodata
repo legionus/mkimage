@@ -45,13 +45,21 @@ cat > .mkisofsrc <<-__EOF__
 	VOLS="${ISODATA_VOLS:-}"
 __EOF__
 
+if [ -n "${MKI_EXCLUDE:-}" ]; then
+	for d in ${MKI_EXCLUDE:-}; do
+		printf '%s\\n' "\$d"
+	done
+fi > .exclude
+
 imgdir=/.image
 [ -z "$imgsubdir" -o ! -d "/.image/$imgsubdir" ] ||
 	imgdir="/.image/$imgsubdir"
 
 rc=0
-mkisofs $verbose -T -J -l -r -U "\$imgdir/" || rc=\$?
+mkisofs -T -J -l -r -U $verbose \
+	-exclude-list /tmp/.exclude \
+	"\$imgdir/" || rc=\$?
 
-rm -f -- .mkisofsrc
+rm -f -- .mkisofsrc .exclude
 exit \$rc
 EOF

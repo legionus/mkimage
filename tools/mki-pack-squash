@@ -25,6 +25,11 @@ outname="${outname##*/}"
 imgsubdir="${MKI_IMAGESUBDIR:-}"
 imgsubdir="${imgsubdir#/}"
 
+exclude=
+for d in ${MKI_EXCLUDE:-}; do
+	exclude="$exclude ${d#/}"
+done
+
 [ -d "$chroot" ] ||
 	fatal "$dir: not look like a work directory of hasher."
 
@@ -41,7 +46,7 @@ imgdir=/.image
 [ ! -e '/.our/$outname' ] ||
 	rm -f -- '/.our/$outname'
 
-$mksquashfs_prog "\$imgdir/" '/.our/$outname' $opts ${nproc:+-processors $nproc} -e .in .host .fakedata
+$mksquashfs_prog "\$imgdir/" '/.our/$outname' $opts ${nproc:+-processors $nproc} -e .in .host .fakedata $exclude
 EOF
 
 mki-copy-our2out
