@@ -51,7 +51,7 @@ parse() {
 
 	for a; do
 		[ -n "${a##[\!]*}" ] &&
-			MKI_IMAGESUBDIRS="$MKI_IMAGESUBDIRS $a" ||
+			MKI_IMAGESUBDIRS="$a" ||
 			MKI_EXCLUDE="$MKI_EXCLUDE ${a#[\!]}"
 	done
 
