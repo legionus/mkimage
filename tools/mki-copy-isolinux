@@ -41,5 +41,11 @@ cp $verbose -aLf /boot/vmlinuz ./alt0/vmlinuz
 
 cp $verbose -f /usr/lib/syslinux/isolinux.bin .
 
+[ ! -f /usr/lib/syslinux/gfxboot.c32 ] ||
+	cp $verbose -f /usr/lib/syslinux/gfxboot.c32 .
+
+[ ! -f /usr/lib/syslinux/gfxboot.com ] ||
+	cp $verbose -f /usr/lib/syslinux/gfxboot.com .
+
 isolinux-config --base /syslinux ./isolinux.bin
 EOF
