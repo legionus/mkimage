@@ -1,5 +1,5 @@
 Name: mkimage
-Version: 0.1.3
+Version: 0.1.4
 Release: alt1
 
 Summary: Simple image creator
@@ -34,6 +34,12 @@ files (called `templates').
 %doc examples doc/README.ru
 
 %changelog
+* Fri Aug 20 2010 Alexey Gladkov <legion@altlinux.ru> 0.1.4-alt1
+- Add gfxboot support for isolinux images (Sergey V Turchin)
+- Add squashfsprogs-lzma support
+- MKI_PACK_RESULTS: Add directory exclusion support
+- Update documentation
+
 * Mon Jun 08 2009 Alexey Gladkov <legion@altlinux.ru> 0.1.3-alt1
 - Make a configurable list of packages for each stage
 - Workaround for stupid squashfsprogs
