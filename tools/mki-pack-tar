@@ -52,7 +52,7 @@ if [ -n "${MKI_EXCLUDE:-}" ]; then
 	for d in ${MKI_EXCLUDE:-}; do
 		args="\$args --exclude \${d#/}"
 	done
-if
+fi
 
 exec tar --numeric-owner \$args $method -cf - .
 EOF
