@@ -1,5 +1,5 @@
 Name: mkimage
-Version: 0.1.4
+Version: 0.1.5
 Release: alt1
 
 Summary: Simple image creator
@@ -34,6 +34,9 @@ files (called `templates').
 %doc examples doc/README.ru
 
 %changelog
+* Fri Sep 03 2010 Alexey Gladkov <legion@altlinux.ru> 0.1.5-alt1
+- mki-pack-tar: Fix syntax error.
+
 * Fri Aug 20 2010 Alexey Gladkov <legion@altlinux.ru> 0.1.4-alt1
 - Add gfxboot support for isolinux images (Sergey V Turchin)
 - Add squashfsprogs-lzma support
