@@ -1,0 +1,28 @@
+CONFIGDIR = @PREFIXDIR@
+
+include $(CONFIGDIR)/config.mk
+
+SUBDIRS = base install2
+
+INFO_THEME = server-light
+
+CHROOT_PACKAGES = kernel-image-std-def apt-utils syslinux memtest86+
+MKI_PACK_RESULTS = boot:legion-test.iso
+
+COPY_TREE = ./isodata
+
+BOOT_TYPE = isolinux
+PROPAGATOR_VERSION = mkimage example3
+PROPAGATOR_MAR_MODULES = ./modules
+PROPAGATOR_INITFS = ./initfs
+
+include $(CONFIGDIR)/targets.mk
+
+all: metadata copy-tree copy-subdirs run-scripts pack-image
+
+# for [[alterator-pkg]]
+metadata:
+	@install -pD base/packages lists/.base
+	@mkdir -p isodata/Metadata
+	@tar cf isodata/Metadata/pkg-groups.tar lists/.base
+	@rm -r lists

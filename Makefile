@@ -1,5 +1,5 @@
 PROJECT = mkimage
-VERSION = 0.0.9
+VERSION = 0.1.6
 
 bindir  = /usr/bin
 datadir = /usr/share
@@ -18,7 +18,10 @@ EXAMPLES = \
 	examples/example1/base/Makefile \
 	examples/example2/Makefile \
 	examples/example2/base/Makefile \
-	examples/example2/install2/Makefile
+	examples/example2/install2/Makefile \
+	examples/example3/Makefile \
+	examples/example3/base/Makefile \
+	examples/example3/install2/Makefile
 
 bin_TARGETS = bin/mkimage-reset-cache
 
