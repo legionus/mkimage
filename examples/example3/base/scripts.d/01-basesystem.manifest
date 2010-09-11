@@ -1,0 +1,4 @@
+#!/bin/sh
+
+mkdir -p -- "$WORKDIR/Metadata"
+find "$WORKDIR/ALTLinux/RPMS.base" -name '*.rpm' -printf '%f\n' > "$WORKDIR/Metadata/basesystem.manifest"

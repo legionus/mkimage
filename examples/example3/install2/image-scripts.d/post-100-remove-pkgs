@@ -1,0 +1,24 @@
+#!/bin/sh -efu
+
+cat >/usr/share/install2/postinstall.d/100-remove-pkgs <<EOF
+#!/bin/sh
+
+. install2-init-functions
+
+chroot \$destdir service messagebus stop >/dev/null 2>&1
+chroot \$destdir service haldaemon stop >/dev/null 2>&1
+
+list="\$(chroot \$destdir rpmquery -a --qf '%{name}\n' \
+	installer* alterator* *guile* libhal hal-info libdbus \
+	libjpeg libpng* libmng liblcms libfreetype)"
+
+list="\${list:+\$list
+}\$(chroot \$destdir rpmquery -a --qf '%{name}\t%{url}\n' |
+	egrep '(xorg\.freedesktop\.org|www.trolltech.com)' |
+	cut -f1)"
+
+printf '%s\n' "\$list" |
+	xargs -r chroot \$destdir apt-get remove -qq -y --force-yes
+:
+EOF
+chmod +x /usr/share/install2/postinstall.d/100-remove-pkgs
