@@ -35,7 +35,7 @@ parse() {
 	MKI_PACKMOD="$1"; shift
 	MKI_OUTNAME=
 	MKI_HANDLER=
-	MKI_IMAGESUBDIRS=
+	MKI_IMAGESUBDIR=
 	MKI_EXCLUDE=
 
 	[ "$#" -gt 0 ] ||
@@ -51,11 +51,11 @@ parse() {
 
 	for a; do
 		[ -n "${a##[\!]*}" ] &&
-			MKI_IMAGESUBDIRS="$a" ||
+			MKI_IMAGESUBDIR="$a" ||
 			MKI_EXCLUDE="$MKI_EXCLUDE ${a#[\!]}"
 	done
 
-	MKI_IMAGESUBDIRS="${MKI_IMAGESUBDIRS# }"
+	MKI_IMAGESUBDIR="${MKI_IMAGESUBDIR# }"
 	MKI_EXCLUDE="${MKI_EXCLUDE# }"
 }
 
@@ -71,6 +71,7 @@ run_pack() {
 			;;
 	esac
 
+	export MKI_OUTNAME MKI_IMAGESUBDIR MKI_EXCLUDE
 	mki-pack-$MKI_PACKMOD
 }
 
