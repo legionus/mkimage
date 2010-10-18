@@ -47,7 +47,7 @@ if [ -n "$verbose" ]; then
 else
 	trap exit_handler HUP INT QUIT TERM EXIT
 fi
-mkdir $verbose -- "$tempdir"
+mkdir $verbose -- "$tempdir" >&2
 
 mki_list_pkgs "$@" > "$tempdir/in-list"
 
