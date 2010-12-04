@@ -11,6 +11,10 @@ TOUCH_R = touch -r
 
 prefixdir ?= $(datadir)/$(PROJECT)
 
+ifdef MKLOCAL
+prefixdir = $(CURDIR)
+endif
+
 EXAMPLES = \
 	examples/example1/Makefile \
 	examples/example1/install2/Makefile \
