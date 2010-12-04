@@ -1,0 +1,31 @@
+#!/bin/ash -efu
+#
+# mki-image-pkgs
+#
+# This file is part of mkimage
+# Copyright (C) 2010  Alexey Gladkov <gladkov.alexey@gmail.com>
+#
+# This file is covered by the GNU General Public License,
+# which should be included with mkimage as the file COPYING.
+#
+
+. "${0%/*}"/mki-sh-functions
+
+verbose "has started executing."
+
+handler=
+case "$1" in
+	copy)    handler="$CHROOT_COPY_PKGS"     ;;
+	install) handler="$CHROOT_IMAGE_INSTALL" ;;
+	*)
+		fatal "Unknown argument: $1"
+		;;
+esac
+
+[ -n "$IMAGE_PACKAGES" -o -n "$IMAGE_PACKAGES_REGEXP" ] ||
+	exit 0
+{
+	$EXPAND_PKGS simple $IMAGE_PACKAGES &&
+	$EXPAND_PKGS regexp $IMAGE_PACKAGES_REGEXP ||
+		fatal "Unable expand chroot packages"
+} |xargs -r "$handler"

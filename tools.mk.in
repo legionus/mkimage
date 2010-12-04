@@ -26,6 +26,7 @@ CHROOT_BUILD_PROPAGATOR	?= $(TOOLSDIR)/mki-build-propagator
 CHROOT_SPLIT		?= $(TOOLSDIR)/mki-split
 CHROOT_SCRIPTS		?= $(TOOLSDIR)/mki-scripts
 CHROOT_IMAGE_SCRIPTS	?= $(TOOLSDIR)/mki-image-scripts
+CHROOT_IMAGE_PKGS	?= $(TOOLSDIR)/mki-image-pkgs
 CHROOT_PREPARE 		?= $(TOOLSDIR)/mki-prepare
 CHROOT_IMAGE_PREPARE	?= $(TOOLSDIR)/mki-image-prepare
 CHROOT_PACK 		?= $(TOOLSDIR)/mki-pack
