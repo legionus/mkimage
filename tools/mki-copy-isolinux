@@ -34,18 +34,24 @@ mkdir $verbose -p -- /.image/$imgsubdir/syslinux/alt0
 
 cd /.image/$imgsubdir/syslinux
 
-cp $verbose -aLf /boot/vmlinuz ./alt0/vmlinuz
+if [ -L /boot/vmlinuz ]; then
+	kimage="\$(readlink -ev /boot/vmlinuz)"
+else
+	kimage="\$(find /boot -type f -name 'vmlinuz-*' -print -quit)"
+fi
+
+cp $verbose -af \$kimage ./alt0/vmlinuz
 
 [ ! -f /boot/full.cz ] ||
-	cp $verbose -aLf /boot/full.cz ./alt0/full.cz
+	cp $verbose -af /boot/full.cz ./alt0/full.cz
 
 cp $verbose -f /usr/lib/syslinux/isolinux.bin .
 
 [ ! -f /usr/lib/syslinux/gfxboot.c32 ] ||
-	cp $verbose -f /usr/lib/syslinux/gfxboot.c32 .
+	cp $verbose -af /usr/lib/syslinux/gfxboot.c32 .
 
 [ ! -f /usr/lib/syslinux/gfxboot.com ] ||
-	cp $verbose -f /usr/lib/syslinux/gfxboot.com .
+	cp $verbose -af /usr/lib/syslinux/gfxboot.com .
 
 isolinux-config --base /syslinux ./isolinux.bin
 EOF

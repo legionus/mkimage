@@ -29,7 +29,13 @@ make_exec "$chroot/.host/packimage.sh" <<EOF
 #!/bin/sh -efu${verbose:+x}
 
 libdir="\$(getconf LIBDIR)"
-kver="\$(readlink -ev /boot/vmlinuz |sed -e 's,/boot/vmlinuz-,,')"
+
+if [ -L /boot/vmlinuz ]; then
+	kimage="\$(readlink -ev /boot/vmlinuz)"
+else
+	kimage="\$(find /boot -type f -name 'vmlinuz-*' -print -quit)"
+fi
+kver="\${kimage#/boot/vmlinuz-}"
 
 if type mkmodpack >/dev/null 2>&1; then
 	mkmodpack -p '/.in/${mar_modules##*/}' -o /tmp/modules -k "\$kver"
