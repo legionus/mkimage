@@ -1,5 +1,5 @@
 Name: mkimage
-Version: 0.1.6
+Version: 0.1.7
 Release: alt1
 
 Summary: Simple image creator
@@ -34,6 +34,10 @@ files (called `templates').
 %doc examples doc/README.ru
 
 %changelog
+* Thu Dec 16 2010 Alexey Gladkov <legion@altlinux.ru> 0.1.7-alt1
+- Fix IMAGE_PACKAGES_* expansion (ALT#24669).
+- mki-expand-pkgs: Fixed output with verbose enabled.
+
 * Tue Oct 05 2010 Alexey Gladkov <legion@altlinux.ru> 0.1.6-alt1
 - mki-pack-results: Fix MKI_IMAGESUBDIR (ALT#24120).
 - Add example3 (thx Michael Shigorin).
