@@ -1,5 +1,5 @@
 Name: mkimage
-Version: 0.1.7
+Version: 0.1.8
 Release: alt1
 
 Summary: Simple image creator
@@ -34,6 +34,9 @@ files (called `templates').
 %doc examples doc/README.ru
 
 %changelog
+* Sun Jan 23 2011 Alexey Gladkov <legion@altlinux.ru> 0.1.8-alt1
+- mki-build-propagator: Fix for bootloader-utils-0.4.11-alt1 (ALT#24850).
+
 * Thu Dec 16 2010 Alexey Gladkov <legion@altlinux.ru> 0.1.7-alt1
 - Fix IMAGE_PACKAGES_* expansion (ALT#24669).
 - mki-expand-pkgs: Fixed output with verbose enabled.
