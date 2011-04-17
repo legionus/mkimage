@@ -26,6 +26,10 @@ imgsubdir="${imgsubdir#/}"
 
 compress='cat'
 case "${MKI_CPIO_COMPRESS:-}" in
+	xz)
+		compress='xz'
+		pkgs="$pkgs ${PACKAGES_REQUIRED_PACK_XZ:-}"
+		;;
 	gzip|gz)
 		compress='gzip'
 		pkgs="$pkgs ${PACKAGES_REQUIRED_PACK_GZIP:-}"
