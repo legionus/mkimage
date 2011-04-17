@@ -1,5 +1,5 @@
 Name: mkimage
-Version: 0.1.8
+Version: 0.1.9
 Release: alt1
 
 Summary: Simple image creator
@@ -34,6 +34,9 @@ files (called `templates').
 %doc examples doc/README.ru
 
 %changelog
+* Sun Apr 17 2011 Alexey Gladkov <legion@altlinux.ru> 0.1.9-alt1
+- Add xz support.
+
 * Sun Jan 23 2011 Alexey Gladkov <legion@altlinux.ru> 0.1.8-alt1
 - mki-build-propagator: Fix for bootloader-utils-0.4.11-alt1 (ALT#24850).
 
