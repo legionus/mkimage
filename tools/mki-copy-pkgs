@@ -35,7 +35,11 @@ lstfile="$tempdir/lst"
 errfile="$tempdir/err"
 reqfile="$tempdir/req"
 
-mki_list_pkgs "$@" > "$reqfile"
+# don't put all the lists into one apt call but allow copying
+# conflicting packages coming from different package lists
+for i in "$@"; do
+	mki_list_pkgs "$i"
+done > "$reqfile"
 
 if [ ! -s "$reqfile" ]; then
 	message "Nothing to do."
