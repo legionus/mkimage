@@ -1,5 +1,5 @@
 PROJECT = mkimage
-VERSION = 0.1.6
+VERSION = $(shell sed '/^Version: */!d;s///;q' mkimage.spec)
 
 bindir  = /usr/bin
 datadir = /usr/share
