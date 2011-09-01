@@ -1,6 +1,5 @@
 # kernel
 kernel-image-std-def
-kernel-modules-igb-std-def
 
 # interactivesystem
 apt
