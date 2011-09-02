@@ -1,5 +1,5 @@
 Name: mkimage
-Version: 0.1.9
+Version: 0.2.0
 Release: alt1
 
 Summary: Simple image creator
@@ -34,6 +34,12 @@ files (called `templates').
 %doc examples doc/README.ru
 
 %changelog
+* Fri Sep 02 2011 Alexey Gladkov <legion@altlinux.org> 0.2.0-alt1
+- conditionally set IMAGE_INIT_LIST (ALT#26135).
+- example3: updated base/packages (thx Michael Shigorin).
+- tools/mki-copy-pkgs: split processing of pkglists (thx Michael Shigorin).
+- tools/mki-copy-isolinux: handle kernel absence (thx Michael Shigorin).
+
 * Sun Apr 17 2011 Alexey Gladkov <legion@altlinux.ru> 0.1.9-alt1
 - Add xz support.
 
