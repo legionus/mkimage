@@ -20,6 +20,7 @@ kernel/drivers/usb/host
 kernel/drivers/usb/storage
 kernel/fs/ext2
 kernel/fs/ext3
+kernel/fs/ext4
 kernel/fs/fat
 kernel/fs/lockd
 kernel/fs/isofs

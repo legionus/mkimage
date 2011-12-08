@@ -1,0 +1,15 @@
+#!/bin/sh
+
+subst 's/AUTODETECT/#AUTODETECT/' /etc/initrd.mk
+echo 'FEATURES += propagator' >> /etc/initrd.mk
+
+kver="$(rpm -qa 'kernel-image*' --qf '%{version}-%{name}-%{release}\n' \
+	| head -n 1 \
+	| sed 's/kernel-image-//')"
+
+make-initrd --no-checks -k $kver \
+&& gzip < /boot/initrd-$kver.img > $(getconf LIBDIR)/propagator/initfs \
+|| exit 1
+
+[ -h /boot/vmlinuz ] || ln -s vmlinuz-$kver /boot/vmlinuz
+[ -h /boot/initrd.img ] || ln -s initrd-$kver.img /boot/initrd.img
