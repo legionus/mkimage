@@ -1,5 +1,5 @@
 Name: mkimage
-Version: 0.2.0
+Version: 0.2.1
 Release: alt1
 
 Summary: Simple image creator
@@ -34,6 +34,10 @@ files (called `templates').
 %doc examples doc/README.ru
 
 %changelog
+* Fri Dec 09 2011 Alexey Gladkov <legion@altlinux.ru> 0.2.1-alt1
+- tools/mki-scripts: Allow symlinks (ALT#26487).
+- example3: fixup for current Sisyphus (ALT#26591)
+
 * Fri Sep 02 2011 Alexey Gladkov <legion@altlinux.org> 0.2.0-alt1
 - conditionally set IMAGE_INIT_LIST (ALT#26135).
 - example3: updated base/packages (thx Michael Shigorin).
