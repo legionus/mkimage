@@ -335,6 +335,11 @@ MKI_SPLITTYPE          - Если вам не нравится критерий 
                          и сортировки: gen_filelist(), sortfiles(outfile).
                          (Подробнее см. реализацию утилиты mki-split)
 
+MKI_SORTFILE	       - Задает путь к файлу в инструментальном чруте, содержащему
+			 указание порядка сортировки данных в образе ISO9660.
+			 Применяется при PACKTYPE: isodata, isoboot, yaboot.
+			 Формат см. в mkisofs(1), описание ключа -sort
+
 GLOBAL_BOOT_LANG,
 BOOT_LANG              - Устанавливает язык, используемый по умолчанию в gfxboot.
 
