@@ -46,7 +46,8 @@ imgdir=/.image
 [ ! -e '/.our/$outname' ] ||
 	rm -f -- '/.our/$outname'
 
-$mksquashfs_prog "\$imgdir/" '/.our/$outname' $opts ${nproc:+-processors $nproc} -e .in .host .fakedata $exclude
+$mksquashfs_prog "\$imgdir/" '/.our/$outname' $opts -no-recovery \\
+	${nproc:+-processors $nproc} -e .in .host .fakedata $exclude
 EOF
 
 mki-copy-our2out
