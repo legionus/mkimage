@@ -107,6 +107,21 @@ ISODATA_SYSI =
 ISODATA_VOLI =
 ISODATA_VOLS =
 
+PACK_UBIFS_OPTS =
+PACK_UBI_OPTS =
+
+PACK_UBI_MIN_IO_SIZE =
+
+PACK_UBI_VOL_TYPE =
+PACK_UBI_VOL_NAME =
+
+# optional
+PACK_UBI_VOL_ID =
+PACK_UBI_VOL_SIZE =
+PACK_UBI_VOL_FLAGS =
+PACK_UBI_VOL_ALIGN =
+
+
 include	$(CONFIGDIR)/config-requires.mk
 include	$(CONFIGDIR)/config-hasher.mk
 include	$(CONFIGDIR)/config-squash.mk

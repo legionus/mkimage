@@ -1,0 +1,83 @@
+#!/bin/ash -efu
+#
+# mki-pack-ubifs
+#
+# This file is part of mkimage
+# Copyright (C) 2012  Alexey Knyshev <alexey.knyshev@gmail.com>
+#
+# This file is covered by the GNU General Public License,
+# which should be included with mkimage as the file COPYING.
+#
+
+. "${0%/*}"/mki-sh-functions
+
+verbose "has started executing."
+
+pkgs="${PACKAGES_REQUIRED_PACK_UBIFS:-}"
+ubifsopts="${PACK_UBIFS_OPTS:-}"
+ubiopts="${PACK_UBI_OPTS:-}"
+
+outname="${MKI_OUTNAME:-outname}"
+outname="${outname##*/}"
+outname="/.our/$outname"
+
+ubifsimg='/tmp/ubifs.img'
+ubicfg='/tmp/ubi.ini'
+imgdir='/.image'
+
+
+# must be specified
+miniosize="${PACK_UBI_MIN_IO_SIZE:?PACK_UBI_MIN_IO_SIZE must be specified}"
+ubivoltype="${PACK_UBI_VOL_TYPE:?PACK_UBI_VOL_TYPE must be specified}"
+ubivolname="${PACK_UBI_VOL_NAME:?PACK_UBI_VOL_NAME must be specified}"
+
+# optional
+ubivolid="${PACK_UBI_VOL_ID:-'0'}"
+ubivolsize="${PACK_UBI_VOL_SIZE:-}"
+ubivolalign="${PACK_UBI_VOL_ALIGN:-}"
+ubivolflags="${PACK_UBI_VOL_FLAGS:-}"
+
+[ -z "$ubivolsize" ] || ubivolsize=$(printf "vol_size=%s" $ubivolsize)
+[ -z "$ubivolalign" ] || ubivolalign=$(printf "vol_alignment=%s" $ubivolalign)
+[ -z "$ubivolflags" ] || ubivolflags=$(printf "vol_flags=%s" $ubivolflags)
+
+
+exclude=
+for d in ${MKI_EXCLUDE:-}; do
+	exclude="$exclude -z $d"
+done
+
+[ -d "$chroot"  ] ||
+	fatal "$dir: not look like work directory of hasher."
+
+mki-install $pkgs ||
+	fatal "faild to install packages: $pkgs."
+
+run_chrooted "$chroot" << EOF
+#!/bin/sh -efu
+
+echo 'mkimage: pack-ubifs: Packing ubifs image ...'
+/usr/sbin/mkfs.ubifs -m $miniosize $ubifsopts $exclude -z .in -z .host -z .fakedata -r $imgdir -o $ubifsimg
+
+cat > $ubicfg << EOT
+[rootfs-image]
+mode=ubi
+image=$ubifsimg
+vol_id=$ubivolid
+vol_type=$ubivoltype
+vol_name=$ubivolname
+$ubivolsize
+$ubivolalign
+$ubivolflags
+EOT
+
+echo 'mkimage: pack-ubifs: Ubinizing ubifs image ...'
+/usr/sbin/ubinize -o $outname -m $miniosize $ubiopts $ubicfg
+
+rm -f $ubifsimg
+rm -f $ubicfg
+
+echo "mkimage: pack-ubifs: Pack result: $outname ..."
+EOF
+
+mki-copy-our2out
