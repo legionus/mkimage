@@ -76,8 +76,14 @@ if [ -n "${MKI_EXCLUDE:-}" ]; then
 	done
 fi > .exclude
 
+if [ -n "${MKI_SORTFILE:-}" ]; then
+	echo "syslinux/boot.cat 1010" >> "$MKI_SORTFILE"
+	echo "syslinux/isolinux.bin 1020" >> "$MKI_SORTFILE"
+fi
+
 rc=0
 mkisofs $verbose -J -l -r -hfs -part -probe \
+	${MKI_SORTFILE:+-sort $MKI_SORTFILE} \
 	-map hfs.map \
 	-exclude-list .exclude \
 	-hfs-bless \$imgdir/ppc \

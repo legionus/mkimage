@@ -1,5 +1,5 @@
 Name: mkimage
-Version: 0.2.1
+Version: 0.2.2
 Release: alt1
 
 Summary: Simple image creator
@@ -34,6 +34,9 @@ files (called `templates').
 %doc examples doc/README.ru
 
 %changelog
+* Tue Jan 17 2012 Michael Shigorin <mike@altlinux.org> 0.2.2-alt1
+- tools/mki-pack-{isodata,isoboot,yaboot}: added mkisofs -sort support
+
 * Fri Dec 09 2011 Alexey Gladkov <legion@altlinux.ru> 0.2.1-alt1
 - tools/mki-scripts: Allow symlinks (ALT#26487).
 - example3: fixup for current Sisyphus (ALT#26591)
