@@ -3,14 +3,18 @@
 # mki-count-cpu
 #
 # This file is part of mkimage
-# Copyright (C) 2007-2009  Alexey Gladkov <gladkov.alexey@gmail.com>
+# Copyright (C) 2007-2012  Alexey Gladkov <gladkov.alexey@gmail.com>
 #
 # This file is covered by the GNU General Public License,
 # which should be included with mkimage as the file COPYING.
 #
 
-if [ -r '/proc/cpuinfo' ]; then
-	grep '^processor' /proc/cpuinfo |wc -l
-else
-	echo '1'
-fi
+ncpu=$(getconf _NPROCESSORS_ONLN 2>/dev/null) ||:
+
+[ "$ncpu" != "0" ] ||
+	ncpu=$(grep -c '^processor' /proc/cpuinfo 2>/dev/null) ||:
+
+[ "$ncpu" != "0" ] ||
+	ncpu=1
+
+printf '%s\n' "$ncpu"
