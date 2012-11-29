@@ -69,14 +69,8 @@ if [ -n "${MKI_EXCLUDE:-}" ]; then
 	done
 fi > .exclude
 
-if [ -n "${MKI_SORTFILE:-}" ]; then
-	echo "syslinux/boot.cat 1010" >> "$MKI_SORTFILE"
-	echo "syslinux/isolinux.bin 1020" >> "$MKI_SORTFILE"
-fi
-
 rc=0
 mkisofs $verbose -J -l -r \
-	${MKI_SORTFILE:+-sort $MKI_SORTFILE} \
 	-b syslinux/isolinux.bin \
 	-c syslinux/boot.cat \
 	-exclude-list /tmp/.exclude \
