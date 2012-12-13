@@ -7,7 +7,7 @@ SUBDIRS = base install2
 INFO_THEME = server-light
 
 CHROOT_PACKAGES = syslinux kernel-image-std-def memtest86+ \
-		  make-initrd-propagator apt-utils
+		  make-initrd-propagator propagator apt-utils
 MKI_PACK_RESULTS = boot:legion-test.iso
 
 COPY_TREE = ./isodata
