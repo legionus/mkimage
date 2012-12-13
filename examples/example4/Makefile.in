@@ -1,0 +1,23 @@
+CONFIGDIR = @PREFIXDIR@
+
+include $(CONFIGDIR)/config.mk
+
+SUBDIRS = rescue
+
+CHROOT_PACKAGES = apt-utils syslinux kernel-image-std-def \
+		  make-initrd-propagator propagator
+MKI_PACK_RESULTS = boot:efi-rescue.iso
+
+COPY_TREE = ./files
+
+EFI_BOOTLOADER = elilo
+BOOT_TYPE = isolinux efiboot
+PROPAGATOR_VERSION = mkimage example4
+PROPAGATOR_MAR_MODULES = ./modules
+PROPAGATOR_INITFS = ./initfs
+
+include $(CONFIGDIR)/targets.mk
+
+all: copy-tree copy-subdirs run-scripts pack-image
+	@if [ -h efi-rescue.iso ]; then rm efi-rescue.iso; fi
+	@ln -s $(WORKDIRNAME)/$(OUTDIRNAME)/efi-rescue.iso
