@@ -32,7 +32,8 @@ done
 [ -d "$chroot" ] ||
 	fatal "$dir: not look like a work directory of hasher."
 
-mki-build-propagator
+[ -z "${PROPAGATOR_MAR_MODULES:-}" ] ||
+	mki-build-propagator
 
 for b in $types; do
 	mki-copy-$b
