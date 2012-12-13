@@ -1,0 +1,69 @@
+#!/bin/ash -efu
+#
+# mki-copy-efiboot
+#
+# This file is part of mkimage
+# Copyright (C) 2007-2009  Alexey Gladkov <gladkov.alexey@gmail.com>
+# Copyright (C) 2012       Michael Shigorin <mike@altlinux.org>
+#
+# This file is covered by the GNU General Public License,
+# which should be included with mkimage as the file COPYING.
+#
+
+. "${0%/*}"/mki-sh-functions
+
+verbose "has started executing."
+
+pkgs="${PACKAGES_REQUIRED_COPY_EFIBOOT:-}"
+
+[ -d "$chroot" ] ||
+	fatal "$dir: does not look like a hasher work directory."
+
+[ -n "${EFI_BOOTLOADER:-}" ] ||
+	fatal "EFI_BOOTLOADER is empty."
+
+mki-install $pkgs $EFI_BOOTLOADER ||
+	fatal "failed to install packages: $pkgs."
+
+make_exec "$chroot/.host/efiboot.sh" <<EOF
+#!/bin/sh -efu${verbose:+x}
+
+cd /.image
+
+stage2=
+for i in altinst live rescue; do
+	if [ -f "\$i" ]; then
+		stage2="\$i"
+		break
+	fi
+done
+[ -n "\${stage2:-}" ] ||
+	fatal "no stage2 image found."
+
+boot=EFI/BOOT
+mkdir $verbose -p -- \$boot
+cp $verbose -pLft \$boot -- syslinux/alt0/{vmlinuz,full.cz}
+cp $verbose -pLf /usr/lib64/efi/elilo.efi \$boot/BOOTX64.EFI
+
+cat > \$boot/elilo.conf << ELILO_EOF
+default="linux"
+image="vmlinuz"
+        label="linux"
+        read-only
+        initrd=full.cz
+        append="fastboot live lowmem showopts automatic=method:cdrom ramdisk_size=131072 stagename=\$stage2"
+ELILO_EOF
+
+# FIXME: path/size
+img=.efiboot.img
+dd if=/dev/zero of=\$img bs=1M count=32
+mkfs.vfat \$img
+mcopy -i \$img -s EFI ::
+mv \$img EFI/
+EOF
+
+rc=0
+mki-run "/.host/efiboot.sh" || rc=$?
+rm -f -- "$chroot/.host/efiboot.sh"
+find "$chroot/.in" -mindepth 1 -maxdepth 1 -exec rm -rf -- '{}' '+'
+exit $rc
