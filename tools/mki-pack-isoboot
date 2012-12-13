@@ -4,6 +4,7 @@
 #
 # This file is part of mkimage
 # Copyright (C) 2007-2009  Alexey Gladkov <gladkov.alexey@gmail.com>
+# Copyright (C) 2012       Michael Shigorin <mike@altlinux.org>
 #
 # This file is covered by the GNU General Public License,
 # which should be included with mkimage as the file COPYING.
@@ -29,6 +30,10 @@ imgsubdir="${imgsubdir#/}"
 
 [ -f "$chroot/.image/$imgsubdir/syslinux/isolinux.cfg" ] ||
 	fatal "/.image/$imgsubdir/syslinux/isolinux.cfg: not found."
+
+# isohybrid bootsector
+[ -z "${EFI_BOOTLOADER:-}" ] ||
+	pkgs="$pkgs syslinux"
 
 mki-install $pkgs ||
 	fatal "faild to install packages: $pkgs."
@@ -69,6 +74,21 @@ if [ -n "${MKI_EXCLUDE:-}" ]; then
 	done
 fi > .exclude
 
+isohybrid_opts=
+efi_opts=
+if [ -n "${EFI_BOOTLOADER:-}" ]; then
+	isohybrid_opts="\
+	-isohybrid-mbr /usr/lib/syslinux/isohdpfx.bin \
+	-partition_offset 16 \
+"
+	efi_opts="\
+	-eltorito-alt-boot \
+	-e EFI/.efiboot.img \
+	-no-emul-boot \
+	-isohybrid-gpt-basdat \
+"
+fi
+
 rc=0
 xorriso -follow param -as mkisofs \
 	$verbose -J -l -r \
@@ -76,8 +96,10 @@ xorriso -follow param -as mkisofs \
 	-c syslinux/boot.cat \
 	-exclude-list /tmp/.exclude \
 	-no-emul-boot \
-	-boot-info-table \
 	-boot-load-size 4 \
+	-boot-info-table \
+	\$isohybrid_opts \
+	\$efi_opts \
 	"\$imgdir/" || rc=\$?
 
 rm -f -- .mkisofsrc .exclude
