@@ -70,7 +70,8 @@ if [ -n "${MKI_EXCLUDE:-}" ]; then
 fi > .exclude
 
 rc=0
-mkisofs $verbose -J -l -r \
+xorriso -follow param -as mkisofs \
+	$verbose -J -l -r \
 	-b syslinux/isolinux.bin \
 	-c syslinux/boot.cat \
 	-exclude-list /tmp/.exclude \
