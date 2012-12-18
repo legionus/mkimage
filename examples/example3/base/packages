@@ -18,7 +18,6 @@ udev
 # editor
 vim-console
 
-hal
 dbus
 installer-server-light-stage3
 
