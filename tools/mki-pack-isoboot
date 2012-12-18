@@ -75,12 +75,15 @@ if [ -n "${MKI_EXCLUDE:-}" ]; then
 fi > .exclude
 
 isohybrid_opts=
-efi_opts=
-if [ -n "${EFI_BOOTLOADER:-}" ]; then
+if [ -n "${EFI_BOOTLOADER:-}" -o -n "${ISOHYBRID:-}" ]; then
 	isohybrid_opts="\
 	-isohybrid-mbr /usr/lib/syslinux/isohdpfx.bin \
 	-partition_offset 16 \
 "
+fi
+
+efi_opts=
+if [ -n "${EFI_BOOTLOADER:-}" ]; then
 	efi_opts="\
 	-eltorito-alt-boot \
 	-e EFI/.efiboot.img \
