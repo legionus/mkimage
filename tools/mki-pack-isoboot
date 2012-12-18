@@ -93,7 +93,9 @@ if [ -n "${EFI_BOOTLOADER:-}" ]; then
 fi
 
 rc=0
-xorriso -follow param -as mkisofs \
+xorriso -follow param \
+	-read_mkisofsrc \
+	-as mkisofs \
 	$verbose -J -l -r \
 	-b syslinux/isolinux.bin \
 	-c syslinux/boot.cat \
