@@ -32,7 +32,7 @@ imgsubdir="${imgsubdir#/}"
 	fatal "/.image/$imgsubdir/syslinux/isolinux.cfg: not found."
 
 # isohybrid bootsector
-[ -z "${EFI_BOOTLOADER:-}" ] ||
+[ -z "${EFI_BOOTLOADER:-}" -a -z "${ISOHYBRID:-}" ] ||
 	pkgs="$pkgs syslinux"
 
 mki-install $pkgs ||
