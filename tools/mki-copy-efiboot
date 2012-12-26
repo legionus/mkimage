@@ -30,6 +30,8 @@ make_exec "$chroot/.host/efiboot.sh" <<EOF
 
 cd /.image
 
+fatal() { echo $*; exit 1; }
+
 stage2=
 for i in altinst live rescue; do
 	if [ -f "\$i" ]; then
