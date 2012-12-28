@@ -3,7 +3,7 @@
 # mki-print-uris
 #
 # This file is part of mkimage
-# Copyright (C) 2007-2009  Alexey Gladkov <gladkov.alexey@gmail.com>
+# Copyright (C) 2007-2012  Alexey Gladkov <gladkov.alexey@gmail.com>
 #
 # This file is covered by the GNU General Public License,
 # which should be included with mkimage as the file COPYING.
@@ -86,5 +86,6 @@ if [ -n "$cached_uris" ]; then
 $cached_uris" || local_uris="$cached_uris"
 fi
 
-printf %s "$local_uris" &&
-	verbose 'calculated package file list.'
+printf %s\\n "$local_uris" |
+	sed -e '/^[[:space:]]*$/d'
+verbose 'calculated package file list.'
