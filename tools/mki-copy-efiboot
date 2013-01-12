@@ -19,10 +19,16 @@ pkgs="${PACKAGES_REQUIRED_COPY_EFIBOOT:-}"
 [ -d "$chroot" ] ||
 	fatal "$dir: does not look like a hasher work directory."
 
+# should be a package name
 [ -n "${EFI_BOOTLOADER:-}" ] ||
 	fatal "EFI_BOOTLOADER is empty."
 
-mki-install $pkgs $EFI_BOOTLOADER ||
+pkgs="$pkgs $EFI_BOOTLOADER"
+
+[ -z "${EFI_CERT:-}" ] ||
+	pkgs="$pkgs alt-uefi-keys shim-signed $EFI_BOOTLOADER-signed"
+
+mki-install $pkgs ||
 	fatal "failed to install packages: $pkgs."
 
 make_exec "$chroot/.host/efiboot.sh" <<EOF
@@ -44,22 +50,113 @@ done
 
 boot=EFI/BOOT
 mkdir $verbose -p -- \$boot
-cp $verbose -pLft \$boot -- syslinux/alt0/{vmlinuz,full.cz}
-cp $verbose -pLf /usr/lib64/efi/elilo.efi \$boot/BOOTX64.EFI
 
-cat > \$boot/elilo.conf << ELILO_EOF
-default="linux"
-image="vmlinuz"
-        label="linux"
-        read-only
-        initrd=full.cz
-        append="fastboot live lowmem showopts automatic=method:cdrom ramdisk_size=131072 stagename=\$stage2"
-ELILO_EOF
+# nexthop name is hardwired into shim-0.2
+if [ -n "${EFI_CERT:-}" ]; then
+	shim_path=\$boot/BOOTX64.EFI
+	bin_path=\$boot/GRUBX64.EFI
+	bin_suffix=-signed
+else
+	shim_path=
+	bin_path=\$boot/BOOTX64.EFI
+	bin_suffix=
+fi
 
-# FIXME: path/size
+stage2_size="\$[ \$(stat -c%s \$stage2) / 1024 + 1 ]"
+bootparams="fastboot live lowmem showopts automatic=method:cdrom"
+bootparams="\$bootparams ramdisk_size=\$stage2_size stagename=\$stage2"
+
+efi_bindir=/usr/lib64/efi
+
+copy_cert() {
+	[ -n "${EFI_CERT:-}" ] ||
+		return 0
+
+	local keyfile="/etc/pki/uefi/$EFI_CERT.cer"
+	[ -s "\$keyfile" ] ||
+		fatal "invalid \$keyfile"
+
+	cp $verbose -pLft EFI/ -- "\$keyfile"
+}
+
+copy_shim() {
+	[ -n "\${shim_path:-}" ] ||
+		return 0
+	copy_cert
+	cp $verbose -pLf \$efi_bindir/shim.efi \$shim_path
+	cp $verbose -pLf \$efi_bindir/MokManager.efi \$boot
+}
+
+copy_kernel() {
+	cp $verbose -pLft \$boot -- syslinux/alt0/{vmlinuz,full.cz}
+}
+
+copy_elilo() {
+	copy_kernel
+	cp $verbose -pLf \$efi_bindir/elilo\$bin_suffix.efi \$bin_path
+	cat > \$boot/elilo.conf <<- ELILO_EOF
+	default="linux"
+	image="vmlinuz"
+	  label="linux"
+	  read-only
+	  initrd=full.cz
+	  append="\$bootparams"
+	ELILO_EOF
+}
+
+# refind is currently signed by default
+refind_aux=EFI/refind
+refind_boot=\$refind_aux/refind_x64.efi
+
+copy_refind_to() {
+	mkdir -p -- "\$2"
+	cp $verbose -pLf \$efi_bindir/refind_x64.efi "\$1"
+	cp $verbose -aLf \$efi_bindir/drivers_x64/ "\$2"
+	cp $verbose -aLf /usr/share/refind/icons/ "\$2"
+}
+
+copy_refind() {
+	copy_kernel	# FIXME: should be unneeded when done properly
+	copy_refind_to \$bin_path \$boot
+	copy_refind_to \$refind_boot \$refind_aux
+
+	cat > \$boot/refind.conf <<- REFIND_EOF
+	timeout 20
+	scanfor manual
+
+	menuentry "ALT Linux" {
+	  icon \$boot/icons/os_altlinux.icns
+	  #loader /syslinux/alt0/vmlinuz
+	  #initrd /syslinux/alt0/full.cz
+	  loader \$boot/vmlinuz
+	  initrd \$boot/full.cz
+	  options "\$bootparams"
+	  #graphics on
+	}
+
+	menuentry "others" {
+	  icon \$boot/icons/vol_internal.icns
+	  loader \$refind_boot
+	}
+	REFIND_EOF
+}
+
+[ -z "${EFI_CERT:-}" ] ||
+	copy_shim
+
+case "$EFI_BOOTLOADER" in
+elilo)
+	copy_elilo;;
+refind)
+	copy_refind;;
+*)
+	fatal "Unable to handle '$EFI_BOOTLOADER'.";;
+esac
+
+imgsize="\$[ \$(du -sB32k EFI | cut -f1) + 4 ]"
 img=.efiboot.img
-dd if=/dev/zero of=\$img bs=1M count=32
-mkfs.vfat \$img
+dd if=/dev/zero of=\$img bs=32k count="\$imgsize"
+mkfs.vfat $verbose -n "El Torito" \$img
 mcopy -i \$img -s EFI ::
 mv \$img EFI/
 EOF
