@@ -135,7 +135,7 @@ copy_refind() {
 	}
 
 	menuentry "others" {
-	  icon \$boot/icons/vol_internal.icns
+	  icon \$boot/icons/os_unknown.icns
 	  loader \$refind_boot
 	}
 	REFIND_EOF
