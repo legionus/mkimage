@@ -25,6 +25,10 @@ pkgs="${PACKAGES_REQUIRED_COPY_EFIBOOT:-}"
 
 pkgs="$pkgs $EFI_BOOTLOADER"
 
+# should be a package name
+[ -z "${EFI_SHELL:-}" ] ||
+	pkgs="$pkgs $EFI_SHELL"
+
 [ -z "${EFI_CERT:-}" ] ||
 	pkgs="$pkgs alt-uefi-keys shim-signed $EFI_BOOTLOADER-signed"
 
@@ -48,7 +52,10 @@ done
 [ -n "\${stage2:-}" ] ||
 	fatal "no stage2 image found."
 
-boot=EFI/BOOT
+efi=EFI
+boot=\$efi/BOOT
+tools=\$efi/tools
+shell=shellx64.efi
 mkdir $verbose -p -- \$boot
 
 # nexthop name is hardwired into shim-0.2
@@ -67,6 +74,13 @@ bootparams="fastboot live lowmem showopts automatic=method:cdrom"
 bootparams="\$bootparams ramdisk_size=\$stage2_size stagename=\$stage2"
 
 efi_bindir=/usr/lib64/efi
+
+copy_shell() {
+	dest="\$efi/\$shell"
+	src="\$efi_bindir/shell${EFI_CERT:+-signed}.efi"
+	[ ! -f "\$src" ] ||
+		cp $verbose -pLf "\$src" "\$dest"
+}
 
 copy_cert() {
 	[ -n "${EFI_CERT:-}" ] ||
@@ -105,7 +119,7 @@ copy_elilo() {
 }
 
 # refind is currently signed by default
-refind_aux=EFI/refind
+refind_aux=\$efi/refind
 refind_boot=\$refind_aux/refind_x64.efi
 
 copy_refind_to() {
@@ -153,12 +167,29 @@ refind)
 	fatal "Unable to handle '$EFI_BOOTLOADER'.";;
 esac
 
-imgsize="\$[ \$(du -sB32k EFI | cut -f1) + 4 ]"
+copy_shell
+
+imgsize="\$[ \$(du -sB32k \$efi | cut -f1) + 4 ]"
 img=.efiboot.img
+
 dd if=/dev/zero of=\$img bs=32k count="\$imgsize"
 mkfs.vfat $verbose -n "El Torito" \$img
-mcopy -i \$img -s EFI ::
-mv \$img EFI/
+
+# put EFI shell into the FAT image's root (for firmware)...
+if [ -f \$efi/\$shell ]; then
+	mv $verbose \$efi/\$shell .
+	mcopy $verbose \$shell -i \$img ::
+fi
+
+mcopy $verbose -i \$img -s \$efi ::
+
+# ...and finally into its ISO9660 location for refind
+if [ -f \$shell ]; then
+	mkdir $verbose -p \$tools
+	mv $verbose \$shell \$tools
+fi
+
+mv \$img \$efi/
 EOF
 
 rc=0
