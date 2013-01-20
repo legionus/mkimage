@@ -72,7 +72,7 @@ copy_cert() {
 	[ -n "${EFI_CERT:-}" ] ||
 		return 0
 
-	local keyfile="/etc/pki/uefi/$EFI_CERT.cer"
+	local keyfile="/etc/pki/uefi/${EFI_CERT:-}.cer"
 	[ -s "\$keyfile" ] ||
 		fatal "invalid \$keyfile"
 
