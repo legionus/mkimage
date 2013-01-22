@@ -130,7 +130,7 @@ copy_refind_to() {
 }
 
 copy_refind() {
-	copy_kernel	# FIXME: should be unneeded when done properly
+	copy_kernel	# seems to be unavoidable
 	copy_refind_to \$bin_path \$boot
 	copy_refind_to \$refind_boot \$refind_aux
 
