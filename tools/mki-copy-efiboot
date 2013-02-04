@@ -70,7 +70,7 @@ else
 fi
 
 stage2_size="\$[ \$(stat -c%s \$stage2) / 1024 + 1 ]"
-bootparams="fastboot live lowmem showopts automatic=method:cdrom"
+bootparams="fastboot live splash lowmem showopts automatic=method:cdrom"
 bootparams="\$bootparams ramdisk_size=\$stage2_size stagename=\$stage2"
 
 efi_bindir=/usr/lib64/efi
