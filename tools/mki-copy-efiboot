@@ -32,6 +32,12 @@ pkgs="$pkgs $EFI_BOOTLOADER"
 [ -z "${EFI_CERT:-}" ] ||
 	pkgs="$pkgs alt-uefi-keys shim-signed $EFI_BOOTLOADER-signed"
 
+case "${EFI_BOOTLOADER:-}" in
+refind)	# won't boot unsigned kernels in SB mode
+	pkgs="$pkgs elilo${EFI_CERT:+-signed}"
+	;;
+esac
+
 mki-install $pkgs ||
 	fatal "failed to install packages: $pkgs."
 
@@ -107,7 +113,7 @@ copy_kernel() {
 
 copy_elilo() {
 	copy_kernel
-	cp $verbose -pLf \$efi_bindir/elilo\$bin_suffix.efi \$bin_path
+	cp $verbose -pLf \$efi_bindir/elilo\$bin_suffix.efi \${1:-\$bin_path}
 	cat > \$boot/elilo.conf <<- ELILO_EOF
 	default="linux"
 	image="vmlinuz"
@@ -133,19 +139,19 @@ copy_refind() {
 	copy_kernel	# seems to be unavoidable
 	copy_refind_to \$bin_path \$boot
 	copy_refind_to \$refind_boot \$refind_aux
+	copy_elilo \$boot/ELILO.EFI
 
 	cat > \$boot/refind.conf <<- REFIND_EOF
 	timeout 20
 	scanfor manual
 
+	# ELILO used as a SB trampoline for unsigned kernels
 	menuentry "ALT Linux" {
 	  icon \$boot/icons/os_altlinux.icns
-	  #loader /syslinux/alt0/vmlinuz
-	  #initrd /syslinux/alt0/full.cz
-	  loader \$boot/vmlinuz
-	  initrd \$boot/full.cz
-	  options "\$bootparams"
-	  #graphics on
+	  loader \$boot/ELILO.EFI
+	  # NB: -v seems critical, otherwise we hit this:
+	  #     gzip_x86_64: invalid exec_header
+	  options "-v -i full.cz vmlinuz \$bootparams"
 	}
 
 	menuentry "others" {
