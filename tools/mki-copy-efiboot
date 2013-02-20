@@ -152,6 +152,15 @@ copy_refind() {
 	  # NB: -v seems critical, otherwise we hit this:
 	  #     gzip_x86_64: invalid exec_header
 	  options "-v -i full.cz vmlinuz \$bootparams"
+	  submenuentry "English" {
+	    add_options "lang=en_US"
+	  }
+	  submenuentry "Russian" {
+	    add_options "lang=ru_RU"
+	  }
+	  submenuentry "Ukrainian" {
+	    add_options "lang=uk_UA"
+	  }
 	}
 
 	menuentry "others" {
