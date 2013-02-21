@@ -60,6 +60,7 @@ done
 
 efi=EFI
 boot=\$efi/BOOT
+cert=\$efi/enroll
 tools=\$efi/tools
 shell=shellx64.efi
 mkdir $verbose -p -- \$boot
@@ -96,7 +97,8 @@ copy_cert() {
 	[ -s "\$keyfile" ] ||
 		fatal "invalid \$keyfile"
 
-	cp $verbose -pLft EFI/ -- "\$keyfile"
+	mkdir $verbose -p \$cert
+	cp $verbose -pLft \$cert -- "\$keyfile"
 }
 
 copy_shim() {
