@@ -66,12 +66,12 @@ mkdir $verbose -p -- \$boot
 
 # nexthop name is hardwired into shim-0.2
 if [ -n "${EFI_CERT:-}" ]; then
-	shim_path=\$boot/BOOTX64.EFI
-	bin_path=\$boot/GRUBX64.EFI
+	shim_path=\$boot/bootx64.efi
+	bin_path=\$boot/grubx64.efi
 	bin_suffix=-signed
 else
 	shim_path=
-	bin_path=\$boot/BOOTX64.EFI
+	bin_path=\$boot/bootx64.efi
 	bin_suffix=
 fi
 
@@ -139,7 +139,7 @@ copy_refind() {
 	copy_kernel	# seems to be unavoidable
 	copy_refind_to \$bin_path \$boot
 	copy_refind_to \$refind_boot \$refind_aux
-	copy_elilo \$boot/ELILO.EFI
+	copy_elilo \$boot/elilo.efi
 
 	cat > \$boot/refind.conf <<- REFIND_EOF
 	timeout 20
@@ -148,7 +148,7 @@ copy_refind() {
 	# ELILO used as a SB trampoline for unsigned kernels
 	menuentry "ALT Linux" {
 	  icon \$boot/icons/os_altlinux.icns
-	  loader \$boot/ELILO.EFI
+	  loader \$boot/elilo.efi
 	  # NB: -v seems critical, otherwise we hit this:
 	  #     gzip_x86_64: invalid exec_header
 	  options "-v -i full.cz vmlinuz \$bootparams"
