@@ -1,6 +1,6 @@
 #!/bin/sh
 
-subst 's/AUTODETECT/#AUTODETECT/' /etc/initrd.mk
+echo 'AUTODETECT =' >> /etc/initrd.mk
 echo 'FEATURES += propagator' >> /etc/initrd.mk
 
 kver="$(find /lib/modules -mindepth 1 -maxdepth 1 -printf '%f\n' -quit)"
