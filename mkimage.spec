@@ -1,5 +1,5 @@
 Name: mkimage
-Version: 0.2.8
+Version: 0.2.9
 Release: alt1
 
 Summary: Simple image creator
@@ -79,6 +79,10 @@ echo "%name-preinstall: allowing to hardlink non-owned files..."
 # - maybe Require: %%name-preinstall in the main package sometime later
 
 %changelog
+* Wed Oct 16 2013 Michael Shigorin <mike@altlinux.org> 0.2.9-alt1
+- added preinstall subpackage which is basically required
+  to be installed since Linux 3.6
+
 * Fri Feb 22 2013 Michael Shigorin <mike@altlinux.org> 0.2.8-alt1
 - example{3,4}: updated for current make-initrd (see #28578)
 - minor spec cleanup
