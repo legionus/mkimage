@@ -14,10 +14,37 @@ Requires: hasher >= 1.3.7-alt1
 
 Source: %name-%version.tar
 
+%define sysctldir %_sysconfdir/sysctl.d
+%define procfile /proc/sys/fs/protected_hardlinks
+
 %description
 mkimage is a tool for building ALT Linux distribution
 ISO images out of a user-supplied set of configuration
 files (called `templates').
+
+%package preinstall
+Summary: Security setup for mkimage to function properly
+Group: Development/Other
+
+%description preinstall
+This package contains settings allowing mkimage to operate
+as intended -- it relies on hardlinks to non-owned files to
+spare space for copies within and outside chroots as well as
+to save time and CPU cycles on actually performing those;
+either free RAM, SSD wearing or HDD bandwidth are to be
+spent with care too).
+
+Please note that this subpackage disables an otherwise reasonable
+security feature that's there for a reason but is almost completely
+incompatible with important part of mkimage's design and security
+model.  Changes take place upon the installation of this package
+and are made persistent by a configuration file held within it.
+
+Remove %name-preinstall subpackage and run this to re-enable:
+
+  echo 1 > %procfile
+
+(this will break mkimage though)
 
 %prep
 %setup
@@ -27,11 +54,29 @@ files (called `templates').
 
 %install
 %makeinstall_std
+mkdir -p %buildroot%sysctldir
+echo "fs.protected_hardlinks = 0" > %buildroot%sysctldir/%name.conf
+
+%post
+[ ! -f %procfile -o `cat %procfile` = 0 ] ||
+	echo "warning: see %name-preinstall"
+
+%post preinstall
+echo "%name-preinstall: allowing to hardlink non-owned files..."
+[ ! -f %procfile ] ||
+	echo 0 > %procfile
 
 %files
 %_bindir/*
 %_datadir/%name
 %doc examples doc/README.ru
+
+%files preinstall
+%config(noreplace) %sysctldir/%name.conf
+
+# TODO:
+# - consider %%postun preinstall to restore the variable value
+# - maybe Require: %%name-preinstall in the main package sometime later
 
 %changelog
 * Fri Feb 22 2013 Michael Shigorin <mike@altlinux.org> 0.2.8-alt1
