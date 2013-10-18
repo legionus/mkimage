@@ -58,12 +58,12 @@ mkdir -p %buildroot%sysctldir
 echo "fs.protected_hardlinks = 0" > %buildroot%sysctldir/%name.conf
 
 %post
-if [ -f %procfile ] && [ "`cat %procfile`" = 1 ]; then
+if grep -Fqsx 1 "%procfile"; then
 	echo "warning: see %name-preinstall" >&2
 fi
 
 %post preinstall
-if [ -f %procfile ] && [ "`cat %procfile`" = 1 ]; then
+if grep -Fqsx 1 "%procfile"; then
 	echo "%name-preinstall: allowing to hardlink non-owned files..." >&2
 	echo 0 > %procfile
 fi
