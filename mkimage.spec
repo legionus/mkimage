@@ -1,6 +1,6 @@
 Name: mkimage
 Version: 0.2.9
-Release: alt1
+Release: alt2
 
 Summary: Simple image creator
 License: GPL3
@@ -81,6 +81,9 @@ fi
 # - maybe Require: %%name-preinstall in the main package sometime later
 
 %changelog
+* Fri Oct 18 2013 Michael Shigorin <mike@altlinux.org> 0.2.9-alt2
+- fixed eval-order-thinko in %%post scriptlet, sorry
+
 * Wed Oct 16 2013 Michael Shigorin <mike@altlinux.org> 0.2.9-alt1
 - added preinstall subpackage which is basically required
   to be installed since Linux 3.6
