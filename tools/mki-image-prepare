@@ -27,6 +27,7 @@ inode2="$(stat -c '%i' "$chroot/.image/.fakedata")"
 [ "$inode1" != "$inode2" ] ||
 	exit 0
 
+# NB: /.fakedata will get overwritten by the time hsh-run exits
 mki-run sh -c 'rm -f /.fakedata. &&
 	cat /.fakedata /.image/.fakedata > /.fakedata. &&
 	ln -f /.fakedata. /.image/.fakedata'
