@@ -27,7 +27,7 @@ inode2="$(stat -c '%i' "$chroot/.image/.fakedata")"
 [ "$inode1" != "$inode2" ] ||
 	exit 0
 
-mki-run sh -c "cat /.image/.fakedata >> /.fakedata"
-
-rm -f -- "$chroot"/.image/.fakedata
-mki-run ln -- /.fakedata /.image/.fakedata
+mki-run sh -c 'rm -f /.fakedata. &&
+	cat /.fakedata /.image/.fakedata > /.fakedata. &&
+	ln -f /.fakedata. /.image/.fakedata'
+mv -f -- "$chroot/.fakedata." "$chroot/.fakedata"
