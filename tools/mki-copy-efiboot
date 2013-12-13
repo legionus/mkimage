@@ -154,6 +154,7 @@ add_langs() {
 }
 
 add_stage2() {
+	count="\`echo \$stage2 | wc -w\`"
 	for root in \$stage2; do
 		case "\$root" in
 		altinst) label="Installation";;
@@ -162,8 +163,10 @@ add_stage2() {
 		*) label="\$root";;
 		esac
 
+		# provide differentiating boot target icons if needed
 		icon="\$boot/icons/altlinux/\$root.icns"
-		[ -s "\$icon" ] || icon="\$boot/icons/os_altlinux.icns"
+		[ "\$count" -ne 1 -a -s "\$icon" ] ||
+			icon="\$boot/icons/os_altlinux.icns"
 
 		cat <<- REFIND_EOF
 
@@ -180,6 +183,16 @@ add_stage2() {
 	done
 }
 
+add_banner() {
+	[ -s /usr/share/gfxboot/sisyphus/bootlogo ] || return 0
+	type -t convert >&/dev/null || return 0
+	if cpio -i --quiet --to-stdout back.jpg \
+		< /usr/share/gfxboot/sisyphus/bootlogo \
+		| convert - \$boot/icons/bg.png; then
+		echo "banner icons/bg.png"
+	fi
+}
+
 copy_refind() {
 	copy_kernel	# seems to be unavoidable
 	copy_refind_to \$bin_path \$boot
@@ -190,6 +203,8 @@ copy_refind() {
 	timeout 20
 	scanfor manual
 	REFIND_EOF
+
+	add_banner >> \$boot/refind.conf
 
 	add_stage2 >> \$boot/refind.conf
 
