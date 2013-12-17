@@ -129,6 +129,7 @@ refind_boot=\$refind_aux/refind_x64.efi
 
 copy_refind_to() {
 	mkdir -p -- "\$2"
+	touch "\$2"/refind.conf
 	cp $verbose -pLf \$efi_bindir/refind_x64.efi "\$1"
 	cp $verbose -aLf \$efi_bindir/drivers_x64/ "\$2"
 	cp $verbose -aLf /usr/share/refind/icons/ "\$2"
