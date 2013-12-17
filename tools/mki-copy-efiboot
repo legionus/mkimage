@@ -38,6 +38,9 @@ refind)	# won't boot unsigned kernels in SB mode
 	;;
 esac
 
+[ -z "${EFI_MEMTEST86:-}" ] ||
+	pkgs="$pkgs $EFI_MEMTEST86"
+
 mki-install $pkgs ||
 	fatal "failed to install packages: $pkgs."
 
@@ -87,6 +90,30 @@ copy_shell() {
 	src="\$efi_bindir/shell.efi"
 	[ ! -f "\$src" ] ||
 		cp $verbose -pLf "\$src" "\$dest"
+}
+
+copy_mt86() {
+	dest="\$tools"
+	mkdir $verbose -p "\$dest"
+	src="\$efi_bindir/memtest86.efi"
+	if [ -f "\$src" ]; then
+		cp $verbose -pLf "\$src" "\$dest/memtest86.efi" &&
+		find /usr/share/efi-memtest86 -type f |
+			xargs cp $verbose -pLft "\$dest"
+	fi
+}
+
+purge_mt86() {
+	(
+	cd "\$tools" ||
+		return 0
+
+	if [ -s memtest86.efi ]; then
+		rm $verbose -f memtest86.efi
+		find /usr/share/efi-memtest86 -type f -printf '%f\n' |
+			xargs rm $verbose -f
+	fi
+	)
 }
 
 copy_cert() {
@@ -230,6 +257,7 @@ refind)
 esac
 
 copy_shell
+copy_mt86
 
 imgsize="\$[ \$(du -sB32k \$efi | cut -f1) + 4 ]"
 img=.efiboot.img
@@ -252,6 +280,9 @@ if [ -f \$shell ]; then
 fi
 
 mv \$img \$efi/
+
+# eltorito copy is enough for flash as well, at least with refind-0.6.12.1
+purge_mt86
 EOF
 
 rc=0
