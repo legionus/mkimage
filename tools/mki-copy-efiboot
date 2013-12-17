@@ -30,11 +30,11 @@ pkgs="$pkgs $EFI_BOOTLOADER"
 	pkgs="$pkgs $EFI_SHELL"
 
 [ -z "${EFI_CERT:-}" ] ||
-	pkgs="$pkgs alt-uefi-keys shim-signed $EFI_BOOTLOADER-signed"
+	pkgs="$pkgs alt-uefi-keys shim-signed"
 
 case "${EFI_BOOTLOADER:-}" in
 refind)	# won't boot unsigned kernels in SB mode
-	pkgs="$pkgs elilo${EFI_CERT:+-signed}"
+	pkgs="$pkgs elilo"
 	;;
 esac
 
@@ -69,11 +69,9 @@ mkdir $verbose -p -- \$boot
 if [ -n "${EFI_CERT:-}" ]; then
 	shim_path=\$boot/bootx64.efi
 	bin_path=\$boot/grubx64.efi
-	bin_suffix=-signed
 else
 	shim_path=
 	bin_path=\$boot/bootx64.efi
-	bin_suffix=
 fi
 
 stage2_size="\$[ \$(stat -c%s \$stage2) / 1024 + 1 ]"
@@ -84,7 +82,7 @@ efi_bindir=/usr/lib64/efi
 
 copy_shell() {
 	dest="\$efi/\$shell"
-	src="\$efi_bindir/shell${EFI_CERT:+-signed}.efi"
+	src="\$efi_bindir/shell.efi"
 	[ ! -f "\$src" ] ||
 		cp $verbose -pLf "\$src" "\$dest"
 }
@@ -115,7 +113,7 @@ copy_kernel() {
 
 copy_elilo() {
 	copy_kernel
-	cp $verbose -pLf \$efi_bindir/elilo\$bin_suffix.efi \${1:-\$bin_path}
+	cp $verbose -pLf \$efi_bindir/elilo.efi \${1:-\$bin_path}
 	cat > \$boot/elilo.conf <<- ELILO_EOF
 	default="linux"
 	image="vmlinuz"
@@ -126,7 +124,6 @@ copy_elilo() {
 	ELILO_EOF
 }
 
-# refind is currently signed by default
 refind_aux=\$efi/refind
 refind_boot=\$refind_aux/refind_x64.efi
 
