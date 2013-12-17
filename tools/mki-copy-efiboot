@@ -51,7 +51,7 @@ fatal() { echo $*; exit 1; }
 stage2=
 for i in altinst live rescue; do
 	if [ -f "\$i" ]; then
-		stage2="\$i"
+		stage2="\$stage2 \$i"
 		break
 	fi
 done
@@ -74,9 +74,11 @@ else
 	bin_path=\$boot/bootx64.efi
 fi
 
-stage2_size="\$[ \$(stat -c%s \$stage2) / 1024 + 1 ]"
-bootparams="fastboot live splash lowmem showopts automatic=method:cdrom"
-bootparams="\$bootparams ramdisk_size=\$stage2_size stagename=\$stage2"
+bootparams() {
+	[ -s "\$1" ] || return 0
+	stage2_size="\$[ \$(stat -c%s \$1) / 1024 + 1 ]"
+	echo "ramdisk_size=\$stage2_size stagename=\$1"
+}
 
 efi_bindir=/usr/lib64/efi
 
@@ -115,12 +117,11 @@ copy_elilo() {
 	copy_kernel
 	cp $verbose -pLf \$efi_bindir/elilo.efi \${1:-\$bin_path}
 	cat > \$boot/elilo.conf <<- ELILO_EOF
-	default="linux"
+	# common bits (elilo complains about missing configuration)
+	append="fastboot live splash lowmem showopts automatic=method:cdrom"
+	read-only
 	image="vmlinuz"
 	  label="linux"
-	  read-only
-	  initrd=full.cz
-	  append="\$bootparams"
 	ELILO_EOF
 }
 
@@ -135,6 +136,50 @@ copy_refind_to() {
 	cp $verbose -aLf /usr/share/refind/icons/ "\$2"
 }
 
+add_langs() {
+	cat <<- REFIND_EOF
+	  submenuentry "English" {
+	    add_options "lang=en_US"
+	  }
+	  submenuentry "Kazakh" {
+	    add_options "lang=kk_KZ"
+	  }
+	  submenuentry "Russian" {
+	    add_options "lang=ru_RU"
+	  }
+	  submenuentry "Ukrainian" {
+	    add_options "lang=uk_UA"
+	  }
+	REFIND_EOF
+}
+
+add_stage2() {
+	for root in \$stage2; do
+		case "\$root" in
+		altinst) label="Installation";;
+		live) label="Live";;
+		rescue) label="Rescue";;
+		*) label="\$root";;
+		esac
+
+		icon="\$boot/icons/altlinux/\$root.icns"
+		[ -s "\$icon" ] || icon="\$boot/icons/os_altlinux.icns"
+
+		cat <<- REFIND_EOF
+
+		# ELILO used as SB trampoline for unsigned kernels
+		menuentry "ALT Linux \$label" {
+		  icon \$icon
+		  loader \$boot/elilo.efi
+		  # NB: -v seems critical, otherwise we hit this:
+		  #     gzip_x86_64: invalid exec_header
+		  options "-v -i full.cz vmlinuz \`bootparams \$root\`"
+		REFIND_EOF
+		add_langs
+		echo "}"
+	done
+}
+
 copy_refind() {
 	copy_kernel	# seems to be unavoidable
 	copy_refind_to \$bin_path \$boot
@@ -144,24 +189,11 @@ copy_refind() {
 	cat > \$boot/refind.conf <<- REFIND_EOF
 	timeout 20
 	scanfor manual
+	REFIND_EOF
 
-	# ELILO used as a SB trampoline for unsigned kernels
-	menuentry "ALT Linux" {
-	  icon \$boot/icons/os_altlinux.icns
-	  loader \$boot/elilo.efi
-	  # NB: -v seems critical, otherwise we hit this:
-	  #     gzip_x86_64: invalid exec_header
-	  options "-v -i full.cz vmlinuz \$bootparams"
-	  submenuentry "English" {
-	    add_options "lang=en_US"
-	  }
-	  submenuentry "Russian" {
-	    add_options "lang=ru_RU"
-	  }
-	  submenuentry "Ukrainian" {
-	    add_options "lang=uk_UA"
-	  }
-	}
+	add_stage2 >> \$boot/refind.conf
+
+	cat >> \$boot/refind.conf <<- REFIND_EOF
 
 	menuentry "others" {
 	  icon \$boot/icons/os_unknown.icns
