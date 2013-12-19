@@ -30,7 +30,7 @@ pkgs="$pkgs $EFI_BOOTLOADER"
 	pkgs="$pkgs $EFI_SHELL"
 
 [ -z "${EFI_CERT:-}" ] ||
-	pkgs="$pkgs alt-uefi-keys shim-signed"
+	pkgs="$pkgs alt-uefi-certs shim-signed"
 
 case "${EFI_BOOTLOADER:-}" in
 refind)	# won't boot unsigned kernels in SB mode
