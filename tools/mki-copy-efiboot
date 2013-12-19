@@ -155,17 +155,6 @@ copy_elilo() {
 	ELILO_EOF
 }
 
-refind_aux=\$efi/refind
-refind_boot=\$refind_aux/refind_x64.efi
-
-copy_refind_to() {
-	mkdir -p -- "\$2"
-	touch "\$2"/refind.conf
-	cp $verbose -pLf \$efi_bindir/refind_x64.efi "\$1"
-	cp $verbose -aLf \$efi_bindir/drivers_x64/ "\$2"
-	cp $verbose -aLf /usr/share/refind/icons/ "\$2"
-}
-
 add_langs() {
 	cat <<- REFIND_EOF
 	  submenuentry "English" {
@@ -194,16 +183,16 @@ add_stage2() {
 		esac
 
 		# provide differentiating boot target icons if needed
-		icon="\$boot/icons/altlinux/\$root.icns"
+		icon="\$refind_aux/icons/altlinux/\$root.icns"
 		[ "\$count" -ne 1 -a -s "\$icon" ] ||
-			icon="\$boot/icons/os_altlinux.icns"
+			icon="\$refind_aux/icons/os_altlinux.icns"
 
 		cat <<- REFIND_EOF
 
 		# ELILO used as SB trampoline for unsigned kernels
 		menuentry "ALT Linux \$label" {
-		  icon \$icon
-		  loader \$boot/elilo.efi
+		  icon /\$icon
+		  loader /\$boot/elilo.efi
 		  # NB: -v seems critical, otherwise we hit this:
 		  #     gzip_x86_64: invalid exec_header
 		  options "-v -i full.cz vmlinuz \`bootparams \$root\`"
@@ -213,25 +202,55 @@ add_stage2() {
 	done
 }
 
+gfxprefix=/usr/share/gfxboot
+
 add_banner() {
-	bootlogo="`find /usr/share/gfxboot -name bootlogo | head -1`"
-	[ -s "\$bootlogo" ] || return 0
+	[ -d \$gfxprefix ] || return 0
 	type -t convert >&/dev/null || return 0
+	bootlogo="\`find \$gfxprefix -name bootlogo | tail -1\`"
+	[ -s "\$bootlogo" ] || return 0
 	if cpio -i --quiet --to-stdout back.jpg < "\$bootlogo" \
-		| convert - \$boot/icons/bg.png; then
-		echo "banner icons/bg.png"
+		| convert - \$refind_aux/icons/bg.png; then
+		echo "banner /\$refind_aux/icons/bg.png"
 	fi
 }
 
+refind_aux=\$efi/refind
+refind_boot=\$refind_aux/refind_x64.efi
+refind_icons=\$refind_aux/icons
+scan_icon=os_unknown.icns
+
+# http://www.rodsbooks.com/refind/configfile.html
+blacklist="shim.efi shim-fedora.efi PreLoader.efi TextMode.efi ebounce.efi GraphicsConsole.efi MokManager.efi HashTool.efi HashTool-signed.efi elilo.efi"
+
 copy_refind() {
 	copy_kernel	# seems to be unavoidable
-	copy_refind_to \$bin_path \$boot
-	copy_refind_to \$refind_boot \$refind_aux
 	copy_elilo \$boot/elilo.efi
 
+	mkdir $verbose -p \$boot \$refind_aux
+	cp $verbose -pLf \$efi_bindir/refind_x64.efi \$bin_path
+	cp $verbose -lpf \$bin_path \$refind_boot
+
+	cp $verbose -aLf \$efi_bindir/drivers_x64/ \$refind_aux
+	cp $verbose -aLf /usr/share/refind/icons/ \$refind_aux
+
+	mkdir $verbose -p \$boot/icons
+	find \$refind_aux/icons/ \
+		-name 'func_*' -o -name 'tool_*' -o -name 'vol_*' \
+		-o -name \$scan_icon |
+		xargs -r cp $verbose -lpft \$boot/icons
+
+	[ ! -d \$refind_aux/altlinux ] ||
+		mv \$refind_aux/altlinux \$boot/icons
+
+	# empty aux refind configuration makes it scan for loaders
+	echo "dont_scan_files \$blacklist" > \$refind_aux/refind.conf
+
+	# overwrite the main configuration file
 	cat > \$boot/refind.conf <<- REFIND_EOF
 	timeout 20
 	scanfor manual
+	scan_driver_dirs /\$refind_aux/drivers_x64
 	REFIND_EOF
 
 	add_banner >> \$boot/refind.conf
@@ -241,8 +260,8 @@ copy_refind() {
 	cat >> \$boot/refind.conf <<- REFIND_EOF
 
 	menuentry "others" {
-	  icon \$boot/icons/os_unknown.icns
-	  loader \$refind_boot
+	  icon /\$boot/icons/\$scan_icon
+	  loader /\$refind_boot
 	}
 	REFIND_EOF
 }
@@ -262,7 +281,7 @@ esac
 copy_shell
 copy_mt86
 
-imgsize="\$[ \$(du -sB32k \$efi | cut -f1) + 4 ]"
+imgsize="\$[ \$(du -lsB32k \$efi | cut -f1) + 4 ]"
 img=.efiboot.img
 
 dd if=/dev/zero of=\$img bs=32k count="\$imgsize"
