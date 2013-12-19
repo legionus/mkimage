@@ -214,10 +214,10 @@ add_stage2() {
 }
 
 add_banner() {
-	[ -s /usr/share/gfxboot/sisyphus/bootlogo ] || return 0
+	bootlogo="`find /usr/share/gfxboot -name bootlogo | head -1`"
+	[ -s "\$bootlogo" ] || return 0
 	type -t convert >&/dev/null || return 0
-	if cpio -i --quiet --to-stdout back.jpg \
-		< /usr/share/gfxboot/sisyphus/bootlogo \
+	if cpio -i --quiet --to-stdout back.jpg < "\$bootlogo" \
 		| convert - \$boot/icons/bg.png; then
 		echo "banner icons/bg.png"
 	fi
