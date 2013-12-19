@@ -137,7 +137,10 @@ copy_shim() {
 }
 
 copy_kernel() {
-	cp $verbose -pLft \$boot -- syslinux/alt0/{vmlinuz,full.cz}
+	! [ -s \$boot/vmlinuz -a -s \$boot/full.cz ] ||
+		return 0
+
+	cp $verbose -lpLft \$boot -- syslinux/alt0/{vmlinuz,full.cz}
 }
 
 copy_elilo() {
@@ -272,6 +275,9 @@ if [ -f \$efi/\$shell ]; then
 fi
 
 mcopy $verbose -i \$img -s \$efi ::
+
+# use ISO9660 hardlinks support if possible
+hardlink $verbose -c \$efi
 
 # ...and finally into its ISO9660 location for refind
 if [ -f \$shell ]; then
