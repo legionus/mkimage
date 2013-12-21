@@ -144,7 +144,6 @@ copy_kernel() {
 }
 
 copy_elilo() {
-	copy_kernel
 	cp $verbose -pLf \$efi_bindir/elilo.efi \${1:-\$bin_path}
 	cat > \$boot/elilo.conf <<- ELILO_EOF
 	# common bits (elilo complains about missing configuration)
@@ -224,7 +223,6 @@ scan_icon=os_unknown.icns
 blacklist="shim.efi shim-fedora.efi PreLoader.efi TextMode.efi ebounce.efi GraphicsConsole.efi MokManager.efi HashTool.efi HashTool-signed.efi elilo.efi"
 
 copy_refind() {
-	copy_kernel	# seems to be unavoidable
 	copy_elilo \$boot/elilo.efi
 
 	mkdir $verbose -p \$boot \$refind_aux
@@ -278,6 +276,7 @@ refind)
 	fatal "Unable to handle '$EFI_BOOTLOADER'.";;
 esac
 
+copy_kernel	# seems to be unavoidable
 copy_shell
 copy_mt86
 
