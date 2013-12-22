@@ -54,7 +54,7 @@ fatal() { echo $*; exit 1; }
 stage2=
 for i in altinst live rescue; do
 	if [ -f "\$i" ]; then
-		stage2="\$stage2 \$i"
+		stage2="\${stage2:+\$stage2 }\$i"
 		break
 	fi
 done
@@ -143,15 +143,20 @@ copy_kernel() {
 	cp $verbose -lpLft \$boot -- syslinux/alt0/{vmlinuz,full.cz}
 }
 
+kargs="fastboot live splash lowmem showopts automatic=method:cdrom"
+
 copy_elilo() {
 	cp $verbose -pLf \$efi_bindir/elilo.efi \${1:-\$bin_path}
 	cat > \$boot/elilo.conf <<- ELILO_EOF
-	# common bits (elilo complains about missing configuration)
-	append="fastboot live splash lowmem showopts automatic=method:cdrom"
+	append="\$kargs"
 	read-only
 	image="vmlinuz"
 	  label="linux"
+	  initrd=full.cz
 	ELILO_EOF
+	[ "$EFI_BOOTLOADER" != elilo ] ||
+		echo "  append=\"\$kargs stagename=\${stage2% *}\"" \
+			>> \$boot/elilo.conf
 }
 
 add_langs() {
