@@ -142,7 +142,7 @@ copy_kernel() {
 	cp $verbose -lpLft \$boot -- syslinux/alt0/{vmlinuz,full.cz}
 }
 
-kargs="fastboot live splash lowmem showopts automatic=method:cdrom"
+kargs="fastboot live lowmem showopts automatic=method:cdrom"
 
 copy_elilo() {
 	cp $verbose -pLf \$efi_bindir/elilo.efi \${1:-\$bin_path}
@@ -179,10 +179,17 @@ add_stage2() {
 	count="\`echo \$stage2 | wc -w\`"
 	for root in \$stage2; do
 		case "\$root" in
-		altinst) label="Installation";;
-		live) label="Live";;
-		rescue) label="Rescue";;
-		*) label="\$root";;
+		altinst)
+			splash="splash "
+			label="Installation";;
+		live)
+			splash="splash "
+			label="Live";;
+		rescue)
+			splash=
+			label="Rescue";;
+		*)
+			label="\$root";;
 		esac
 
 		# provide differentiating boot target icons if needed
@@ -198,7 +205,7 @@ add_stage2() {
 		  loader /\$boot/elilo.efi
 		  # NB: -v seems critical, otherwise we hit this:
 		  #     gzip_x86_64: invalid exec_header
-		  options "-v -i full.cz vmlinuz \`bootparams \$root\`"
+		  options "-v -i full.cz vmlinuz \`bootparams \$root\` \$splash"
 		REFIND_EOF
 		add_langs
 		echo "}"
