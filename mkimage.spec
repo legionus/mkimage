@@ -1,5 +1,5 @@
 Name: mkimage
-Version: 0.2.12.1
+Version: 0.2.12.2
 Release: alt1
 
 Summary: Simple image creator
@@ -26,6 +26,7 @@ files (called `templates').
 %package preinstall
 Summary: Security setup for mkimage to function properly
 Group: Development/Other
+Requires: sysfsutils
 
 %description preinstall
 This package contains settings allowing mkimage to operate
@@ -82,6 +83,9 @@ fi
 # - maybe Require: %%name-preinstall in the main package sometime later
 
 %changelog
+* Sat Mar 01 2014 Michael Shigorin <mike@altlinux.org> 0.2.12.2-alt1
+- preinstall subpackage: added missing dependency (thanks Speccyfighter)
+
 * Wed Dec 25 2013 Michael Shigorin <mike@altlinux.org> 0.2.12.1-alt1
 - mki-copy-efiboot: rescue needs no bootsplash
 
