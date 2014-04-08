@@ -215,13 +215,14 @@ add_stage2() {
 gfxprefix=/usr/share/gfxboot
 
 add_banner() {
+	local bgfile="\$refind_icons/bg.png"
 	[ -d \$gfxprefix ] || return 0
 	type -t convert >&/dev/null || return 0
 	bootlogo="\`find \$gfxprefix -name bootlogo | tail -1\`"
 	[ -s "\$bootlogo" ] || return 0
-	if cpio -i --quiet --to-stdout back.jpg < "\$bootlogo" \
-		| convert - \$refind_icons/bg.png; then
-		echo "banner /\$refind_icons/bg.png"
+	if [ -s "\$bgfile" ] || cpio -i --quiet --to-stdout back.jpg \
+		< "\$bootlogo" | convert - \$bgfile; then
+		echo "banner /\$bgfile"
 	fi
 }
 
@@ -253,7 +254,11 @@ copy_refind() {
 		mv \$refind_aux/altlinux \$boot/icons
 
 	# empty aux refind configuration makes it scan for loaders
-	echo "dont_scan_files \$blacklist" > \$refind_aux/refind.conf
+	{
+		echo "dont_scan_files \$blacklist"
+		echo "icons_dir \$refind_aux/icons"
+		add_banner
+	} > \$refind_aux/refind.conf
 
 	# overwrite the main configuration file
 	cat > \$boot/refind.conf <<- REFIND_EOF
