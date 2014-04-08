@@ -193,9 +193,9 @@ add_stage2() {
 		esac
 
 		# provide differentiating boot target icons if needed
-		icon="\$refind_aux/icons/altlinux/\$root.icns"
+		icon="\$refind_icons/altlinux/\$root.icns"
 		[ "\$count" -ne 1 -a -s "\$icon" ] ||
-			icon="\$refind_aux/icons/os_altlinux.icns"
+			icon="\$refind_icons/os_altlinux.icns"
 
 		cat <<- REFIND_EOF
 
@@ -220,8 +220,8 @@ add_banner() {
 	bootlogo="\`find \$gfxprefix -name bootlogo | tail -1\`"
 	[ -s "\$bootlogo" ] || return 0
 	if cpio -i --quiet --to-stdout back.jpg < "\$bootlogo" \
-		| convert - \$refind_aux/icons/bg.png; then
-		echo "banner /\$refind_aux/icons/bg.png"
+		| convert - \$refind_icons/bg.png; then
+		echo "banner /\$refind_icons/bg.png"
 	fi
 }
 
@@ -244,7 +244,7 @@ copy_refind() {
 	cp $verbose -aLf /usr/share/refind/icons/ \$refind_aux
 
 	mkdir $verbose -p \$boot/icons
-	find \$refind_aux/icons/ \
+	find \$refind_icons/ \
 		-name 'func_*' -o -name 'tool_*' -o -name 'vol_*' \
 		-o -name \$scan_icon |
 		xargs -r cp $verbose -lpft \$boot/icons
