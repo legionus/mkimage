@@ -175,6 +175,20 @@ add_langs() {
 	REFIND_EOF
 }
 
+add_forensic_mode() {
+	[ -f rescue ] || return 0
+	forensic_args="\$(sed -rn \
+		's,^.* stagename=rescue (.*forensic hash=[0-9a-f]+)\$,\1,p' \
+		syslinux/isolinux.cfg)"
+	[ -n "\$forensic_args" ] || return 0
+
+	cat <<- REFIND_EOF
+	  submenuentry "Forensic mode (leave disks alone)" {
+	    add_options "\$forensic_args"
+	  }
+	REFIND_EOF
+}
+
 add_stage2() {
 	count="\`echo \$stage2 | wc -w\`"
 	for root in \$stage2; do
@@ -207,6 +221,7 @@ add_stage2() {
 		  #     gzip_x86_64: invalid exec_header
 		  options "-v -i full.cz vmlinuz \`bootparams \$root\` \$splash"
 		REFIND_EOF
+		[ "\$root" != rescue ] || add_forensic_mode
 		add_langs
 		echo "}"
 	done
