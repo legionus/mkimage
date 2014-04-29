@@ -271,8 +271,9 @@ copy_refind() {
 	# empty aux refind configuration makes it scan for loaders
 	{
 		echo "dont_scan_files \$blacklist"
-		echo "icons_dir \$refind_aux/icons"
-		add_banner
+		echo "textonly 1"
+		echo "textmode 0"	# 80x25
+		echo "timeout 0"
 	} > \$refind_aux/refind.conf
 
 	# overwrite the main configuration file
