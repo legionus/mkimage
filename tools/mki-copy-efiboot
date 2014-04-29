@@ -270,6 +270,7 @@ copy_refind() {
 	# empty aux refind configuration makes it scan for loaders
 	{
 		echo "dont_scan_files \$blacklist"
+		echo 'dont_scan_volumes "Recovery HD", LRS_ESP, "El Torito"'
 		echo "textonly 1"
 		echo "textmode 0"	# 80x25
 		echo "timeout 0"
