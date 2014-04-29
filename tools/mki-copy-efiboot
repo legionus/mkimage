@@ -221,8 +221,7 @@ add_stage2() {
 		  #     gzip_x86_64: invalid exec_header
 		  options "-v -i full.cz vmlinuz \`bootparams \$root\` \$splash"
 		REFIND_EOF
-		[ "\$root" != rescue ] || add_forensic_mode
-		add_langs
+		[ "\$root" = rescue ] && add_forensic_mode || add_langs
 		echo "}"
 	done
 }
