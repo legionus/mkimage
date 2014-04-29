@@ -276,23 +276,24 @@ copy_refind() {
 	} > \$refind_aux/refind.conf
 
 	# overwrite the main configuration file
-	cat > \$boot/refind.conf <<- REFIND_EOF
-	timeout 20
-	scanfor manual
-	scan_driver_dirs /\$refind_aux/drivers_x64
-	REFIND_EOF
+	{
+		cat <<- REFIND_EOF
+		timeout 20
+		scanfor manual
+		scan_driver_dirs /\$refind_aux/drivers_x64
+		REFIND_EOF
 
-	add_banner >> \$boot/refind.conf
+		add_banner
+		add_stage2
 
-	add_stage2 >> \$boot/refind.conf
+		cat <<- REFIND_EOF
 
-	cat >> \$boot/refind.conf <<- REFIND_EOF
-
-	menuentry "others" {
-	  icon /\$boot/icons/\$scan_icon
-	  loader /\$refind_boot
-	}
-	REFIND_EOF
+		menuentry "others" {
+		  icon /\$boot/icons/\$scan_icon
+		  loader /\$refind_boot
+		}
+		REFIND_EOF
+	} > \$boot/refind.conf
 }
 
 [ -z "${EFI_CERT:-}" ] ||
