@@ -36,7 +36,7 @@ done
 mki-install $pkgs ||
 	fatal "faild to install packages: $pkgs."
 
-run_chrooted "$chroot" <<EOF
+HSH_PROC=1 run_chrooted "$chroot" <<EOF
 #!/bin/sh -efu
 
 imgdir=/.image
