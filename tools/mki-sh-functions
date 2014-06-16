@@ -68,7 +68,6 @@ make_exec() {
 }
 
 run_chrooted() {
-echo "** $0: HSH_PROC=$HSH_PROC" >&2
 	local rc=0
 	make_exec "$1/.host/run_chrooted.sh"
 	mki-run "/.host/run_chrooted.sh" || rc=$?
