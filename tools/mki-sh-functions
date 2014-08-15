@@ -64,7 +64,7 @@ get_copy_args() {
 
 make_exec() {
 	cat > "$1"
-	chmod +x -- "$1"
+	chmod 755 -- "$1"
 }
 
 run_chrooted() {
