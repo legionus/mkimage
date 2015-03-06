@@ -142,7 +142,7 @@ copy_kernel() {
 	cp $verbose -lpLft \$boot -- syslinux/alt0/{vmlinuz,full.cz}
 }
 
-kargs="fastboot live lowmem showopts automatic=method:cdrom"
+kargs="fastboot live lowmem showopts automatic=method:cdrom ${EFI_BOOTARGS:-}"
 
 copy_elilo() {
 	cp $verbose -pLf \$efi_bindir/elilo.efi \${1:-\$bin_path}
