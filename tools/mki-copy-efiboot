@@ -317,7 +317,7 @@ imgsize="\$[ \$(du -lsB32k \$efi | cut -f1) + 4 ]"
 img=.efiboot.img
 
 dd if=/dev/zero of=\$img bs=32k count="\$imgsize"
-mkfs.vfat $verbose -n "El Torito" \$img
+mkfs.fat $verbose -n "El Torito" \$img
 
 # put EFI shell into the FAT image's root (for firmware)...
 if [ -f \$efi/\$shell ]; then
