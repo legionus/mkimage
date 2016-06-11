@@ -319,6 +319,10 @@ img=.efiboot.img
 dd if=/dev/zero of=\$img bs=32k count="\$imgsize"
 mkfs.fat $verbose -n "El Torito" \$img
 
+# dosfstools-4.0 insists that total number of sectors
+# is a multiple of sectors per track (the infamous 63)
+echo "mtools_skip_check=1" >~/.mtoolsrc
+
 # put EFI shell into the FAT image's root (for firmware)...
 if [ -f \$efi/\$shell ]; then
 	mv $verbose \$efi/\$shell .
