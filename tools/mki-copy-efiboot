@@ -317,10 +317,18 @@ imgsize="\$[ \$(du -lsB32k \$efi | cut -f1) + 4 ]"
 img=.efiboot.img
 
 dd if=/dev/zero of=\$img bs=32k count="\$imgsize"
-mkfs.fat $verbose -n "El Torito" \$img
 
-# dosfstools-4.0 insists that total number of sectors
-# is a multiple of sectors per track (the infamous 63)
+# dosfstools-4.0 has dropped those ancient symlinks, *sigh*
+if type -t mkfs.fat >/dev/null; then
+	mkfs=mkfs.fat
+else
+	mkfs=mkfs.vfat
+fi
+\$mkfs $verbose -n "El Torito" \$img
+
+# mtools insists that total number of sectors
+# is a multiple of sectors per track (the infamous 63),
+# and dosfstools-4.0 doesn't follow that anymore
 echo "mtools_skip_check=1" >~/.mtoolsrc
 
 # put EFI shell into the FAT image's root (for firmware)...
