@@ -207,9 +207,9 @@ add_stage2() {
 		esac
 
 		# provide differentiating boot target icons if needed
-		icon="\$refind_icons/altlinux/\$root.icns"
+		icon="\$refind_icons/altlinux/\$root.\$icon_format"
 		[ "\$count" -ne 1 -a -s "\$icon" ] ||
-			icon="\$refind_icons/os_altlinux.icns"
+			icon="\$refind_icons/os_altlinux.\$icon_format"
 
 		cat <<- REFIND_EOF
 
@@ -243,7 +243,12 @@ add_banner() {
 refind_aux=\$efi/refind
 refind_boot=\$refind_aux/refind_x64.efi
 refind_icons=\$refind_aux/icons
-scan_icon=os_unknown.icns
+if [ -f /usr/share/refind/icons/os_unknown.png ];then
+   icon_format=png
+else
+   icon_format=icns
+fi
+scan_icon=os_unknown.\$icon_format
 
 # http://www.rodsbooks.com/refind/configfile.html
 blacklist="shim.efi shim-fedora.efi PreLoader.efi TextMode.efi ebounce.efi GraphicsConsole.efi MokManager.efi HashTool.efi HashTool-signed.efi elilo.efi"
