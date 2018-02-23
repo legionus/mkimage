@@ -84,7 +84,14 @@ mki_list_pkgs() {
 		else
 			printf '%s\n' "$r"
 		fi
-	done
+	done |
+		{
+			if [ -z "$NO_SORT_PACKAGES" ]; then
+				sort -u
+			else
+				cat
+			fi
+		}
 }
 
 fi
