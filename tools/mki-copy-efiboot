@@ -30,11 +30,13 @@ pkgs="$pkgs $EFI_BOOTLOADER"
 	pkgs="$pkgs $EFI_SHELL"
 
 [ -z "${EFI_CERT:-}" ] ||
-	pkgs="$pkgs alt-uefi-certs shim-signed"
+	pkgs="$pkgs alt-uefi-certs shim-signed shim-unsigned"
 
 case "${EFI_BOOTLOADER:-}" in
 refind)	# won't boot unsigned kernels in SB mode
-	pkgs="$pkgs elilo"
+	# elilo for x86_64 boot stack compatibility
+	# grub-efi for ia32 EFI on x86_64
+	pkgs="$pkgs elilo grub-efi"
 	;;
 esac
 
@@ -60,6 +62,7 @@ done
 [ -n "\${stage2:-}" ] ||
 	fatal "no stage2 image found."
 
+ia32efi_flag="present"
 efi=EFI
 boot=\$efi/BOOT
 cert=\$efi/enroll
@@ -80,6 +83,34 @@ bootparams() {
 	[ -s "\$1" ] || return 0
 	stage2_size="\$[ \$(stat -c%s \$1) / 1024 + 1 ]"
 	echo "ramdisk_size=\$stage2_size stagename=\$1"
+}
+
+shim_teen_path() {
+	# find out if shim version is not less than 15
+	# looking at directory structure
+	# ia32 binaries should be present since that version
+	shim_dir_prefix="/usr/share/shim"
+	if [ -d "\$shim_dir_prefix" ]; then
+		shim_max_version="\$(find  \$shim_dir_prefix -maxdepth 1 -type d | sed 's|\./||' | sort -n -r | head -1)"
+		if [ ! "X\$shim_max_version" = "X\$shim_dir_prefix" ]; then
+
+			shimia32_dir=\$shim_max_version/ia32
+			shimx64_dir=\$shim_max_version/x64
+		else
+			ia32efi_flag="absent"
+		fi
+	fi
+}
+
+ia32efi_stack_full() {
+	# check if shim, refind and grub-efi include ia32 EFI binaries
+	shim_teen_path
+	[ -f \$efi_bindir/refind_ia32.efi ] || ia32efi_flag="absent"
+	[ -f \$efi_bindir/grubia32.efi ] || ia32efi_flag="absent"
+	
+	[ "X\$ia32efi_flag" = "Xabsent" ] && 
+		echo "Warning! Some of required bootloader packages in current branch miss ia32 binaries, ia32 EFI support is therefore disabled." || :
+
 }
 
 efi_bindir=/usr/lib64/efi
@@ -133,6 +164,15 @@ copy_shim() {
 	copy_cert
 	cp $verbose -pLf \$efi_bindir/shim.efi \$shim_path
 	cp $verbose -pLf \$efi_bindir/MokManager.efi \$boot
+
+	#injection of unsigned (for a while) shim-15+ ia32 binaries
+	if [ "X\$ia32efi_flag" = "Xpresent" ];then
+
+		#shimia32.efi binary is a first stage loader therefore renamed
+		cp $verbose -pLf \$shimia32_dir/shimia32.efi \$boot/bootia32.efi
+		cp $verbose -pLf \$shimia32_dir/mmia32.efi \$boot
+		cp $verbose -pLf \$shimia32_dir/shimia32.hash \$boot/bootia32.hash
+	fi
 }
 
 copy_kernel() {
@@ -223,6 +263,22 @@ add_stage2() {
 		REFIND_EOF
 		[ "\$root" = rescue ] && add_forensic_mode || add_langs
 		echo "}"
+
+		#append ia32 EFI boot option only if all ia32 bootloader stack parts are available in current branch
+		if [ "X\$ia32efi_flag" = "Xpresent" ]; then
+
+			cat <<- REFIND_EOF
+
+			# GRUB-EFI is used as SB trampoline for unsigned kernels
+			# for ia32 EFI on x86_64 platforms
+			menuentry "ALT Linux ia32 EFI for x86_64 \$label" {
+		  	icon /\$icon
+		  	loader /\$boot/grubia32_ldr.efi
+		  	options ""
+			REFIND_EOF
+			[ "\$root" = rescue ] && add_forensic_mode || add_langs
+			echo "}"
+		fi
 	done
 }
 
@@ -240,8 +296,22 @@ add_banner() {
 	fi
 }
 
+add_grub_cfg() {
+	{
+		cat <<- GRUB_EOF
+		set default=1
+		set timeout=1
+		menuentry 'ALT Linux \$label' {
+			linuxefi /EFI/BOOT/vmlinuz \$kargs stagename=\${stage2% *}
+			initrdefi /EFI/BOOT/full.cz
+		}
+		GRUB_EOF
+	} > \$boot/grub.cfg
+}
+
 refind_aux=\$efi/refind
 refind_boot=\$refind_aux/refind_x64.efi
+refind_bootia32=\$refind_aux/refind_ia32.efi
 refind_icons=\$refind_aux/icons
 if [ -f /usr/share/refind/icons/os_unknown.png ];then
    icon_format=png
@@ -259,8 +329,18 @@ copy_refind() {
 	mkdir $verbose -p \$boot \$refind_aux
 	cp $verbose -pLf \$efi_bindir/refind_x64.efi \$bin_path
 	cp $verbose -lpf \$bin_path \$refind_boot
-
 	cp $verbose -aLf \$efi_bindir/drivers_x64/ \$refind_aux
+
+	if [ "X\$ia32efi_flag" = "Xpresent" ];then	
+		#refind binary mimics the grub2 binary
+		cp $verbose -pLf \$efi_bindir/refind_ia32.efi \$boot/grubia32.efi
+		#have to rename real grubia32 to prevent interference
+		cp $verbose -pLf \$efi_bindir/grubia32.efi \$boot/grubia32_ldr.efi
+		cp $verbose -aLf \$efi_bindir/refind_ia32.efi \$refind_bootia32
+
+		cp $verbose -aLf \$efi_bindir/drivers_ia32/ \$refind_aux
+	fi
+
 	cp $verbose -aLf /usr/share/refind/icons/ \$refind_aux
 
 	mkdir $verbose -p \$boot/icons
@@ -289,6 +369,14 @@ copy_refind() {
 		scan_driver_dirs /\$refind_aux/drivers_x64
 		REFIND_EOF
 
+
+		#if ia32 EFI bootloader stack is full
+		if [ "X\$ia32efi_flag" = "Xpresent" ];then
+			cat <<- REFIND_EOF
+			scan_driver_dirs /\$refind_aux/drivers_ia32
+			REFIND_EOF
+		fi
+
 		add_banner
 		add_stage2
 
@@ -298,9 +386,26 @@ copy_refind() {
 		  icon /\$boot/icons/\$scan_icon
 		  loader /\$refind_boot
 		}
+
 		REFIND_EOF
+
+		#if ia32 EFI bootloader stack is full
+                if [ "X\$ia32efi_flag" = "Xpresent" ];then
+			cat <<- REFIND_EOF
+			menuentry "others ia32 EFI on x86_64" {
+			  icon /\$boot/icons/\$scan_icon
+			  loader /\$refind_bootia32
+			}
+
+			REFIND_EOF
+		fi
 	} > \$boot/refind.conf
+	#if ia32 EFI bootloader stack is full
+	[ "X\$ia32efi_flag" = "Xpresent" ] && add_grub_cfg || :
 }
+
+#find out if all bootloader stages have ia32 binaries in the package
+ia32efi_stack_full
 
 [ -z "${EFI_CERT:-}" ] ||
 	copy_shim
