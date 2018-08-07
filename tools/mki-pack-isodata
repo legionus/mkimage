@@ -34,15 +34,15 @@ run_chrooted "$chroot" >"$outdir/$outname" <<EOF
 #!/bin/sh -efu
 cd /tmp
 cat > .mkisofsrc <<-__EOF__
-	APPI="${ISODATA_APPI:-}"
-	COPY="${ISODATA_COPY:-}"
-	ABST="${ISODATA_ABST:-}"
-	BIBL="${ISODATA_BIBL:-}"
-	PREP="${ISODATA_PREP:-}"
-	PUBL="${ISODATA_PUBL:-}"
-	SYSI="${ISODATA_SYSI:-}"
-	VOLI="${ISODATA_VOLI:-}"
-	VOLS="${ISODATA_VOLS:-}"
+	APPI=${ISODATA_APPI:-}
+	COPY=${ISODATA_COPY:-}
+	ABST=${ISODATA_ABST:-}
+	BIBL=${ISODATA_BIBL:-}
+	PREP=${ISODATA_PREP:-}
+	PUBL=${ISODATA_PUBL:-}
+	SYSI=${ISODATA_SYSI:-}
+	VOLI=${ISODATA_VOLI:-}
+	VOLS=${ISODATA_VOLS:-}
 __EOF__
 
 if [ -n "${MKI_EXCLUDE:-}" ]; then
