@@ -107,8 +107,8 @@ ia32efi_stack_full() {
 	shim_teen_path
 	[ -f \$efi_bindir/refind_ia32.efi ] || ia32efi_flag="absent"
 	[ -f \$efi_bindir/grubia32.efi ] || ia32efi_flag="absent"
-	
-	[ "X\$ia32efi_flag" = "Xabsent" ] && 
+
+	[ "X\$ia32efi_flag" = "Xabsent" ] &&
 		echo "Warning! Some of required bootloader packages in current branch miss ia32 binaries, ia32 EFI support is therefore disabled." || :
 
 }
@@ -272,9 +272,9 @@ add_stage2() {
 			# GRUB-EFI is used as SB trampoline for unsigned kernels
 			# for ia32 EFI on x86_64 platforms
 			menuentry "ALT Linux ia32 EFI for x86_64 \$label" {
-		  	icon /\$icon
-		  	loader /\$boot/grubia32_ldr.efi
-		  	options ""
+			icon /\$icon
+			loader /\$boot/grubia32_ldr.efi
+			options ""
 			REFIND_EOF
 			[ "\$root" = rescue ] && add_forensic_mode || add_langs
 			echo "}"
@@ -368,7 +368,6 @@ copy_refind() {
 		scanfor manual
 		scan_driver_dirs /\$refind_aux/drivers_x64
 		REFIND_EOF
-
 
 		#if ia32 EFI bootloader stack is full
 		if [ "X\$ia32efi_flag" = "Xpresent" ];then
