@@ -422,7 +422,7 @@ copy_kernel	# seems to be unavoidable
 copy_shell
 copy_mt86
 
-imgsize="\$[ \$(du -lsB32k \$efi | cut -f1) + 4 ]"
+imgsize="\$[ \$(du -lsB32k \$efi | cut -f1) + 10 ]"
 img=.efiboot.img
 
 dd if=/dev/zero of=\$img bs=32k count="\$imgsize"
