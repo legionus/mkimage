@@ -251,34 +251,36 @@ add_stage2() {
 		[ "\$count" -ne 1 -a -s "\$icon" ] ||
 			icon="\$refind_icons/os_altlinux.\$icon_format"
 
-		cat <<- REFIND_EOF
 
-		# ELILO used as SB trampoline for unsigned kernels
-		menuentry "ALT Linux \$label" {
-		  icon /\$icon
-		  loader /\$boot/elilo.efi
-		  # NB: -v seems critical, otherwise we hit this:
-		  #     gzip_x86_64: invalid exec_header
-		  options "-v -i full.cz vmlinuz \`bootparams \$root\` \$splash"
-		REFIND_EOF
-		[ "\$root" = rescue ] && add_forensic_mode || add_langs
-		echo "}"
+		case "\$1" in
+		x64)
+			cat <<- REFIND_EOF
 
-		#append ia32 EFI boot option only if all ia32 bootloader stack parts are available in current branch
-		if [ "X\$ia32efi_flag" = "Xpresent" ]; then
-
+			# ELILO used as SB trampoline for unsigned kernels
+			menuentry "ALT Linux \$label" {
+			  icon /\$icon
+			  loader /\$boot/elilo.efi
+			  # NB: -v seems critical, otherwise we hit this:
+			  #     gzip_x86_64: invalid exec_header
+			  options "-v -i full.cz vmlinuz \`bootparams \$root\` \$splash"
+			REFIND_EOF
+			[ "\$root" = rescue ] && add_forensic_mode || add_langs
+			echo "}";;
+		ia32)
 			cat <<- REFIND_EOF
 
 			# GRUB-EFI is used as SB trampoline for unsigned kernels
 			# for ia32 EFI on x86_64 platforms
-			menuentry "ALT Linux ia32 EFI for x86_64 \$label" {
-			icon /\$icon
-			loader /\$boot/grubia32_ldr.efi
-			options ""
+			  menuentry "ALT Linux \$label" {
+			  icon /\$icon
+			  loader /\$boot/grubia32_ldr.efi
+			  options ""
 			REFIND_EOF
 			[ "\$root" = rescue ] && add_forensic_mode || add_langs
-			echo "}"
-		fi
+			echo "}";;
+		*)
+			;;
+		esac
 	done
 }
 
@@ -307,6 +309,14 @@ add_grub_cfg() {
 		}
 		GRUB_EOF
 	} > \$boot/grub.cfg
+}
+
+refind_autodetect() {
+	echo "dont_scan_files \$blacklist"
+	echo 'dont_scan_volumes "Recovery HD", LRS_ESP, "El Torito"'
+	echo "textonly 1"
+	echo "textmode 0"	# 80x25
+	echo "timeout 0"
 }
 
 refind_aux=\$efi/refind
@@ -354,14 +364,17 @@ copy_refind() {
 
 	# empty aux refind configuration makes it scan for loaders
 	{
-		echo "dont_scan_files \$blacklist"
-		echo 'dont_scan_volumes "Recovery HD", LRS_ESP, "El Torito"'
-		echo "textonly 1"
-		echo "textmode 0"	# 80x25
-		echo "timeout 0"
+		refind_autodetect
 	} > \$refind_aux/refind.conf
 
-	# overwrite the main configuration file
+	#if ia32 EFI bootloader stack is full
+	if [ "X\$ia32efi_flag" = "Xpresent" ];then
+		{
+			refind_autodetect
+		} > \$refind_aux/refind_ia32.conf
+	fi
+
+	# overwrite the main configuration file (for x64 EFI version)
 	{
 		cat <<- REFIND_EOF
 		timeout 20
@@ -369,15 +382,8 @@ copy_refind() {
 		scan_driver_dirs /\$refind_aux/drivers_x64
 		REFIND_EOF
 
-		#if ia32 EFI bootloader stack is full
-		if [ "X\$ia32efi_flag" = "Xpresent" ];then
-			cat <<- REFIND_EOF
-			scan_driver_dirs /\$refind_aux/drivers_ia32
-			REFIND_EOF
-		fi
-
 		add_banner
-		add_stage2
+		add_stage2 x64
 
 		cat <<- REFIND_EOF
 
@@ -388,17 +394,32 @@ copy_refind() {
 
 		REFIND_EOF
 
-		#if ia32 EFI bootloader stack is full
-                if [ "X\$ia32efi_flag" = "Xpresent" ];then
+	} > \$boot/refind.conf
+
+
+	#append ia32 EFI boot options only if all ia32 bootloader stack parts are available in current branch
+	if [ "X\$ia32efi_flag" = "Xpresent" ];then
+		# overwrite the main configuration file (for ia32 EFI version)
+		{
 			cat <<- REFIND_EOF
-			menuentry "others ia32 EFI on x86_64" {
+			timeout 20
+			scanfor manual
+			scan_driver_dirs /\$refind_aux/drivers_ia32
+			REFIND_EOF
+
+			add_banner
+			add_stage2 ia32
+
+			cat <<- REFIND_EOF
+			menuentry "others" {
 			  icon /\$boot/icons/\$scan_icon
 			  loader /\$refind_bootia32
 			}
 
 			REFIND_EOF
-		fi
-	} > \$boot/refind.conf
+		} > \$boot/refind_ia32.conf
+	fi
+
 	#if ia32 EFI bootloader stack is full
 	[ "X\$ia32efi_flag" = "Xpresent" ] && add_grub_cfg || :
 }
