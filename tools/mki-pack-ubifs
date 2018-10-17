@@ -51,7 +51,7 @@ done
 	fatal "$dir: not look like work directory of hasher."
 
 mki-install $pkgs ||
-	fatal "faild to install packages: $pkgs."
+	fatal "failed to install packages: $pkgs."
 
 run_chrooted "$chroot" << EOF
 #!/bin/sh -efu

@@ -32,7 +32,7 @@ imgsubdir="${imgsubdir#/}"
 	fatal "/.image/$imgsubdir/etc/yaboot.conf: not found."
 
 mki-install $pkgs ||
-	fatal "faild to install packages: $pkgs."
+	fatal "failed to install packages: $pkgs."
 
 run_chrooted "$chroot" >"$outdir/$outname" <<EOF
 #!/bin/sh -efu

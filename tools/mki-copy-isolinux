@@ -22,7 +22,7 @@ imgsubdir="${imgsubdir#/}"
 	fatal "$dir: not look like a work directory of hasher."
 
 mki-install $pkgs ||
-	fatal "faild to install packages: $pkgs."
+	fatal "failed to install packages: $pkgs."
 
 [ -f "$chroot/.image/$imgsubdir/syslinux/isolinux.cfg" ] ||
 	message "Warning: /.image/$imgsubdir/syslinux/isolinux.cfg: not found."

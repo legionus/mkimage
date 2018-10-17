@@ -34,7 +34,7 @@ done
 	fatal "$dir: not look like a work directory of hasher."
 
 mki-install $pkgs ||
-	fatal "faild to install packages: $pkgs."
+	fatal "failed to install packages: $pkgs."
 
 HSH_PROC=1 run_chrooted "$chroot" <<EOF
 #!/bin/sh -efu
