@@ -102,7 +102,8 @@ shim_teen_path() {
 
 ia32efi_stack_full() {
 	# check if shim, refind and grub-efi include ia32 EFI binaries
-	shim_teen_path
+	# if signed shim is absent try to fallback to unsigned one
+	[ -f \$efi_bindir/shimia32.efi ] || shim_teen_path
 	[ -f \$efi_bindir/refind_ia32.efi ] || ia32efi_flag="absent"
 	[ -f \$efi_bindir/grubia32.efi ] || ia32efi_flag="absent"
 
@@ -160,16 +161,28 @@ copy_shim() {
 	[ -n "\${shim_path:-}" ] ||
 		return 0
 	copy_cert
-	cp $verbose -pLf \$efi_bindir/shim.efi \$shim_path
-	cp $verbose -pLf \$efi_bindir/MokManager.efi \$boot
+	if [ -s "\$efi_bindir/shimx64.efi" ]; then
+		cp $verbose -pLf \$efi_bindir/shimx64.efi \$shim_path
+		cp $verbose -pLf \$efi_bindir/mmx64.efi \$boot
+	else
+		# compatibility with shim-signed-0.4
+		cp $verbose -pLf \$efi_bindir/shim.efi \$shim_path
+		cp $verbose -pLf \$efi_bindir/MokManager.efi \$boot
+	fi
 
-	#injection of unsigned (for a while) shim-15+ ia32 binaries
+	# injection of ia32 binaries
 	if [ "\$ia32efi_flag" = "present" ]; then
+		if [ -s "\$efi_bindir/shimia32.efi" ]; then
+			# shimia32.efi binary is a first stage loader therefore renamed
+			cp $verbose -pLf \$efi_bindir/shimia32.efi \$boot/bootia32.efi
+			cp $verbose -pLf \$efi_bindir/mmia32.efi \$boot
+		else
+			# use unsigned shim if signed is not available
+			cp $verbose -pLf \$shimia32_dir/shimia32.efi \$boot/bootia32.efi
+			cp $verbose -pLf \$shimia32_dir/mmia32.efi \$boot
+			cp $verbose -pLf \$shimia32_dir/shimia32.hash \$boot/bootia32.hash
+		fi
 
-		#shimia32.efi binary is a first stage loader therefore renamed
-		cp $verbose -pLf \$shimia32_dir/shimia32.efi \$boot/bootia32.efi
-		cp $verbose -pLf \$shimia32_dir/mmia32.efi \$boot
-		cp $verbose -pLf \$shimia32_dir/shimia32.hash \$boot/bootia32.hash
 	fi
 }
 
@@ -329,7 +342,7 @@ fi
 scan_icon=os_unknown.\$icon_format
 
 # http://www.rodsbooks.com/refind/configfile.html
-blacklist="shim.efi shim-fedora.efi PreLoader.efi TextMode.efi ebounce.efi GraphicsConsole.efi MokManager.efi HashTool.efi HashTool-signed.efi elilo.efi"
+blacklist="shim.efi shimx64.efi shimia32.efi shim-fedora.efi PreLoader.efi TextMode.efi ebounce.efi GraphicsConsole.efi MokManager.efi mmx64.efi mmia32.efi HashTool.efi HashTool-signed.efi elilo.efi"
 
 copy_refind() {
 	copy_elilo \$boot/elilo.efi
