@@ -61,7 +61,7 @@ buildlist() {
 	fi
 
 	local conflicts
-	if ! conflicts="$(LANG=C fgrep ': Conflicts: ' "$errfile")"; then
+	if ! conflicts="$(LANG=C egrep ': (Conflicts|Depends): ' "$errfile")"; then
 		cat -- "$errfile" >&2
 		fatal 'could not copy packages.'
 	fi
