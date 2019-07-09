@@ -78,6 +78,10 @@ copy-pxelinux: prepare-workdir $(SUBDIRS)
 copy-syslinux: prepare-workdir $(SUBDIRS)
 	@$(CHROOT_COPY_SYSLINUX)
 
+copy-ieee1275boot: prepare-workdir $(SUBDIRS)
+	@echo "mkimage: Processing '$@' ..."
+	@$(CHROOT_COPY_IEEE1275BOOT)
+
 copy-tree: prepare-workdir $(SUBDIRS)
 	@echo "mkimage: Processing '$@' ..."
 	@if ! $(CHROOT_CACHE) check $@; then \

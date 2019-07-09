@@ -40,6 +40,7 @@ CHROOT_COPY_TREE	?= $(TOOLSDIR)/mki-copy-tree
 CHROOT_COPY_ISOLINUX	?= $(TOOLSDIR)/mki-copy-isolinux
 CHROOT_COPY_PXELINUX	?= $(TOOLSDIR)/mki-copy-pxelinux
 CHROOT_COPY_SYSLINUX	?= $(TOOLSDIR)/mki-copy-syslinux
+CHROOT_COPY_IEEE1275BOOT?= $(TOOLSDIR)/mki-copy-ieee1275boot
 CHROOT_INSTALL		?= $(TOOLSDIR)/mki-install
 CHROOT_IMAGE_INSTALL	?= $(TOOLSDIR)/mki-image-install
 

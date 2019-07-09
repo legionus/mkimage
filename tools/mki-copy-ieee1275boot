@@ -1,0 +1,84 @@
+#!/bin/ash -efux
+#
+# mki-copy-grub-ieee1275
+#
+# This file is part of mkimage
+# Copyright (C) 2019  Gleb Fotengauer-Malinovskiy <glebfm@altlinux.org>
+#
+# This file is covered by the GNU General Public License,
+# which should be included with mkimage as the file COPYING.
+#
+
+. "${0%/*}"/mki-sh-functions
+
+pkgs="${PACKAGES_REQUIRED_COPY_IEEE1275BOOT:-}"
+imgdir="/.image${MKI_IMAGESUBDIR:+/$MKI_IMAGESUBDIR}"
+grub_format="${GRUB_IEEE1275_FORMAT:-powerpc-ieee1275}"
+
+verbose "has started executing."
+
+[ -d "$chroot" ] ||
+	fatal "$dir: does not look like a hasher work directory."
+
+mki-install $pkgs ||
+	fatal "failed to install packages: $pkgs."
+
+run_chrooted "$chroot" <<EOF
+#!/bin/sh -efux
+
+GRUB_DIR=/usr/lib/grub/$grub_format
+[ -d "\$GRUB_DIR" ] || GRUB_DIR=/usr/lib64/grub/$grub_format
+
+cd "$imgdir"
+
+mkdir $verbose -p boot/grub/$grub_format
+
+grub-mkimage $verbose -O $grub_format -d "\$GRUB_DIR" \
+	-p '()/boot/grub'  -o boot/grub/powerpc.elf \
+	echo gzio iso9660 linux minicmd normal test
+
+mkdir $verbose -p ppc
+
+cp $verbose -af "\$GRUB_DIR"/bootinfo.txt -t ppc
+
+if [ -L /boot/vmlinuz ]; then
+	kimage="\$(readlink -ev /boot/vmlinuz)"
+else
+	kimage="\$(find /boot -type f -name 'vmlinuz-*' -print -quit)"
+fi
+
+if [ -n "\$kimage" ]; then
+	mkdir $verbose alt0
+
+	cp $verbose -af \$kimage alt0/vmlinuz
+	cp $verbose -af /boot/full.cz alt0/full.cz
+fi
+
+[ ! -s 'boot/grub/grub.cfg' ] || exit 0
+
+cat > boot/grub/grub.cfg <<@@@
+insmod echo
+insmod gzio
+insmod minicmd
+insmod normal
+insmod test
+
+@@@
+
+syslinux_cfg="syslinux/ieee1275boot.cfg"
+if [ -s "\$syslinux_cfg" ]; then
+	grub-syslinux2cfg -T '' "\$syslinux_cfg" >> boot/grub/grub.cfg
+	rm "\$syslinux_cfg"
+	rmdir syslinux ||:
+else
+	cat >> boot/grub/grub.cfg <<@@@
+menuentry "Install ALT" {
+	linux /alt0/vmlinuz changedisk fastboot automatic=method:cdrom showopts
+	initrd /alt0/full.cz
+}
+@@@
+fi
+
+exit 0
+
+EOF
