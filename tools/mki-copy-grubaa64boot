@@ -1,0 +1,99 @@
+#!/bin/ash -efu
+#
+# mki-copy-grubaa64boot
+#
+# This file is part of mkimage
+# Copyright (C) 2019  Leonid Krivoshein <klark@altlinux.org>
+# Copyright (C) 2019  Alexey Shabalin <shaba@altlinux.org>
+#
+# This file is covered by the GNU General Public License,
+# which should be included with mkimage as the file COPYING.
+#
+
+. "${0%/*}"/mki-sh-functions
+
+pkgs="${PACKAGES_REQUIRED_COPY_GRUBAA64BOOT:-}"
+imgdir="/.image${MKI_IMAGESUBDIR:+/$MKI_IMAGESUBDIR}"
+grub_format="${GRUB_ARM64_FORMAT:-arm64-efi}"
+
+verbose "has started executing."
+
+[ -d "$chroot" ] ||
+	fatal "$dir: does not look like a hasher work directory."
+
+mki-install $pkgs ||
+	fatal "failed to install packages: $pkgs."
+
+run_chrooted "$chroot" <<EOF
+#!/bin/sh -efu
+
+cd "$imgdir"
+
+if [ ! -f EFI/BOOT/.efiboot.img ]; then
+	mkdir $verbose -p EFI/BOOT
+	cp $verbose -Lf /usr/lib64/efi/grubx64.efi EFI/BOOT/bootaa64.efi
+
+	type -t mkfs.fat >/dev/null && mkfs=mkfs.fat || mkfs=mkfs.vfat
+	imgsize=\$(du -lsB32k EFI | cut -f1)
+	imgsize=\$((\$imgsize + 10))
+
+	dd if=/dev/zero of=.efiboot.img bs=32k count=\$imgsize
+	\$mkfs $verbose -n ELTORITOEFI .efiboot.img
+
+	# mtools insists that total number of sectors
+	# is a multiple of sectors per track (the infamous 63),
+	# and dosfstools-4.0 doesn't follow that anymore
+	echo "mtools_skip_check=1" >"\$HOME"/.mtoolsrc
+
+	mcopy $verbose -i .efiboot.img -s EFI ::
+	mv $verbose -f .efiboot.img EFI/BOOT/
+fi
+
+[ -d boot/grub/fonts ] || mkdir $verbose -p boot/grub/fonts
+cp $verbose -arf /usr/lib64/grub/"$grub_format" boot/grub/
+find boot/grub/"$grub_format" -type f -name '*.module' -delete ||:
+cp $verbose -Lf /boot/grub/fonts/unicode.pf2 boot/grub/fonts/
+cp $verbose -Lf /boot/grub/unifont.pf2 boot/grub/
+
+if [ -L /boot/vmlinuz ]; then
+	kimage="\$(readlink -ev /boot/vmlinuz)"
+else
+	kimage="\$(find /boot -type f -name 'vmlinuz-*' -print -quit)"
+fi
+
+if [ -n "\$kimage" ]; then
+	mkdir $verbose alt0
+
+	cp $verbose -af \$kimage alt0/vmlinuz
+	cp $verbose -af /boot/full.cz alt0/full.cz
+fi
+
+[ ! -s 'EFI/BOOT/grub.cfg' ] || exit 0
+
+cat > EFI/BOOT/grub.cfg <<GRUB_CONF
+insmod echo
+insmod gzio
+insmod minicmd
+insmod normal
+insmod test
+
+GRUB_CONF
+
+syslinux_cfg="syslinux/grubaa64boot.cfg"
+if [ -s "\$syslinux_cfg" ]; then
+	grub-syslinux2cfg -T '' "\$syslinux_cfg" >> EFI/BOOT/grub.cfg
+	rm -f "\$syslinux_cfg"
+	rmdir syslinux ||:
+else
+	cat >> EFI/BOOT/grub.cfg <<GRUB_CONF
+menuentry 'Install ALT' {
+    linux /alt0/vmlinuz fastboot live lowmem showopts automatic=method:cdrom
+    initrd /alt0/full.cz
+}
+
+GRUB_CONF
+fi
+
+exit 0
+
+EOF

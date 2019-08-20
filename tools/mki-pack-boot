@@ -21,12 +21,12 @@ outname="${outname##*/}"
 types=
 for b in ${BOOT_TYPE:-}; do
 	case "$b" in
-		isolinux|pxelinux|syslinux|yaboot|efiboot|ieee1275boot) types="$types $b " ;;
+		isolinux|pxelinux|syslinux|yaboot|efiboot|ieee1275boot|grubaa64boot) types="$types $b " ;;
 		*) fatal "Unknown boot type" ;;
 	esac
 done
 
-[ -z "${EFI_BOOTLOADER:-}" -o -z "${types##* efiboot *}" ] ||
+[ -z "${EFI_BOOTLOADER:-}" -o -z "${types##* grubaa64boot *}" -o -z "${types##* efiboot *}" ] ||
 	types="$types efiboot "
 
 [ -n "$types" ] ||
@@ -50,5 +50,8 @@ done
 
 [ -n "${types##* ieee1275boot *}" ] ||
 	exec mki-pack-isodata
+
+[ -n "${types##* grubaa64boot *}" ] ||
+	exec mki-pack-efionly-isoboot
 
 exec mki-pack-data

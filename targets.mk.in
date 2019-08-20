@@ -82,6 +82,10 @@ copy-ieee1275boot: prepare-workdir $(SUBDIRS)
 	@echo "mkimage: Processing '$@' ..."
 	@$(CHROOT_COPY_IEEE1275BOOT)
 
+copy-grubaa64boot: prepare-workdir $(SUBDIRS)
+	@echo "mkimage: Processing '$@' ..."
+	@$(CHROOT_COPY_GRUBAA64BOOT)
+
 copy-tree: prepare-workdir $(SUBDIRS)
 	@echo "mkimage: Processing '$@' ..."
 	@if ! $(CHROOT_CACHE) check $@; then \

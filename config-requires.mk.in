@@ -24,6 +24,7 @@ PACKAGES_REQUIRED_PACK_XZ		?= xz
 PACKAGES_REQUIRED_PACK_UBIFS		?= mtd-utils
 PACKAGES_REQUIRED_COPY_YABOOT		?= yaboot kernel-bootwrapper binutils
 PACKAGES_REQUIRED_COPY_IEEE1275BOOT	?= grub-ieee1275 grub-common
+PACKAGES_REQUIRED_COPY_GRUBAA64BOOT	?= grub-efi grub-common dosfstools mtools
 PACKAGES_REQUIRED_COPY_EFIBOOT		?= dosfstools mtools hardlink
 PACKAGES_REQUIRED_COPY_ISOLINUX		?= syslinux
 PACKAGES_REQUIRED_COPY_SYSLINUX		?= syslinux
