@@ -1,4 +1,4 @@
-#!/bin/ash -efux
+#!/bin/ash -efu
 #
 # mki-copy-grub-ieee1275
 #
@@ -24,7 +24,7 @@ mki-install $pkgs ||
 	fatal "failed to install packages: $pkgs."
 
 run_chrooted "$chroot" <<EOF
-#!/bin/sh -efux
+#!/bin/sh -efu
 
 GRUB_DIR=/usr/lib/grub/$grub_format
 [ -d "\$GRUB_DIR" ] || GRUB_DIR=/usr/lib64/grub/$grub_format
