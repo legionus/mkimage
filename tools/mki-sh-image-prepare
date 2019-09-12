@@ -43,11 +43,11 @@ hsh_initroot() {
 	fi
 
         # Create essential tty devices.
-        echo "\
-		600 /dev/console c 5 1
-		600 /dev/tty0 c 4 0
-		666 /dev/tty c 5 0
-		666 /dev/ptmx c 5 2" |
+        printf "%s\n" \
+		"600 /dev/console c 5 1" \
+		"600 /dev/tty0 c 4 0" \
+		"666 /dev/tty c 5 0" \
+		"666 /dev/ptmx c 5 2" |
 	while read mode name type major minor ; do
 	        hsh-fakedev \
 			$verbose $quiet \
