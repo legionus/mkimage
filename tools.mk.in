@@ -23,6 +23,7 @@ CHROOT_CACHE		?= $(TOOLSDIR)/mki-cache
 CHROOT_INVALIDATE_CACHE	?= $(TOOLSDIR)/mki-invalidate-cache
 
 CHROOT_BUILD_PROPAGATOR	?= $(TOOLSDIR)/mki-build-propagator
+CHROOT_CREATE_FAKEDEV	?= $(TOOLSDIR)/mki-fakedev
 CHROOT_SPLIT		?= $(TOOLSDIR)/mki-split
 CHROOT_SCRIPTS		?= $(TOOLSDIR)/mki-scripts
 CHROOT_IMAGE_SCRIPTS	?= $(TOOLSDIR)/mki-image-scripts
