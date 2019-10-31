@@ -38,6 +38,9 @@ refind)	# won't boot unsigned kernels in SB mode
 	# grub-efi for ia32 EFI on x86_64
 	pkgs="$pkgs elilo grub-efi"
 	;;
+grub-efi)
+	pkgs="$pkgs grub-efi"
+	;;
 esac
 
 [ -z "${EFI_MEMTEST86:-}" ] ||
@@ -208,6 +211,22 @@ copy_elilo() {
 		echo "  append=\"\$kargs stagename=\${stage2% *}\"" \
 			>> \$boot/elilo.conf
 }
+
+copy_grub() {
+
+	cp $verbose -pLf \$efi_bindir/grubx64.efi \$boot/grubx64.efi
+	cp $verbose -pLf \$efi_bindir/grubia32.efi \$boot/grubia32.efi
+	[ -d \$boot/fonts ] || mkdir $verbose -p \$boot/fonts
+	cp $verbose -arf /usr/lib64/grub/x86_64-efi \$boot/
+	cp $verbose -arf /usr/lib64/grub/i386-efi \$boot/
+	find \$boot/x86_64-efi -type f -name '*.module' -delete ||:
+	find \$boot/i386-efi -type f -name '*.module' -delete ||:
+	cp $verbose -Lf /boot/grub/fonts/unicode.pf2 \$boot/fonts/
+	cp $verbose -Lf /boot/grub/unifont.pf2 \$boot/
+
+	# add_grub_cfg
+}
+
 
 add_langs() {
 	cat <<- REFIND_EOF
@@ -442,6 +461,8 @@ elilo)
 	copy_elilo;;
 refind)
 	copy_refind;;
+grub-efi)
+	copy_grub;;
 *)
 	fatal "Unable to handle '$EFI_BOOTLOADER'.";;
 esac
