@@ -5,6 +5,7 @@
 # This file is part of mkimage
 # Copyright (C) 2019  Leonid Krivoshein <klark@altlinux.org>
 # Copyright (C) 2019  Alexey Shabalin <shaba@altlinux.org>
+# Copyright (C) 2020  Anton Midyukov <antohami@altlinux.org>
 #
 # This file is covered by the GNU General Public License,
 # which should be included with mkimage as the file COPYING.
@@ -29,8 +30,9 @@ run_chrooted "$chroot" <<EOF
 
 cd "$imgdir"
 
+mkdir $verbose -p EFI/BOOT/fonts
+
 if [ ! -f EFI/BOOT/.efiboot.img ]; then
-	mkdir $verbose -p EFI/BOOT
 	cp $verbose -Lf /usr/lib64/efi/grubx64.efi EFI/BOOT/bootaa64.efi
 
 	type -t mkfs.fat >/dev/null && mkfs=mkfs.fat || mkfs=mkfs.vfat
@@ -49,11 +51,10 @@ if [ ! -f EFI/BOOT/.efiboot.img ]; then
 	mv $verbose -f .efiboot.img EFI/BOOT/
 fi
 
-[ -d boot/grub/fonts ] || mkdir $verbose -p boot/grub/fonts
-cp $verbose -arf /usr/lib64/grub/"$grub_format" boot/grub/
+cp $verbose -arf /usr/lib64/grub/"$grub_format" EFI/BOOT/
 find boot/grub/"$grub_format" -type f -name '*.module' -delete ||:
-cp $verbose -Lf /boot/grub/fonts/unicode.pf2 boot/grub/fonts/
-cp $verbose -Lf /boot/grub/unifont.pf2 boot/grub/
+cp $verbose -Lf /boot/grub/fonts/unicode.pf2 EFI/BOOT/fonts/
+cp $verbose -Lf /boot/grub/unifont.pf2 EFI/BOOT/
 
 if [ -L /boot/vmlinuz ]; then
 	kimage="\$(readlink -ev /boot/vmlinuz)"
@@ -62,10 +63,8 @@ else
 fi
 
 if [ -n "\$kimage" ]; then
-	mkdir $verbose alt0
-
-	cp $verbose -af \$kimage alt0/vmlinuz
-	cp $verbose -af /boot/full.cz alt0/full.cz
+	cp $verbose -af \$kimage EFI/BOOT/vmlinuz
+	cp $verbose -af /boot/full.cz EFI/BOOT/full.cz
 fi
 
 [ ! -s 'EFI/BOOT/grub.cfg' ] || exit 0
@@ -81,14 +80,15 @@ GRUB_CONF
 
 syslinux_cfg="syslinux/grubaa64boot.cfg"
 if [ -s "\$syslinux_cfg" ]; then
-	grub-syslinux2cfg -T '' "\$syslinux_cfg" >> EFI/BOOT/grub.cfg
+	grub-syslinux2cfg -T '' "\$syslinux_cfg" |
+	  sed "s,alt0,EFI/BOOT,g;s,'/',/,g" >> EFI/BOOT/grub.cfg
 	rm -f "\$syslinux_cfg"
 	rmdir syslinux ||:
 else
 	cat >> EFI/BOOT/grub.cfg <<GRUB_CONF
 menuentry 'Install ALT' {
-    linux /alt0/vmlinuz fastboot live lowmem showopts automatic=method:cdrom
-    initrd /alt0/full.cz
+    linux /EFI/BOOT/vmlinuz fastboot live lowmem showopts automatic=method:cdrom
+    initrd /EFI/BOOT/full.cz
 }
 
 GRUB_CONF

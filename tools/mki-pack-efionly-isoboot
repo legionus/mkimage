@@ -7,6 +7,7 @@
 # Copyright (C) 2012       Michael Shigorin <mike@altlinux.org>
 # Copyright (C) 2019       Leonid Krivoshein <klark@altlinux.org>
 # Copyright (C) 2019       Alexey Shabalin <shaba@altlinux.org>
+# Copyright (C) 2020       Anton Midyukov <antohami@altlinux.org>
 #
 # This file is covered by the GNU General Public License,
 # which should be included with mkimage as the file COPYING.
@@ -68,7 +69,7 @@ xorriso -follow param \
 	-read_mkisofsrc \
 	-as mkisofs \
 	$verbose -J -l -r \
-	-c boot/boot.cat \
+	-c EFI/BOOT/boot.cat \
 	-exclude-list /tmp/.exclude \
 	-no-emul-boot \
 	-boot-load-size 4 \
