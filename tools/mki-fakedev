@@ -34,7 +34,6 @@ Arguments <name>, <type>, <major> and <minor> have the same meaning as in
 mknod(1) utility.  They are required iff --reference option is not given.
 
 Options:
-  --number=NUMBER           subconfig identifier;
   -m, --mode=MODE           set permission mode as in mknod(1);
   -g, --group=GROUP         set group ownership as in install(1);
   -o, --owner=OWNER         set ownership as in install(1);
@@ -59,7 +58,7 @@ opt_check_dev()
 	printf %s "$value"
 }
 
-TEMP=`getopt -n $PROG -o g:,m:,o:,r:,$getopt_common_opts -l number:,mode:,group:,owner:,reference:,$getopt_common_longopts -- "$@"` ||
+TEMP=`getopt -n $PROG -o g:,m:,o:,r:,$getopt_common_opts -l mode:,group:,owner:,reference:,$getopt_common_longopts -- "$@"` ||
 	show_usage
 eval set -- "$TEMP"
 
@@ -69,10 +68,6 @@ owner=
 reference=
 while :; do
 	case "$1" in
-		--number)
-			number="$(opt_check_number_ge_0 "$1" "$2")"
-			shift
-			;;
 		-m|--mode)
 			mode="$2"
 			shift

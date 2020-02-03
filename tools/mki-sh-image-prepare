@@ -71,7 +71,6 @@ hsh_initroot() {
 			continue
 		mki-fakedev \
 			$verbose $quiet \
-			${HSH_NUMBER:+--number="$HSH_NUMBER"} \
 			-o root \
 			-m "$mode" \
 			-- "$1" "$name" "$type" "$major" "$minor" ||
