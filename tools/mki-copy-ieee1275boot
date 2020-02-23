@@ -4,6 +4,7 @@
 #
 # This file is part of mkimage
 # Copyright (C) 2019  Gleb Fotengauer-Malinovskiy <glebfm@altlinux.org>
+# Copyright (C) 2020  Anton Midyukov <antohami@altlinux.org>
 #
 # This file is covered by the GNU General Public License,
 # which should be included with mkimage as the file COPYING.
@@ -48,10 +49,8 @@ else
 fi
 
 if [ -n "\$kimage" ]; then
-	mkdir $verbose alt0
-
-	cp $verbose -af \$kimage alt0/vmlinuz
-	cp $verbose -af /boot/full.cz alt0/full.cz
+	cp $verbose -af \$kimage boot/vmlinuz
+	cp $verbose -af /boot/full.cz boot/full.cz
 fi
 
 [ ! -s 'boot/grub/grub.cfg' ] || exit 0
@@ -67,14 +66,15 @@ insmod test
 
 syslinux_cfg="syslinux/ieee1275boot.cfg"
 if [ -s "\$syslinux_cfg" ]; then
-	grub-syslinux2cfg -T '' "\$syslinux_cfg" >> boot/grub/grub.cfg
+	grub-syslinux2cfg -T '' "\$syslinux_cfg" |
+	  sed "s,alt0,EFI/BOOT,g;s,'/',/,g" >> boot/grub/grub.cfg
 	rm "\$syslinux_cfg"
 	rmdir syslinux ||:
 else
 	cat >> boot/grub/grub.cfg <<@@@
 menuentry "Install ALT" {
-	linux /alt0/vmlinuz changedisk fastboot automatic=method:cdrom showopts
-	initrd /alt0/full.cz
+	linux /boot/vmlinuz changedisk fastboot automatic=method:cdrom showopts
+	initrd /boot/full.cz
 }
 @@@
 fi
