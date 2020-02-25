@@ -84,7 +84,9 @@ fi
 
 %changelog
 * Tue Feb 25 2020 Anton Midyukov <antohami@altlinux.org> 0.2.30-alt1
-- 
+- mki-copy-ieee1275boot: replaced alt0 to boot
+- mki-copy-grubaa64boot, mki-pack-efionly-isoboot: replaced grub-efi
+to EFI/BOOT
 
 * Thu Nov 14 2019 Alexey Shabalin <shaba@altlinux.org> 0.2.29-alt1
 - Added support grub-efi to efiboot
