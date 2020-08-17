@@ -321,25 +321,26 @@ refind_add_stage2()
 	done
 }
 
-gfxprefix=/usr/share/gfxboot
-
 refind_add_banner() {
 	local bgfile="$refind_icons/bg.png"
 
-	[ -d "$gfxprefix" ] ||
-		return 0
+	if [ ! -s "$bgfile" ]; then
+		local bootlogo=''
 
-	convert -version >/dev/null 2>&1 ||
-		return 0
+		bootlogo="$(find /usr/share/gfxboot -name bootlogo -print -quit 2>/dev/null)" ||
+			return 0
 
-	bootlogo="$(find "$gfxprefix" -name bootlogo -print -quit)"
+		[ -n "$bootlogo" ] && [ -s "$bootlogo" ] ||
+			return 0
 
-	[ -s "$bootlogo" ] ||
-		return 0
+		convert -version >/dev/null 2>&1 ||
+			return 0
 
-	if [ -s "$bgfile" ] || cpio -i --quiet --to-stdout back.jpg < "$bootlogo" | convert - "$bgfile"; then
-		echo "banner /$bgfile"
+		cpio -i --quiet --to-stdout back.jpg < "$bootlogo" | convert - "$bgfile" ||
+			return 0
 	fi
+
+	echo "banner /$bgfile"
 }
 
 add_grub_cfg() {
