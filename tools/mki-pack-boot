@@ -26,7 +26,7 @@ for b in ${BOOT_TYPE:-}; do
 	esac
 done
 
-[ -z "${EFI_BOOTLOADER:-}" -o -z "${types##* grubaa64boot *}" -o -z "${types##* efiboot *}" ] ||
+[ -z "${EFI_BOOTLOADER:-}" ] || [ -z "${types##* grubaa64boot *}" ] || [ -z "${types##* efiboot *}" ] ||
 	types="$types efiboot "
 
 [ -n "$types" ] ||

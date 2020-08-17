@@ -50,7 +50,7 @@ run_chrooted "$chroot" > "$outdir/$outname" <<EOF
 #!/bin/sh -efu
 cd /.image/
 
-[ -z "$imgsubdir" -o ! -d "./$imgsubdir" ] || cd "./$imgsubdir"
+[ -z "$imgsubdir" ] || [ ! -d "./$imgsubdir" ] || cd "./$imgsubdir"
 
 args=
 [ ! -d .in ]       || args="\${args:+\$args -a} ! -wholename ./.in"

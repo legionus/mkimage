@@ -22,7 +22,7 @@ read_config() {
 	while read -r l; do
 		lineno=$(($lineno+1))
 
-		[ -n "$l" -o -n "${l##\#*}" ] ||
+		[ -n "$l" ] || [ -n "${l##\#*}" ] ||
 			continue
 
 		n="${l%%=*}"
@@ -61,7 +61,7 @@ showenv() {
 
 dir="$1"; shift
 
-if [ -z "$NO_REMOTES" -a -z "${dir##*=*}" ]; then
+if [ -z "$NO_REMOTES" ] && [ -z "${dir##*=*}" ]; then
 	conf="${dir#*=}"
 	dir="${dir%%=*}"
 

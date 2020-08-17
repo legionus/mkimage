@@ -22,7 +22,7 @@ case "$1" in
 		;;
 esac
 
-[ -n "$IMAGE_PACKAGES" -o -n "$IMAGE_PACKAGES_REGEXP" ] ||
+[ -n "$IMAGE_PACKAGES" ] || [ -n "$IMAGE_PACKAGES_REGEXP" ] ||
 	exit 0
 {
 	$EXPAND_PKGS simple $IMAGE_PACKAGES &&

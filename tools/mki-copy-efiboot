@@ -190,7 +190,7 @@ copy_shim() {
 }
 
 copy_kernel() {
-	! [ -s \$boot/vmlinuz -a -s \$boot/full.cz ] ||
+	[ ! -s "\$boot/vmlinuz" ] && [ ! -s "\$boot/full.cz" ] ||
 		return 0
 
 	cp $verbose -lpLft \$boot -- syslinux/alt0/{vmlinuz,full.cz}
@@ -278,7 +278,7 @@ add_stage2() {
 
 		# provide differentiating boot target icons if needed
 		icon="\$refind_icons/altlinux/\$root.\$icon_format"
-		[ "\$count" -ne 1 -a -s "\$icon" ] ||
+		[ "\$count" -ne 1 ] && [ -s "\$icon" ] ||
 			icon="\$refind_icons/os_altlinux.\$icon_format"
 
 

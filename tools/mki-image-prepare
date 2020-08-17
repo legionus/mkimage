@@ -19,7 +19,7 @@ verbose "has started executing."
 
 ln $verbose -nsf -- "$WORKDIRNAME/chroot" "$chroot/.image"
 
-[ -f "$chroot/.fakedata" -a -f "$chroot/.image/.fakedata" ] ||
+[ -f "$chroot/.fakedata" ] && [ -f "$chroot/.image/.fakedata" ] ||
 	exit 0
 
 inode1="$(stat -c '%i' "$chroot/.fakedata")"

@@ -21,7 +21,7 @@ verbose "has started executing."
 
 action="$1"; shift
 
-if [ -n "${NO_CACHE:-}" -a "$action" = 'check' ]; then
+if [ -n "${NO_CACHE:-}" ] && [ "$action" = 'check' ]; then
 	verbose "Cache disabled"
 	exit 1
 fi

@@ -17,7 +17,7 @@ MKI_SPLIT="${MKI_SPLIT:-}"
 
 verbose "has started executing."
 
-if [ -z "$MKI_DESTDIR" -o -z "$MKI_SPLIT" ]; then
+if [ -z "$MKI_DESTDIR" ] || [ -z "$MKI_SPLIT" ]; then
 	message "MKI_DESTDIR or MKI_SPLIT is empty. Nothing to do."
 	return 0
 fi
@@ -26,7 +26,7 @@ sortfiles() {
 	sort -r -n -k1,1 -o "$1"
 }
 
-gen_filelist() {	
+gen_filelist() {
 	find "./${MKI_DESTDIR#/}" -mindepth 1 -printf '%s\t%p\n'
 }
 
@@ -48,7 +48,7 @@ exit_handler() {
 size_to_bytes() {
 	local iteration=
 	iteration="$1"; shift
-	
+
 	while [ "$iteration" -gt 0 ]; do
 		bytes="$(($bytes * 1024))"
 		iteration="$(($iteration-1))"

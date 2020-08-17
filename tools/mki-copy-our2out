@@ -26,7 +26,7 @@ fi
 
 get_copy_args "$outdir" "$chroot/.our"
 
-[ -z "$cleanup" -o "$level" = "1" ] ||
+[ -z "$cleanup" ] || [ "$level" = "1" ] ||
 	find "$outdir/" -mindepth 1 -maxdepth 1 -execdir rm $verbose -rf -- '{}' '+'
 
 cd "$chroot/.our"

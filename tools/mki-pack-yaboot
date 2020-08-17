@@ -38,7 +38,7 @@ run_chrooted "$chroot" >"$outdir/$outname" <<EOF
 #!/bin/sh -efu
 
 imgdir=/.image
-[ -z "$imgsubdir" -o ! -d "/.image/$imgsubdir" ] ||
+[ -z "$imgsubdir" ] || [ ! -d "/.image/$imgsubdir" ] ||
 	imgdir="/.image/$imgsubdir"
 
 if [ ! -f \$imgdir/ppc/chrp/yaboot ]; then

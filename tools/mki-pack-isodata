@@ -52,7 +52,7 @@ if [ -n "${MKI_EXCLUDE:-}" ]; then
 fi > .exclude
 
 imgdir=/.image
-[ -z "$imgsubdir" -o ! -d "/.image/$imgsubdir" ] ||
+[ -z "$imgsubdir" ] || [ ! -d "/.image/$imgsubdir" ] ||
 	imgdir="/.image/$imgsubdir"
 
 rc=0

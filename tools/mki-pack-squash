@@ -40,7 +40,7 @@ HSH_PROC=1 run_chrooted "$chroot" <<EOF
 #!/bin/sh -efu
 
 imgdir=/.image
-[ -z "$imgsubdir" -o ! -d "/.image/$imgsubdir" ] ||
+[ -z "$imgsubdir" ] || [ ! -d "/.image/$imgsubdir" ] ||
 	imgdir="/.image/$imgsubdir"
 
 [ ! -e '/.our/$outname' ] ||
