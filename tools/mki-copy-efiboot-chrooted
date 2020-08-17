@@ -154,18 +154,18 @@ copy_shim()
 	fi
 
 	# injection of ia32 binaries
-	if [ "$ia32efi_flag" = "present" ]; then
-		if [ -s "$efi_bindir/shimia32.efi" ]; then
-			# shimia32.efi binary is a first stage loader therefore renamed
-			cp $verbose -pLf "$efi_bindir/shimia32.efi" "$boot/bootia32.efi"
-			cp $verbose -pLf "$efi_bindir/mmia32.efi" "$boot"
-		else
-			# use unsigned shim if signed is not available
-			cp $verbose -pLf "$shimia32_dir/shimia32.efi" "$boot/bootia32.efi"
-			cp $verbose -pLf "$shimia32_dir/mmia32.efi" "$boot"
-			cp $verbose -pLf "$shimia32_dir/shimia32.hash" "$boot/bootia32.hash"
-		fi
+	[ "$ia32efi_flag" = "present" ] ||
+		return 0
 
+	if [ -s "$efi_bindir/shimia32.efi" ]; then
+		# shimia32.efi binary is a first stage loader therefore renamed
+		cp $verbose -pLf "$efi_bindir/shimia32.efi" "$boot/bootia32.efi"
+		cp $verbose -pLf "$efi_bindir/mmia32.efi" "$boot"
+	else
+		# use unsigned shim if signed is not available
+		cp $verbose -pLf "$shimia32_dir/shimia32.efi" "$boot/bootia32.efi"
+		cp $verbose -pLf "$shimia32_dir/mmia32.efi" "$boot"
+		cp $verbose -pLf "$shimia32_dir/shimia32.hash" "$boot/bootia32.hash"
 	fi
 }
 
@@ -369,19 +369,10 @@ copy_refind()
 	copy_elilo "$boot/elilo.efi"
 
 	mkdir $verbose -p "$boot" "$refind_aux"
+
 	cp $verbose -pLf "$efi_bindir/refind_x64.efi" "$bin_path"
 	cp $verbose -lpf "$bin_path" "$refind_boot"
 	cp $verbose -aLf "$efi_bindir/drivers_x64/" "$refind_aux"
-
-	if [ "$ia32efi_flag" = "present" ]; then
-		#refind binary mimics the grub2 binary
-		cp $verbose -pLf "$efi_bindir/refind_ia32.efi" "$boot/grubia32.efi"
-		#have to rename real grubia32 to prevent interference
-		cp $verbose -pLf "$efi_bindir/grubia32.efi" "$boot/grubia32_ldr.efi"
-		cp $verbose -aLf "$efi_bindir/refind_ia32.efi" "$refind_bootia32"
-
-		cp $verbose -aLf "$efi_bindir/drivers_ia32/" "$refind_aux"
-	fi
 
 	cp $verbose -aLf /usr/share/refind/icons/ "$refind_aux"
 
@@ -395,11 +386,6 @@ copy_refind()
 
 	# empty aux refind configuration makes it scan for loaders
 	refind_cfg_add_autodetect > "$refind_aux/refind.conf"
-
-	#if ia32 EFI bootloader stack is full
-	if [ "$ia32efi_flag" = "present" ]; then
-		refind_cfg_add_autodetect > "$refind_aux/refind_ia32.conf"
-	fi
 
 	# overwrite the main configuration file (for x64 EFI version)
 	{
@@ -420,35 +406,44 @@ copy_refind()
 		}
 
 		REFIND_EOF
-
 	} > "$boot/refind.conf"
 
+	[ "$ia32efi_flag" = "present" ] ||
+		return 0
+
+	#refind binary mimics the grub2 binary
+	cp $verbose -pLf "$efi_bindir/refind_ia32.efi" "$boot/grubia32.efi"
+
+	#have to rename real grubia32 to prevent interference
+	cp $verbose -pLf "$efi_bindir/grubia32.efi" "$boot/grubia32_ldr.efi"
+	cp $verbose -aLf "$efi_bindir/refind_ia32.efi" "$refind_bootia32"
+
+	cp $verbose -aLf "$efi_bindir/drivers_ia32/" "$refind_aux"
 
 	#append ia32 EFI boot options only if all ia32 bootloader stack parts are available in current branch
-	if [ "$ia32efi_flag" = "present" ]; then
-		# overwrite the main configuration file (for ia32 EFI version)
-		{
-			cat <<- REFIND_EOF
-			timeout 20
-			scanfor manual
-			scan_driver_dirs /$refind_aux/drivers_ia32
-			REFIND_EOF
+	refind_cfg_add_autodetect > "$refind_aux/refind_ia32.conf"
 
-			refind_add_banner
-			refind_add_stage2 ia32
+	# overwrite the main configuration file (for ia32 EFI version)
+	{
+		cat <<- REFIND_EOF
+		timeout 20
+		scanfor manual
+		scan_driver_dirs /$refind_aux/drivers_ia32
+		REFIND_EOF
 
-			cat <<- REFIND_EOF
-			menuentry "others" {
-			  icon /$boot/icons/$scan_icon
-			  loader /$refind_bootia32
-			}
+		refind_add_banner
+		refind_add_stage2 ia32
 
-			REFIND_EOF
-		} > "$boot/refind_ia32.conf"
-	fi
+		cat <<- REFIND_EOF
+		menuentry "others" {
+		  icon /$boot/icons/$scan_icon
+		  loader /$refind_bootia32
+		}
 
-	#if ia32 EFI bootloader stack is full
-	[ "$ia32efi_flag" = "present" ] && add_grub_cfg || :
+		REFIND_EOF
+	} > "$boot/refind_ia32.conf"
+
+	add_grub_cfg || :
 }
 
 #find out if all bootloader stages have ia32 binaries in the package
