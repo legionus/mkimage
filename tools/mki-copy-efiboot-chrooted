@@ -10,9 +10,14 @@ EFI_BOOTARGS="${EFI_BOOTARGS-}"
 
 cd /.image
 
-fatal()
+message()
 {
 	printf '%s: %s\n' "$PROG" "$*" >&2
+}
+
+fatal()
+{
+	message "$*"
 	exit 1
 }
 
@@ -79,19 +84,13 @@ check_ia32efi_stack_full()
 	[ -f "$efi_bindir/shimia32.efi" ] ||
 		check_shim_teen_path
 
-	[ -f "$efi_bindir/refind_ia32.efi" ] ||
+	[ -f "$efi_bindir/refind_ia32.efi" ] || [ -f "$efi_bindir/grubia32.efi" ] ||
 		ia32efi_flag="absent"
 
-	[ -f "$efi_bindir/grubia32.efi" ] ||
-		ia32efi_flag="absent"
-
-	if [ "$ia32efi_flag" = "absent" ]; then
-		printf '%s' \
-			"Warning! " \
-			"Some of required bootloader packages in current branch " \
+	[ "$ia32efi_flag" != "absent" ] ||
+		message "WARNING:" \
+			"Some of required bootloader packages in current branch" \
 			"miss ia32 binaries, ia32 EFI support is therefore disabled."
-		printf '\n'
-	fi
 }
 
 efi_bindir=/usr/lib64/efi
