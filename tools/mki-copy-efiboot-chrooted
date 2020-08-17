@@ -48,11 +48,11 @@ bootparams()
 	echo "ramdisk_size=$stage2_size stagename=$1"
 }
 
-shim_teen_path()
+# find out if shim version is not less than 15
+# looking at directory structure
+# ia32 binaries should be present since that version
+check_shim_teen_path()
 {
-	# find out if shim version is not less than 15
-	# looking at directory structure
-	# ia32 binaries should be present since that version
 	shim_dir_prefix="/usr/share/shim"
 	if [ -d "$shim_dir_prefix" ]; then
 		shim_max_version="$(find  "$shim_dir_prefix" -maxdepth 1 -type d | sed 's|\./||' | sort -n -r | head -1)"
@@ -64,13 +64,18 @@ shim_teen_path()
 	fi
 }
 
-ia32efi_stack_full()
+# check if shim, refind and grub-efi include ia32 EFI binaries
+# if signed shim is absent try to fallback to unsigned one
+check_ia32efi_stack_full()
 {
-	# check if shim, refind and grub-efi include ia32 EFI binaries
-	# if signed shim is absent try to fallback to unsigned one
-	[ -f "$efi_bindir/shimia32.efi" ] || shim_teen_path
-	[ -f "$efi_bindir/refind_ia32.efi" ] || ia32efi_flag="absent"
-	[ -f "$efi_bindir/grubia32.efi" ] || ia32efi_flag="absent"
+	[ -f "$efi_bindir/shimia32.efi" ] ||
+		check_shim_teen_path
+
+	[ -f "$efi_bindir/refind_ia32.efi" ] ||
+		ia32efi_flag="absent"
+
+	[ -f "$efi_bindir/grubia32.efi" ] ||
+		ia32efi_flag="absent"
 
 	if [ "$ia32efi_flag" = "absent" ]; then
 		printf '%s' \
@@ -207,7 +212,7 @@ copy_grub()
 }
 
 
-add_langs()
+refind_add_langs()
 {
 	cat <<- REFIND_EOF
 	  submenuentry "English" {
@@ -225,7 +230,7 @@ add_langs()
 	REFIND_EOF
 }
 
-add_forensic_mode()
+refind_add_forensic_mode()
 {
 	[ -f rescue ] ||
 		return 0
@@ -244,7 +249,8 @@ add_forensic_mode()
 	REFIND_EOF
 }
 
-add_stage2() {
+refind_add_stage2()
+{
 	count="`echo $stage2 | wc -w`"
 
 	for root in $stage2; do
@@ -284,7 +290,9 @@ add_stage2() {
 				  #     gzip_x86_64: invalid exec_header
 				  options "-v -i full.cz vmlinuz `bootparams $root` $splash"
 				REFIND_EOF
-				[ "$root" = rescue ] && add_forensic_mode || add_langs
+				[ "$root" = rescue ] &&
+					refind_add_forensic_mode ||
+					refind_add_langs
 				echo "}"
 				;;
 			ia32)
@@ -297,11 +305,13 @@ add_stage2() {
 				  loader /$boot/grubia32_ldr.efi
 				  options ""
 				REFIND_EOF
-				[ "$root" = rescue ] && add_forensic_mode || add_langs
+				[ "$root" = rescue ] &&
+					refind_add_forensic_mode ||
+					refind_add_langs
 				echo "}"
 				;;
 			*)
-				fatal "Unknown architecture argument '$1' in add_stage2()!"
+				fatal "Unknown architecture argument '$1' in refind_add_stage2()!"
 				;;
 		esac
 	done
@@ -309,7 +319,7 @@ add_stage2() {
 
 gfxprefix=/usr/share/gfxboot
 
-add_banner() {
+refind_add_banner() {
 	local bgfile="$refind_icons/bg.png"
 
 	[ -d "$gfxprefix" ] ||
@@ -341,7 +351,7 @@ add_grub_cfg() {
 	} > "$boot/grub.cfg"
 }
 
-refind_autodetect() {
+refind_cfg_add_autodetect() {
 	echo "dont_scan_files $blacklist"
 	echo 'dont_scan_volumes "Recovery HD", LRS_ESP, "El Torito"'
 	echo "textonly 1"
@@ -393,11 +403,11 @@ copy_refind()
 		mv "$refind_aux/altlinux" "$boot/icons"
 
 	# empty aux refind configuration makes it scan for loaders
-	refind_autodetect > "$refind_aux/refind.conf"
+	refind_cfg_add_autodetect > "$refind_aux/refind.conf"
 
 	#if ia32 EFI bootloader stack is full
 	if [ "$ia32efi_flag" = "present" ]; then
-		refind_autodetect > "$refind_aux/refind_ia32.conf"
+		refind_cfg_add_autodetect > "$refind_aux/refind_ia32.conf"
 	fi
 
 	# overwrite the main configuration file (for x64 EFI version)
@@ -408,8 +418,8 @@ copy_refind()
 		scan_driver_dirs /$refind_aux/drivers_x64
 		REFIND_EOF
 
-		add_banner
-		add_stage2 x64
+		refind_add_banner
+		refind_add_stage2 x64
 
 		cat <<- REFIND_EOF
 
@@ -433,8 +443,8 @@ copy_refind()
 			scan_driver_dirs /$refind_aux/drivers_ia32
 			REFIND_EOF
 
-			add_banner
-			add_stage2 ia32
+			refind_add_banner
+			refind_add_stage2 ia32
 
 			cat <<- REFIND_EOF
 			menuentry "others" {
@@ -451,7 +461,7 @@ copy_refind()
 }
 
 #find out if all bootloader stages have ia32 binaries in the package
-ia32efi_stack_full
+check_ia32efi_stack_full
 
 [ -z "$EFI_CERT" ] ||
 	copy_shim
