@@ -357,6 +357,9 @@ add_grub_cfg() {
 }
 
 refind_cfg_add_autodetect() {
+	# http://www.rodsbooks.com/refind/configfile.html
+	local blacklist="shim.efi shimx64.efi shimia32.efi shim-fedora.efi PreLoader.efi TextMode.efi ebounce.efi GraphicsConsole.efi MokManager.efi mmx64.efi mmia32.efi HashTool.efi HashTool-signed.efi elilo.efi"
+
 	echo "dont_scan_files $blacklist"
 	echo 'dont_scan_volumes "Recovery HD", LRS_ESP, "El Torito"'
 	echo "textonly 1"
@@ -374,9 +377,6 @@ else
    icon_format=icns
 fi
 scan_icon=os_unknown."$icon_format"
-
-# http://www.rodsbooks.com/refind/configfile.html
-blacklist="shim.efi shimx64.efi shimia32.efi shim-fedora.efi PreLoader.efi TextMode.efi ebounce.efi GraphicsConsole.efi MokManager.efi mmx64.efi mmia32.efi HashTool.efi HashTool-signed.efi elilo.efi"
 
 copy_refind()
 {
