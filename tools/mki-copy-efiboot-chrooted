@@ -14,12 +14,15 @@ fatal()
 	exit 1
 }
 
+n_stages=0
 stage2=
 for i in altinst live rescue; do
-	[ ! -f "$i" ] ||
+	if [ -f "$i" ]; then
 		stage2="${stage2:+$stage2 }$i"
+		n_stages=$(($n_stages + 1))
+	fi
 done
-[ -n "${stage2:-}" ] ||
+[ -n "$stage2" ] ||
 	fatal "no stage2 image found."
 
 ia32efi_flag="present"
@@ -211,47 +214,43 @@ copy_grub()
 	# add_grub_cfg
 }
 
-
-refind_add_langs()
+refind_add_stage_submenu()
 {
-	cat <<- REFIND_EOF
-	  submenuentry "English" {
-	    add_options "lang=en_US"
-	  }
-	  submenuentry "Kazakh" {
-	    add_options "lang=kk_KZ"
-	  }
-	  submenuentry "Russian" {
-	    add_options "lang=ru_RU"
-	  }
-	  submenuentry "Ukrainian" {
-	    add_options "lang=uk_UA"
-	  }
-	REFIND_EOF
-}
+	if [ "$1" = rescue ]; then
+		[ -f rescue ] ||
+			return 0
 
-refind_add_forensic_mode()
-{
-	[ -f rescue ] ||
+		local forensic_args
+
+		forensic_args="$(sed -rn \
+			's,^.* stagename=rescue (.*forensic hash=[0-9a-f]+)$,\1,p' \
+			syslinux/isolinux.cfg)"
+
+		[ -n "$forensic_args" ] ||
+			return 0
+
+		cat <<- REFIND_EOF
+		  submenuentry "Forensic mode (leave disks alone)" {
+		    add_options "$forensic_args"
+		  }
+		REFIND_EOF
 		return 0
+	fi
 
-	forensic_args="$(sed -rn \
-		's,^.* stagename=rescue (.*forensic hash=[0-9a-f]+)$,\1,p' \
-		syslinux/isolinux.cfg)"
+	local pair
 
-	[ -n "$forensic_args" ] ||
-		return 0
-
-	cat <<- REFIND_EOF
-	  submenuentry "Forensic mode (leave disks alone)" {
-	    add_options "$forensic_args"
-	  }
-	REFIND_EOF
+	for pair in English:en_US Kazakh:kk_KZ Russian:ru_RU Ukrainian:uk_UA; do
+		cat <<- REFIND_EOF
+		  submenuentry "${pair%%:*}" {
+		    add_options "lang=${pair##*:}"
+		  }
+		REFIND_EOF
+	done
 }
 
 refind_add_stage2()
 {
-	count="`echo $stage2 | wc -w`"
+	local root icon splash label loader options
 
 	for root in $stage2; do
 		case "$root" in
@@ -275,45 +274,37 @@ refind_add_stage2()
 		# provide differentiating boot target icons if needed
 		icon="$refind_icons/altlinux/$root.$icon_format"
 
-		[ "$count" -ne 1 ] && [ -s "$icon" ] ||
+		[ "$n_stages" -ne 1 ] && [ -s "$icon" ] ||
 			icon="$refind_icons/os_altlinux.$icon_format"
 
 		case "$1" in
 			x64)
-				cat <<- REFIND_EOF
-
 				# ELILO used as SB trampoline for unsigned kernels
-				menuentry "ALT Linux $label" {
-				  icon /$icon
-				  loader /$boot/elilo.efi
-				  # NB: -v seems critical, otherwise we hit this:
-				  #     gzip_x86_64: invalid exec_header
-				  options "-v -i full.cz vmlinuz `bootparams $root` $splash"
-				REFIND_EOF
-				[ "$root" = rescue ] &&
-					refind_add_forensic_mode ||
-					refind_add_langs
-				echo "}"
+				loader="/$boot/elilo.efi"
+				# NB: -v seems critical, otherwise we hit this:
+				#     gzip_x86_64: invalid exec_header
+				options="-v -i full.cz vmlinuz `bootparams $root` $splash"
 				;;
 			ia32)
-				cat <<- REFIND_EOF
-
 				# GRUB-EFI is used as SB trampoline for unsigned kernels
 				# for ia32 EFI on x86_64 platforms
-				  menuentry "ALT Linux $label" {
-				  icon /$icon
-				  loader /$boot/grubia32_ldr.efi
-				  options ""
-				REFIND_EOF
-				[ "$root" = rescue ] &&
-					refind_add_forensic_mode ||
-					refind_add_langs
-				echo "}"
+				loader="/$boot/grubia32_ldr.efi"
+				options=""
 				;;
 			*)
 				fatal "Unknown architecture argument '$1' in refind_add_stage2()!"
 				;;
 		esac
+
+		cat <<- REFIND_EOF
+
+		menuentry "ALT Linux $label" {
+		  icon /$icon
+		  loader /$loader
+		  options "$options"
+		  `refind_add_stage_submenu "$root"`
+		}
+		REFIND_EOF
 	done
 }
 
