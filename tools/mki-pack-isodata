@@ -56,7 +56,10 @@ imgdir=/.image
 	imgdir="/.image/$imgsubdir"
 
 rc=0
-mkisofs -T -J -l -r -U $verbose \
+xorriso -follow param \
+	-read_mkisofsrc \
+	-as mkisofs \
+	$verbose -J -l -r \
 	-exclude-list /tmp/.exclude \
 	"\$imgdir/" || rc=\$?
 
