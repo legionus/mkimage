@@ -18,7 +18,7 @@ mar_modules="${PROPAGATOR_MAR_MODULES:?Mar morules required}"
 initfs="${PROPAGATOR_INITFS:?initfs required}"
 
 [ -d "$chroot" ] ||
-	fatal "$dir: not look like a work directory of hasher."
+	fatal "$dir: does not look like a hasher work directory."
 
 mki-install $pkgs ||
 	fatal "failed to install packages: $pkgs."
@@ -30,12 +30,21 @@ make_exec "$chroot/.host/packimage.sh" <<EOF
 
 libdir="\$(getconf LIBDIR)"
 
-if [ -L /boot/vmlinuz ]; then
-	kimage="\$(readlink -ev /boot/vmlinuz)"
+case "`arch`" in
+	e2k)
+		kname=image
+		;;
+	*)
+		kname=vmlinuz
+		;;
+esac
+
+if [ -L /boot/\$kname ]; then
+	kimage="\$(readlink -mv /boot/\$kname)"
 else
-	kimage="\$(find /boot -type f -name 'vmlinuz-*' -print -quit)"
+	kimage="\$(find /boot -type f -name "\$kname-*" -print -quit)"
 fi
-kver="\${kimage#/boot/vmlinuz-}"
+kver="\${kimage#/boot/\$kname-}"
 
 if type mkmodpack >/dev/null 2>&1; then
 	mkmodpack -p '/.in/${mar_modules##*/}' -o /tmp/modules -k "\$kver"
