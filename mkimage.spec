@@ -1,5 +1,5 @@
 Name: mkimage
-Version: 0.2.32
+Version: 0.2.33
 Release: alt1
 
 Summary: Simple image creator
@@ -83,6 +83,9 @@ fi
 # - maybe Require: %%name-preinstall in the main package sometime later
 
 %changelog
+* Mon Aug 31 2020 Alexey Gladkov <legion@altlinux.ru> 0.2.33-alt1
+- tools.mk.in: added forgotten variable (mike@)
+
 * Mon Aug 24 2020 Alexey Gladkov <legion@altlinux.ru> 0.2.32-alt1
 - mki-copy-efiboot: Split mki-copy-efiboot
 - mki-copy-efiboot-chrooted: Fix adding a refind banner
