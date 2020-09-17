@@ -293,7 +293,7 @@ refind_add_stage2()
 		case "$1" in
 			x64)
 				# ELILO used as SB trampoline for unsigned kernels
-				loader="/$boot/elilo.efi"
+				loader="$boot/elilo.efi"
 				# NB: -v seems critical, otherwise we hit this:
 				#     gzip_x86_64: invalid exec_header
 				options="-v -i full.cz vmlinuz `bootparams $root` $splash"
@@ -301,7 +301,7 @@ refind_add_stage2()
 			ia32)
 				# GRUB-EFI is used as SB trampoline for unsigned kernels
 				# for ia32 EFI on x86_64 platforms
-				loader="/$boot/grubia32_ldr.efi"
+				loader="$boot/grubia32_ldr.efi"
 				options=""
 				;;
 			*)
