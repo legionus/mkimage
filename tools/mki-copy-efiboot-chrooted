@@ -223,8 +223,6 @@ copy_grub()
 
 	cp $verbose -Lf /boot/grub/fonts/unicode.pf2 "$boot/fonts"
 	cp $verbose -Lf /boot/grub/unifont.pf2 "$boot"
-
-	# add_grub_cfg
 }
 
 refind_add_stage_submenu()
@@ -263,7 +261,7 @@ refind_add_stage_submenu()
 
 refind_add_stage2()
 {
-	local root icon splash label loader options
+	local root icon splash loader options
 
 	for root in $stage2; do
 		case "$root" in
@@ -369,7 +367,7 @@ refind_cfg_add_autodetect() {
 
 copy_refind()
 {
-	local refind_aux refind_boot refind_bootia32 refind_icons icon_format scan_icon
+	local label refind_aux refind_boot refind_bootia32 refind_icons icon_format scan_icon
 
 	refind_aux="$efi/refind"
 	refind_boot="$refind_aux/refind_x64.efi"
@@ -459,7 +457,7 @@ copy_refind()
 		REFIND_EOF
 	} > "$boot/refind_ia32.conf"
 
-	add_grub_cfg || :
+	add_grub_cfg
 }
 
 #find out if all bootloader stages have ia32 binaries in the package
