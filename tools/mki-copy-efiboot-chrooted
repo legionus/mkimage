@@ -223,6 +223,8 @@ copy_grub()
 
 	cp $verbose -Lf /boot/grub/fonts/unicode.pf2 "$boot/fonts"
 	cp $verbose -Lf /boot/grub/unifont.pf2 "$boot"
+	[ ! -d /boot/grub/themes ] ||
+		cp $verbose -arf /boot/grub/themes "$boot"
 }
 
 refind_add_stage_submenu()
