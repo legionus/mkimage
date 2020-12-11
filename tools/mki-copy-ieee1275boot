@@ -41,6 +41,8 @@ grub-mkimage $verbose -O $grub_format -d "\$GRUB_DIR" \
 mkdir $verbose -p ppc
 
 cp $verbose -af "\$GRUB_DIR"/bootinfo.txt -t ppc
+cp $verbose -arf "\$GRUB_DIR" boot/grub
+find boot/grub/"$grub_format" -type f -name '*.module' -delete ||:
 
 if [ -L /boot/vmlinuz ]; then
 	kimage="\$(readlink -ev /boot/vmlinuz)"
