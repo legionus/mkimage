@@ -55,6 +55,8 @@ cp $verbose -arf /usr/lib64/grub/"$grub_format" EFI/BOOT/
 find boot/grub/"$grub_format" -type f -name '*.module' -delete ||:
 cp $verbose -Lf /boot/grub/fonts/unicode.pf2 EFI/BOOT/fonts/
 cp $verbose -Lf /boot/grub/unifont.pf2 EFI/BOOT/
+[ ! -d /boot/grub/themes ] ||
+	cp $verbose -arf /boot/grub/themes EFI/BOOT/
 
 if [ -L /boot/vmlinuz ]; then
 	kimage="\$(readlink -ev /boot/vmlinuz)"
