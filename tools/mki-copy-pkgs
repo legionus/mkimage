@@ -52,7 +52,7 @@ fi
 buildlist() {
 	local rc=0
 
-	xargs -r mki-print-uris 2>"$errfile" >> "$lstfile" < "$1" ||
+	xargs -r mki-print-uris "$lstfile" 2>"$errfile" < "$1" ||
 		rc=$?
 
 	if [ "$rc" -eq 0 ]; then

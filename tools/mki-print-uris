@@ -9,83 +9,95 @@
 # which should be included with mkimage as the file COPYING.
 #
 
+. shell-error
+
+export LC_ALL=C LANG=C LANGUAGE=C
+
+if [ -n "${MKI_RPMI_PRINT_FILES-}" ]; then
+	#!/bin/sh -efu
+	#
+	# Copyright (C) 2009  Alexey Tourbin <at@altlinux.org>
+	#
+	# Pretend to be rpmi and print rpm filenames passed for installation
+	#
+	# SPDX-License-Identifier: GPL-2.0-or-later
+	#
+
+	TEMP=$(getopt -n "$PROG" -o iUevhr: -l fancypercent,root: \
+		-l allfiles,badreloc,excludeconfigs,excludedocs,force,ignoresize,justdb \
+		-l noconfigs,nocontexts,nodeps,nodocs,nofdigests,nomd5,noorder,noscripts,notriggers \
+		-l oldpackage,percent,repackage,replacefiles,replacepkgs,test \
+		-- "$@" ) || exit 1
+
+	eval set -- "$TEMP"
+
+	i='' U='' e=''
+
+	while :; do
+		case "$1" in
+			-i) i=1 ;;
+			-U) U=1 ;;
+			-e) e=1 ;;
+			-r|--root) shift ;;
+			--) shift; break ;;
+			*) ;;
+		esac
+		shift
+	done
+
+	if [ $# -lt 1 ]; then
+		fatal "not enough arguments"
+	elif [ -n "$e" ]; then
+		fatal "cannot erase packages: $*"
+	elif [ -z "$i$U" ]; then
+		fatal "install command not recognized"
+	fi
+
+	print_rpmfile()
+	{
+		case "$1" in
+			/*.rpm) printf '%s\n' "$1" ;;
+			*) fatal "invalid argument${2:+ $2}: $1" ;;
+		esac
+	}
+
+	for arg; do
+		case "$arg" in
+			/*/filelist.*)
+				found=
+				while read -r fname; do
+					print_rpmfile "$fname" "from filelist"
+					found=1
+				done < "$arg"
+				[ -n "$found" ] ||
+					fatal "empty filelist"
+				;;
+			*)
+				print_rpmfile "$arg"
+				;;
+		esac
+	done >> "$MKI_RPMI_PRINT_FILES"
+	exit
+fi
+
 . "${0%/*}"/mki-sh-functions
 
 verbose "has started executing."
 
 aptboxdir="${PKGBOX:?global aptbox required}"
 
-export LC_ALL=C LANG=C LANGUAGE=C
-
-# assumed: defined aptbox
-APT_Get_PrintLocalFile=
-out=
-
 aptbox="$aptboxdir/aptbox"
 [ -d "$aptbox" ] ||
 	fatal "$aptbox: Not a directory"
 
-if ! out="$("$aptbox/apt-get" -q -y --print-uris install -- "$@" 2>&1)"; then
-	printf %s\\n "$out" >&2
+export MKI_RPMI_PRINT_FILES="$1"
+shift
+
+"$aptbox/apt-get" -q -y -o RPM::PM=external -o "Dir::Bin::rpm=$0" install -- "$@" >&2 || {
+	rc=$?
+	[ $rc -le 128 ] ||
+		message "apt-get terminated by signal $(($rc-128))"
 	fatal 'failed to calculate package file list.'
-fi
+}
 
-all_pattern="'\\([a-z]\\+\\):\\([^']\\+\\)' .*"
-local_pattern="'\\(file\\|copy\\):\\([^']\\+\\)' .*"
-
-if ! all_uris="$(printf %s "$out" |sed -ne "s/^$all_pattern/\\2/pg")"; then
-	printf %s\\n "$out" >&2
-	fatal 'failed to filter package file list.'
-fi
-
-cached_uris=
-if ! local_uris="$(printf %s "$out" |sed -ne "s/^$local_pattern/\\2/pg")"; then
-	printf %s\\n "$out" >&2
-	fatal 'failed to filter package file list.'
-fi
-
-if [ "$all_uris" != "$local_uris" ]; then
-	if [ -z "$APT_Get_PrintLocalFile" ]; then
-		if ! out="$("$aptbox/apt-get" -o APT::Get::PrintLocalFile=yes -q -y --print-uris install -- "$@" 2>&1)"; then
-			printf %s\\n "$out" >&2
-			fatal 'calculated package file list is not local and apt-get does not support APT::Get::PrintLocalFile option.'
-		fi
-
-		if ! cached_uris="$(printf %s "$out" |sed -ne "s/^$all_pattern/\\2/pg")" ||
-		   [ -n "$cached_uris" ]; then
-			printf %s\\n "$out" >&2
-			fatal 'calculated package file list is not local and apt-get does not support APT::Get::PrintLocalFile option.'
-		fi
-
-		APT_Get_PrintLocalFile=1
-	fi
-
-	if [ -n "$verbose" ]; then
-		"$aptbox/apt-get" -y -d install -- "$@" >&2 ||
-			fatal 'failed to download packages from calculated package file list.'
-	else
-		if ! out="$("$aptbox/apt-get" -y -d install -- "$@" 2>&1)"; then
-			printf %s\\n "$out" >&2
-			fatal 'failed to download packages from calculated package file list.'
-		fi
-	fi
-
-	if ! out="$("$aptbox/apt-get" -o APT::Get::PrintLocalFile=yes -q -y --print-uris install -- "$@" 2>&1)"; then
-		printf %s\\n "$out" >&2
-		fatal 'failed to calculate local package file list.'
-	fi
-
-	if ! cached_uris="$(printf %s "$out" |grep ^/)" || [ -z "$cached_uris" ]; then
-		printf %s\\n "$out" >&2
-		fatal 'failed to calculate local package file list.'
-	fi
-fi
-
-if [ -n "$cached_uris" ]; then
-	[ -n "$local_uris" ] && local_uris="$local_uris
-$cached_uris" || local_uris="$cached_uris"
-fi
-
-printf %s\\n "$local_uris" |
-	sed -e '/^[[:space:]]*$/d'
 verbose 'calculated package file list.'
