@@ -74,7 +74,9 @@ xorriso -follow param \
 	-no-emul-boot \
 	-boot-load-size 4 \
 	-boot-info-table \
+	-partition_offset 16 \
 	--efi-boot EFI/BOOT/.efiboot.img \
+	-append_partition 2 0xef /.image/EFI/BOOT/.efiboot.img \
 	"\$imgdir/" || rc=\$?
 
 rm -f -- .mkisofsrc .exclude

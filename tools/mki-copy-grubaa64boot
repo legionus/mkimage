@@ -47,8 +47,20 @@ if [ ! -f EFI/BOOT/.efiboot.img ]; then
 	# and dosfstools-4.0 doesn't follow that anymore
 	echo "mtools_skip_check=1" >"\$HOME"/.mtoolsrc
 
+	[ ! -f EFI/BOOT/grub.cfg ] ||
+		mv EFI/BOOT/grub.cfg .
+
+	cat >> 'EFI/BOOT/grub.cfg' <<'GRUB_CONF'
+search --file --set=root /.disk/info
+set prefix=(\$root)/EFI/BOOT
+source \$prefix/grub.cfg
+GRUB_CONF
+
 	mcopy $verbose -i .efiboot.img -s EFI ::
 	mv $verbose -f .efiboot.img EFI/BOOT/
+	rm EFI/BOOT/grub.cfg
+	[ ! -f grub.cfg ] ||
+		mv grub.cfg EFI/BOOT/
 fi
 
 cp $verbose -arf /usr/lib64/grub/"$grub_format" EFI/BOOT/
