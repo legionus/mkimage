@@ -32,6 +32,7 @@ done
 
 ia32efi_flag="present"
 efi=EFI
+img='.efiboot.img'
 boot="$efi/BOOT"
 cert="$efi/enroll"
 tools="$efi/tools"
@@ -220,15 +221,16 @@ copy_elilo()
 			>> "$boot/elilo.conf"
 }
 
-copy_grub()
-{
+copy_grub_primary() {
 	[ ! -f "$efi_bindir/grubx64.efi" ] ||
 		cp $verbose -pLf "$efi_bindir/grubx64.efi" "$boot/grubx64.efi"
 	[ ! -f "$efi_bindir/grubia32.efi" ] ||
 		cp $verbose -pLf "$efi_bindir/grubia32.efi" "$boot/grubia32.efi"
 	[ ! -f "$efi_bindir/grubx64.efi" ] ||
 		cp $verbose -pLf "$efi_bindir/grubx64.efi" "$boot/bootaa64.efi"
+}
 
+copy_grub_secondary() {
 	[ -d "$boot/fonts" ] ||
 		mkdir $verbose -p "$boot/fonts"
 
@@ -369,7 +371,18 @@ refind_add_banner() {
 	echo "banner /$bgfile"
 }
 
+# grub.cfg for .efiboot.img
 add_grub_cfg() {
+	{
+		cat <<- GRUB_EOF
+			search --file --set=root /.disk/info
+			set prefix=(\$root)/EFI/BOOT
+			source \$prefix/grub.cfg
+		GRUB_EOF
+	} > "$boot/grub.cfg"
+}
+
+add_grub_cfg_refind() {
 	{
 		cat <<- GRUB_EOF
 		set default=1
@@ -485,7 +498,51 @@ copy_refind()
 		REFIND_EOF
 	} > "$boot/refind_ia32.conf"
 
-	add_grub_cfg
+	add_grub_cfg_refind
+}
+
+write_efiboot_img () {
+	imgsize="$(( $(du -lsB32k $efi | cut -f1) + 10 ))"
+
+	dd if=/dev/zero of="$img" bs=32k count="$imgsize"
+
+	# dosfstools-4.0 has dropped those ancient symlinks, *sigh*
+	mkfs=
+	for bin in mkfs.fat mkfs.vfat; do
+		if $bin --help >/dev/null 2>&1; then
+			mkfs="$bin"
+			break
+		fi
+	done
+
+	[ -n "$mkfs" ] ||
+		fatal "Not found: mkfs.fat or mkfs.vfat"
+
+	$mkfs $verbose -n "El Torito" $img
+
+	# mtools insists that total number of sectors
+	# is a multiple of sectors per track (the infamous 63),
+	# and dosfstools-4.0 doesn't follow that anymore
+	echo "mtools_skip_check=1" >~/.mtoolsrc
+
+	if [ "$EFI_BOOTLOADER" = grub-efi ]; then
+		[ ! -f "$boot/grub.cfg" ] ||
+			mv $boot/grub.cfg .
+		add_grub_cfg
+	fi
+
+	# put EFI shell into the FAT image's root (for firmware)...
+	if [ -f "$efi/$shell" ]; then
+		mv $verbose "$efi/$shell" .
+		mcopy $verbose "$shell" -i "$img" ::
+	fi
+
+	mcopy $verbose -i "$img" -s "$efi" ::
+
+	mv "$img" "$efi/"
+
+	[ ! "$EFI_BOOTLOADER" = grub-efi -a ! -f grub.cfg ] ||
+		mv grub.cfg $boot/
 }
 
 #find out if all bootloader stages have ia32 binaries in the package
@@ -502,48 +559,23 @@ case "$EFI_BOOTLOADER" in
 		copy_refind
 		;;
 	grub-efi)
-		copy_grub
+		copy_grub_primary
 		;;
 	*)
 		fatal "Unable to handle '$EFI_BOOTLOADER'."
 		;;
 esac
 
-copy_kernel	# seems to be unavoidable
-copy_shell
-copy_mt86
-
-imgsize="$(( $(du -lsB32k $efi | cut -f1) + 10 ))"
-img='.efiboot.img'
-
-dd if=/dev/zero of="$img" bs=32k count="$imgsize"
-
-# dosfstools-4.0 has dropped those ancient symlinks, *sigh*
-mkfs=
-for bin in mkfs.fat mkfs.vfat; do
-	if $bin --help >/dev/null 2>&1; then
-		mkfs="$bin"
-		break
-	fi
-done
-
-[ -n "$mkfs" ] ||
-	fatal "Not found: mkfs.fat or mkfs.vfat"
-
-$mkfs $verbose -n "El Torito" $img
-
-# mtools insists that total number of sectors
-# is a multiple of sectors per track (the infamous 63),
-# and dosfstools-4.0 doesn't follow that anymore
-echo "mtools_skip_check=1" >~/.mtoolsrc
-
-# put EFI shell into the FAT image's root (for firmware)...
-if [ -f "$efi/$shell" ]; then
-	mv $verbose "$efi/$shell" .
-	mcopy $verbose "$shell" -i "$img" ::
+if [ "$EFI_BOOTLOADER" = grub-efi ]; then
+	[ -f "$efi/$img" ] || write_efiboot_img
+	copy_kernel
+	copy_grub_secondary
+else
+	copy_kernel
+	copy_shell
+	copy_mt86
+	[ -f "$efi/$img" ] || write_efiboot_img
 fi
-
-mcopy $verbose -i "$img" -s "$efi" ::
 
 # use ISO9660 hardlinks support if possible
 hardlink $verbose -c "$efi"
@@ -554,7 +586,5 @@ if [ -f "$shell" ]; then
 	mv $verbose "$shell" "$tools"
 fi
 
-mv "$img" "$efi/"
-
 # eltorito copy is enough for flash as well, at least with refind-0.6.12.1
-purge_mt86
+[ "$EFI_BOOTLOADER" = grub-efi ] || purge_mt86
