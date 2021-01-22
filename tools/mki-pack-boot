@@ -54,4 +54,7 @@ done
 [ -n "${types##* grubaa64boot *}" ] ||
 	exec mki-pack-efionly-isoboot
 
+[ ! -n "${types##* isolinux *}" -a -n "${types##* efiboot *}" ] ||
+	exec mki-pack-efionly-isoboot
+
 exec mki-pack-data

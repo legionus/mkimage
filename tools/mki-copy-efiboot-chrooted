@@ -29,8 +29,6 @@ for i in altinst live rescue; do
 		n_stages=$(($n_stages + 1))
 	fi
 done
-[ -n "$stage2" ] ||
-	fatal "no stage2 image found."
 
 ia32efi_flag="present"
 efi=EFI
@@ -188,7 +186,22 @@ copy_kernel()
 	[ ! -s "$boot/vmlinuz" ] && [ ! -s "$boot/full.cz" ] ||
 		return 0
 
-	cp $verbose -lpLft "$boot" -- syslinux/alt0/{vmlinuz,full.cz}
+	if [ -f syslinux/alt0/vmlinuz ]; then
+		cp $verbose -lpLft "$boot" -- syslinux/alt0/{vmlinuz,full.cz}
+		return 0
+	fi
+
+	if [ -L /boot/vmlinuz ]; then
+		kimage="$(readlink -v /boot/vmlinuz)"
+	else
+		kimage="$(find /boot -type f -name 'vmlinuz-*' -print -quit)"
+	fi
+
+	if [ -n "$kimage" ]; then
+		cp $verbose -af /boot/$kimage $boot/vmlinuz
+		[ ! -f /boot/full.cz ] ||
+			cp $verbose -af /boot/full.cz $boot/full.cz
+	fi
 }
 
 
@@ -209,17 +222,28 @@ copy_elilo()
 
 copy_grub()
 {
-	cp $verbose -pLf "$efi_bindir/grubx64.efi" "$boot/grubx64.efi"
-	cp $verbose -pLf "$efi_bindir/grubia32.efi" "$boot/grubia32.efi"
+	[ ! -f "$efi_bindir/grubx64.efi" ] ||
+		cp $verbose -pLf "$efi_bindir/grubx64.efi" "$boot/grubx64.efi"
+	[ ! -f "$efi_bindir/grubia32.efi" ] ||
+		cp $verbose -pLf "$efi_bindir/grubia32.efi" "$boot/grubia32.efi"
+	[ ! -f "$efi_bindir/grubx64.efi" ] ||
+		cp $verbose -pLf "$efi_bindir/grubx64.efi" "$boot/bootaa64.efi"
 
 	[ -d "$boot/fonts" ] ||
 		mkdir $verbose -p "$boot/fonts"
 
-	cp $verbose -arf /usr/lib64/grub/x86_64-efi "$boot"
-	cp $verbose -arf /usr/lib64/grub/i386-efi "$boot/"
-
-	find "$boot/x86_64-efi" -type f -name '*.module' -delete ||:
-	find "$boot/i386-efi" -type f -name '*.module' -delete ||:
+	if [ -f "$efi_bindir/x86_64-efi" ]; then
+		cp $verbose -arf "$efi_bindir/x86_64-efi" "$boot"
+		find "$boot/x86_64-efi" -type f -name '*.module' -delete ||:
+	fi
+	if [ -f "$efi_bindir/i386-efi" ]; then
+		cp $verbose -arf "$efi_bindir/i386-efi" "$boot"
+		find "$boot/i386-efi" -type f -name '*.module' -delete ||:
+	fi
+	if [ -f "$efi_bindir/arm64-efi" ]; then
+		cp $verbose -arf "$efi_bindir/arm64-efi" "$boot"
+		find "$boot/arm64-efi" -type f -name '*.module' -delete ||:
+	fi
 
 	cp $verbose -Lf /boot/grub/fonts/unicode.pf2 "$boot/fonts"
 	cp $verbose -Lf /boot/grub/unifont.pf2 "$boot"
@@ -263,6 +287,8 @@ refind_add_stage_submenu()
 
 refind_add_stage2()
 {
+	[ -n "$stage2" ] ||
+		fatal "no stage2 image found."
 	local root icon splash loader options
 
 	for root in $stage2; do

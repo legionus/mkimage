@@ -71,6 +71,10 @@ copy-isolinux: prepare-workdir $(SUBDIRS)
 	@echo "mkimage: Processing '$@' ..."
 	@$(CHROOT_COPY_ISOLINUX)
 
+copy-efiboot: prepare-workdir $(SUBDIRS)
+	@echo "mkimage: Processing '$@' ..."
+	@$(CHROOT_COPY_EFIBOOT)
+
 copy-pxelinux: prepare-workdir $(SUBDIRS)
 	@echo "mkimage: Processing '$@' ..."
 	@$(CHROOT_COPY_PXELINUX)
