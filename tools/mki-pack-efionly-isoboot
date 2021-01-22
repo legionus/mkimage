@@ -31,8 +31,8 @@ imgsubdir="${imgsubdir#/}"
 [ -d "$chroot" ] ||
 	fatal "$dir: not look like a work directory of hasher."
 
-[ -f "$chroot/.image/$imgsubdir/EFI/BOOT/.efiboot.img" ] ||
-	fatal "/.image/$imgsubdir/EFI/BOOT/.efiboot.img: not found."
+[ -f "$chroot/.image/$imgsubdir/EFI/.efiboot.img" ] ||
+	fatal "/.image/$imgsubdir/EFI/.efiboot.img: not found."
 
 mki-install $pkgs ||
 	fatal "failed to install packages: $pkgs."
@@ -75,8 +75,8 @@ xorriso -follow param \
 	-boot-load-size 4 \
 	-boot-info-table \
 	-partition_offset 16 \
-	--efi-boot EFI/BOOT/.efiboot.img \
-	-append_partition 2 0xef /.image/EFI/BOOT/.efiboot.img \
+	--efi-boot EFI/.efiboot.img \
+	-append_partition 2 0xef /.image/EFI/.efiboot.img \
 	"\$imgdir/" || rc=\$?
 
 rm -f -- .mkisofsrc .exclude

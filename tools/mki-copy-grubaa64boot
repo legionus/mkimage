@@ -32,7 +32,7 @@ cd "$imgdir"
 
 mkdir $verbose -p EFI/BOOT/fonts
 
-if [ ! -f EFI/BOOT/.efiboot.img ]; then
+if [ ! -f EFI/.efiboot.img ]; then
 	cp $verbose -Lf /usr/lib64/efi/grubx64.efi EFI/BOOT/bootaa64.efi
 
 	type -t mkfs.fat >/dev/null && mkfs=mkfs.fat || mkfs=mkfs.vfat
@@ -57,7 +57,7 @@ source \$prefix/grub.cfg
 GRUB_CONF
 
 	mcopy $verbose -i .efiboot.img -s EFI ::
-	mv $verbose -f .efiboot.img EFI/BOOT/
+	mv $verbose -f .efiboot.img EFI/
 	rm EFI/BOOT/grub.cfg
 	[ ! -f grub.cfg ] ||
 		mv grub.cfg EFI/BOOT/
