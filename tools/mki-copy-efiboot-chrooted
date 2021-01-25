@@ -251,6 +251,14 @@ copy_grub_secondary() {
 	cp $verbose -Lf /boot/grub/unifont.pf2 "$boot"
 	[ ! -d /boot/grub/themes ] ||
 		cp $verbose -arf /boot/grub/themes "$boot"
+
+	if [ ! -e "$boot/locale" ]; then
+		mkdir "$boot/locale"
+		for i in $(find /usr/share/locale/ -name grub.mo); do
+			lct="$(echo $i | cut -d/ -f5)"
+			cp $verbose -arf "$i" "$boot/locale/$lct.mo"
+		done
+	fi
 }
 
 refind_add_stage_submenu()
