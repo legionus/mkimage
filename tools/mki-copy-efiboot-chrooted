@@ -37,6 +37,7 @@ boot="$efi/BOOT"
 cert="$efi/enroll"
 tools="$efi/tools"
 efi_bindir='/usr/lib64/efi'
+grub_modules='/usr/lib64/grub'
 shell='shellx64.efi'
 
 kernel_bootparams="fastboot live lowmem showopts automatic=method:cdrom $EFI_BOOTARGS"
@@ -234,16 +235,16 @@ copy_grub_secondary() {
 	[ -d "$boot/fonts" ] ||
 		mkdir $verbose -p "$boot/fonts"
 
-	if [ -f "$efi_bindir/x86_64-efi" ]; then
-		cp $verbose -arf "$efi_bindir/x86_64-efi" "$boot"
+	if [ -d "$grub_modules/x86_64-efi" ]; then
+		cp $verbose -arf "$grub_modules/x86_64-efi" "$boot"
 		find "$boot/x86_64-efi" -type f -name '*.module' -delete ||:
 	fi
-	if [ -f "$efi_bindir/i386-efi" ]; then
-		cp $verbose -arf "$efi_bindir/i386-efi" "$boot"
+	if [ -d "$grub_modules/i386-efi" ]; then
+		cp $verbose -arf "$grub_modules/i386-efi" "$boot"
 		find "$boot/i386-efi" -type f -name '*.module' -delete ||:
 	fi
-	if [ -f "$efi_bindir/arm64-efi" ]; then
-		cp $verbose -arf "$efi_bindir/arm64-efi" "$boot"
+	if [ -d "$grub_modules/arm64-efi" ]; then
+		cp $verbose -arf "$grub_modules/arm64-efi" "$boot"
 		find "$boot/arm64-efi" -type f -name '*.module' -delete ||:
 	fi
 
