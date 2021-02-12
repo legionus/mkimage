@@ -33,8 +33,9 @@ cd "$imgdir"
 mkdir $verbose -p EFI/BOOT/fonts
 
 if [ ! -f EFI/.efiboot.img ]; then
-	cp $verbose -Lf /usr/lib64/efi/grubx64.efi EFI/BOOT/bootaa64.efi
-
+	bootaa64=/usr/lib64/efi/grubx64.efi
+	[ ! -f /usr/lib64/efi/grubaa64.efi ] || bootaa64=/usr/lib64/efi/grubaa64.efi
+	cp $verbose -Lf "$bootaa64" EFI/BOOT/bootaa64.efi
 	type -t mkfs.fat >/dev/null && mkfs=mkfs.fat || mkfs=mkfs.vfat
 	imgsize=\$(du -lsB32k EFI | cut -f1)
 	imgsize=\$((\$imgsize + 10))
