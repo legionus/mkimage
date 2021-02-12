@@ -34,6 +34,7 @@ ia32efi_flag="present"
 efi=EFI
 img='.efiboot.img'
 boot="$efi/BOOT"
+boot_grub="boot/grub"
 cert="$efi/enroll"
 tools="$efi/tools"
 efi_bindir='/usr/lib64/efi'
@@ -237,32 +238,31 @@ copy_grub_primary() {
 }
 
 copy_grub_secondary() {
-	[ -d "$boot/fonts" ] ||
-		mkdir $verbose -p "$boot/fonts"
+	[ -d "$boot_grub/fonts" ] ||
+		mkdir $verbose -p "$boot_grub/fonts"
 
 	if [ -d "$grub_modules/x86_64-efi" ]; then
-		cp $verbose -arf "$grub_modules/x86_64-efi" "$boot"
-		find "$boot/x86_64-efi" -type f -name '*.module' -delete ||:
+		cp $verbose -arf "$grub_modules/x86_64-efi" "$boot_grub"
+		find "$boot_grub/x86_64-efi" -type f -name '*.module' -delete ||:
 	fi
 	if [ -d "$grub_modules/i386-efi" ]; then
-		cp $verbose -arf "$grub_modules/i386-efi" "$boot"
-		find "$boot/i386-efi" -type f -name '*.module' -delete ||:
+		cp $verbose -arf "$grub_modules/i386-efi" "$boot_grub"
+		find "$boot_grub/i386-efi" -type f -name '*.module' -delete ||:
 	fi
 	if [ -d "$grub_modules/arm64-efi" ]; then
-		cp $verbose -arf "$grub_modules/arm64-efi" "$boot"
-		find "$boot/arm64-efi" -type f -name '*.module' -delete ||:
+		cp $verbose -arf "$grub_modules/arm64-efi" "$boot_grub"
+		find "$boot_grub/arm64-efi" -type f -name '*.module' -delete ||:
 	fi
 
-	cp $verbose -Lf /boot/grub/fonts/unicode.pf2 "$boot/fonts"
-	cp $verbose -Lf /boot/grub/unifont.pf2 "$boot"
-	[ ! -d /boot/grub/themes ] ||
-		cp $verbose -arf /boot/grub/themes "$boot"
-
-	if [ ! -e "$boot/locale" ]; then
-		mkdir "$boot/locale"
+	cp $verbose -Lf /boot/grub/fonts/unicode.pf2 "$boot_grub/fonts"
+	cp $verbose -Lf /boot/grub/unifont.pf2 "$boot_grub"
+	[ ! -d /boot/grub/themes ] || [ -d "$boot_grub/themes" ] ||
+		cp $verbose -arf /boot/grub/themes "$boot_grub"
+	if [ ! -e "$boot_grub/locale" ]; then
+		mkdir "$boot_grub/locale"
 		for i in $(find /usr/share/locale/ -name grub.mo); do
 			lct="$(echo $i | cut -d/ -f5)"
-			cp $verbose -arf "$i" "$boot/locale/$lct.mo"
+			cp $verbose -arf "$i" "$boot_grub/locale/$lct.mo"
 		done
 	fi
 }
@@ -390,7 +390,7 @@ add_grub_cfg() {
 	{
 		cat <<- GRUB_EOF
 			search --file --set=root /.disk/info
-			set prefix=(\$root)/EFI/BOOT
+			set prefix=(\$root)/$boot_grub
 			source \$prefix/grub.cfg
 		GRUB_EOF
 	} > "$boot/grub.cfg"
@@ -540,8 +540,8 @@ write_efiboot_img () {
 	echo "mtools_skip_check=1" >~/.mtoolsrc
 
 	if [ "$EFI_BOOTLOADER" = grub-efi ]; then
-		[ ! -f "$boot/grub.cfg" ] ||
-			mv $boot/grub.cfg .
+		[ ! -f "$boot/grub.cfg" ] || [ -f "$boot_grub/grub.cfg" ] ||
+			mv "$boot/grub.cfg" "$boot_grub"
 		add_grub_cfg
 	fi
 
@@ -554,10 +554,6 @@ write_efiboot_img () {
 	mcopy $verbose -i "$img" -s "$efi" ::
 
 	mv "$img" "$efi/"
-
-	if [ "$EFI_BOOTLOADER" = grub-efi ] && [ -f grub.cfg ]; then
-		mv grub.cfg $boot/
-	fi
 }
 
 #find out if all bootloader stages have ia32 binaries in the package
@@ -582,6 +578,7 @@ case "$EFI_BOOTLOADER" in
 esac
 
 if [ "$EFI_BOOTLOADER" = grub-efi ]; then
+	[ -d "$boot_grub" ] || mkdir -p "$boot_grub"
 	[ -f "$efi/$img" ] || write_efiboot_img
 	copy_kernel
 	copy_grub_secondary
