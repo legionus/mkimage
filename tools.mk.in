@@ -43,6 +43,7 @@ CHROOT_COPY_PXELINUX	?= $(TOOLSDIR)/mki-copy-pxelinux
 CHROOT_COPY_SYSLINUX	?= $(TOOLSDIR)/mki-copy-syslinux
 CHROOT_COPY_IEEE1275BOOT?= $(TOOLSDIR)/mki-copy-ieee1275boot
 CHROOT_COPY_GRUBAA64BOOT?= $(TOOLSDIR)/mki-copy-grubaa64boot
+CHROOT_COPY_GRUBPCBOOT	?= $(TOOLSDIR)/mki-copy-grubpcboot
 CHROOT_COPY_EFIBOOT	?= $(TOOLSDIR)/mki-copy-efiboot
 CHROOT_COPY_E2KBOOT	?= $(TOOLSDIR)/mki-copy-e2kboot
 CHROOT_INSTALL		?= $(TOOLSDIR)/mki-install

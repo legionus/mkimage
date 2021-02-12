@@ -90,6 +90,10 @@ copy-grubaa64boot: prepare-workdir $(SUBDIRS)
 	@echo "mkimage: Processing '$@' ..."
 	@$(CHROOT_COPY_GRUBAA64BOOT)
 
+copy-grubpcboot: prepare-workdir $(SUBDIRS)
+	@echo "mkimage: Processing '$@' ..."
+	@$(CHROOT_COPY_GRUBPCBOOT)
+
 copy-e2k-boot: prepare-workdir $(SUBDIRS)
 	@echo "mkimage: Processing '$@' ..."
 	@$(CHROOT_COPY_E2KBOOT)

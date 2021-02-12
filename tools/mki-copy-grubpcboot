@@ -1,0 +1,80 @@
+#!/bin/ash -efu
+#
+# mki-copy-grubpcboot
+#
+# This file is part of mkimage
+# Copyright (C) 2021 Anton Midyukov <antohami@altlinux.org>
+#
+# This file is covered by the GNU General Public License,
+# which should be included with mkimage as the file COPYING.
+#
+
+. "${0%/*}"/mki-sh-functions
+
+pkgs="${PACKAGES_REQUIRED_COPY_GRUBPCBOOT:-}"
+imgdir="/.image${MKI_IMAGESUBDIR:+/$MKI_IMAGESUBDIR}"
+grub_format="${GRUB_I386_FORMAT:-i386-pc}"
+
+verbose "has started executing."
+
+[ -d "$chroot" ] ||
+	fatal "$dir: does not look like a hasher work directory."
+
+mki-install $pkgs ||
+	fatal "failed to install packages: $pkgs."
+
+run_chrooted "$chroot" <<EOF
+#!/bin/sh -efu
+
+libdir=/usr/lib64
+[ -d "\$libdir" ] ||
+	libdir=/usr/lib
+
+cd "$imgdir"
+
+mkdir $verbose -p boot/grub/fonts
+
+# make eltorito.img
+if [ ! -f boot/grub/bios.img ]; then
+	cat >> 'boot/grub.cfg' <<'GRUB_CONF'
+search --file --set=root /.disk/info
+set prefix=(\$root)/boot/grub
+source \$prefix/grub.cfg
+GRUB_CONF
+
+	grub-mkstandalone \
+		--format="$grub_format" \
+		--output=boot/core.img \
+		--install-modules="linux normal iso9660 biosdisk memdisk part_gpt search tar ls" \
+		--modules="linux normal iso9660 biosdisk part_gpt search" \
+		--locales="" \
+		--fonts="" \
+		"boot/grub/grub.cfg=boot/grub.cfg"
+
+	cat "\$libdir"/grub/"$grub_format"/cdboot.img boot/core.img \
+		> boot/grub/bios.img
+
+	# cleanup temporary files
+	rm boot/{core.img,grub.cfg}
+fi
+
+cp $verbose -arf "\$libdir"/grub/"$grub_format" boot/grub/
+find boot/grub/"$grub_format" -type f -name '*.module' -delete ||:
+cp $verbose -Lf /boot/grub/fonts/unicode.pf2 boot/grub/fonts/
+cp $verbose -Lf /boot/grub/unifont.pf2 boot/grub/
+[ ! -d /boot/grub/themes ] || [ -d boot/grub/themes ] ||
+	cp $verbose -arf /boot/grub/themes boot/grub/
+
+if [ -L /boot/vmlinuz ]; then
+	kimage="\$(readlink -ev /boot/vmlinuz)"
+else
+	kimage="\$(find /boot -type f -name 'vmlinuz-*' -print -quit)"
+fi
+
+if [ -n "\$kimage" ]; then
+	cp $verbose -af \$kimage boot/vmlinuz
+	[ ! -f /boot/full.cz ] ||
+		cp $verbose -af /boot/full.cz boot/full.cz
+fi
+
+EOF
