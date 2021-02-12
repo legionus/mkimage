@@ -223,12 +223,17 @@ copy_elilo()
 }
 
 copy_grub_primary() {
-	[ ! -f "$efi_bindir/grubx64.efi" ] ||
+	if [ -f "$efi_bindir/grubx64.efi" ] && [ -d "$grub_modules/x86_64-efi" ]; then
 		cp $verbose -pLf "$efi_bindir/grubx64.efi" "$boot/grubx64.efi"
-	[ ! -f "$efi_bindir/grubia32.efi" ] ||
+	fi
+	if [ -f "$efi_bindir/grubia32.efi" ]; then
 		cp $verbose -pLf "$efi_bindir/grubia32.efi" "$boot/grubia32.efi"
-	[ ! -f "$efi_bindir/grubx64.efi" ] ||
+	fi
+	if [ -f "$efi_bindir/grubaa64.efi" ]; then
+		cp $verbose -pLf "$efi_bindir/grubaa64.efi" "$boot/bootaa64.efi"
+	elif [ -f "$efi_bindir/grubx64.efi" ] && [ -d "$grub_modules/arm64-efi" ]; then
 		cp $verbose -pLf "$efi_bindir/grubx64.efi" "$boot/bootaa64.efi"
+	fi
 }
 
 copy_grub_secondary() {
