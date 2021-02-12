@@ -555,8 +555,9 @@ write_efiboot_img () {
 
 	mv "$img" "$efi/"
 
-	[ ! "$EFI_BOOTLOADER" = grub-efi -a ! -f grub.cfg ] ||
+	if [ "$EFI_BOOTLOADER" = grub-efi ] && [ -f grub.cfg ]; then
 		mv grub.cfg $boot/
+	fi
 }
 
 #find out if all bootloader stages have ia32 binaries in the package
