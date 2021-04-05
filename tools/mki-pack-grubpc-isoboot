@@ -92,6 +92,7 @@ xorriso -follow param \
 	--eltorito-catalog  boot/grub/boot.cat \
 	--grub2-boot-info \
 	--grub2-mbr \$libdir/grub/i386-pc/boot_hybrid.img \
+	--mbr-force-bootable \
 	\$efi_opts \
 	"\$imgdir/" || rc=\$?
 
