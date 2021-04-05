@@ -46,11 +46,7 @@ else
 fi
 kver="\${kimage#/boot/\$kname-}"
 
-if type mkmodpack >/dev/null 2>&1; then
-	mkmodpack -p '/.in/${mar_modules##*/}' -o /tmp/modules -k "\$kver"
-else
-	mkmar -r / -p '/.in/${mar_modules##*/}' -o /tmp/modules -k "\$kver"
-fi
+mkmodpack -p '/.in/${mar_modules##*/}' -o /tmp/modules -k "\$kver"
 
 printf '%s\n' "${PROPAGATOR_VERSION:-}" > /tmp/.VERSION
 
