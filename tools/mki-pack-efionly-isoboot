@@ -78,6 +78,7 @@ xorriso -follow param \
 	-partition_offset 16 \
 	--efi-boot EFI/.efiboot.img \
 	-append_partition 2 0xef /.image/EFI/.efiboot.img \
+	-appended_part_as_gpt \
 	"\$imgdir/" || rc=\$?
 
 rm -f -- .mkisofsrc .exclude
