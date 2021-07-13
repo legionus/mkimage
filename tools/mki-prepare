@@ -16,7 +16,9 @@ verbose "has started executing."
 
 # Instrumental chroot should not have docs.
 HSH_EXCLUDE_DOCS=1
-IMAGE_INIT_LIST=
+
+# Instrumental chroot should have its own list of initial packages.
+IMAGE_INIT_LIST=${WORK_INIT_LIST-}
 
 run_mkaptbox() {
 	rm -rf -- "$pkgbox/aptbox"
