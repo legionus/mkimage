@@ -15,14 +15,14 @@ verbose "has started executing."
 
 case "$PROG" in
 	*-run)
-		exec env -i PATH="$PATH" \
+		exec env -i PATH="$PATH" ${HSH_NETWORK:+share_network=1} \
 		hsh-run --rooter $verbose $quiet \
 			${HSH_NUMBER:+--number="$HSH_NUMBER"} \
 			${HSH_PROC:+--mountpoints=/proc} \
 			"$dir" -- "$@"
 		;;
 	*-exec)
-		exec env -i PATH="$PATH" \
+		exec env -i PATH="$PATH" ${HSH_NETWORK:+share_network=1} \
 		hsh-run --rooter $verbose $quiet \
 			${HSH_NUMBER:+--number="$HSH_NUMBER"} \
 			${HSH_PROC:+--mountpoints=/proc} \
