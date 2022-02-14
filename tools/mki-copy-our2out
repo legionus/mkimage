@@ -12,7 +12,7 @@
 . "${0%/*}"/mki-sh-functions
 
 cleanup="${CLEANUP_OUTDIR:-}"
-level="${MAKELEVEL:-}"
+subprofile="${SUBPROFILE:-0}"
 
 verbose "has started executing."
 
@@ -26,7 +26,7 @@ fi
 
 get_copy_args "$outdir" "$chroot/.our"
 
-[ -z "$cleanup" ] || [ "$level" = "1" ] ||
+[ -z "$cleanup" ] || [ "$subprofile" = 0 ] ||
 	find "$outdir/" -mindepth 1 -maxdepth 1 -execdir rm $verbose -rf -- '{}' '+'
 
 cd "$chroot/.our"
