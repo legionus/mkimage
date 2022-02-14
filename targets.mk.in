@@ -176,4 +176,4 @@ env-current:
 env: env-current $(SUBDIRS)
 
 $(SUBDIRS):
-	$(RUN_MAKE) "$@" $(MAKE) $(MFLAGS) $(MAKECMDGOALS)
+	$(RUN_MAKE) "$@" $(MAKE) $(MFLAGS) $(MAKECMDGOALS) SUBPROFILE=1

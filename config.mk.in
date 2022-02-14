@@ -32,6 +32,13 @@ PREVDIR		= $(dir $(PWD))
 TOPDIR 		= $(shell $(GET_TOPDIR) $(PWD))
 OUTDIR		?= $(WORKDIR)/$(OUTDIRNAME)
 
+SUBPROFILE	?= 0
+ifeq ($(SUBPROFILE), 0)
+ifneq ($(TOPDIR), $(CURDIR))
+SUBPROFILE = 1
+endif
+endif
+
 PROFILE		?=
 SUBDIRS		?=
 CLEANUP_OUTDIR	?= 1
