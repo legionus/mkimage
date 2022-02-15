@@ -29,10 +29,6 @@ exit_handler() {
 trap exit_handler HUP INT QUIT TERM EXIT
 
 for d in $subdirs; do
-	if [ -z "$NO_REMOTES" ] && [ -z "${d##*=*}" ]; then
-		d="${d%%=*}"
-	fi
-
 	outsubdir="$curdir/$d/$workdirname/$outdirname"
 
 	get_copy_args "$outsubdir" "$chroot/.in"
