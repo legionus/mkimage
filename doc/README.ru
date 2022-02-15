@@ -314,8 +314,6 @@ MKI_PACK_RESULTS       - Этот параметр комбинирует MKI_PA
                          boot            - создаёт загрузочный ISO-образ.
                          isoboot         - аналогично 'boot', но не пытается создать образ
                                            для propagator.
-                         yaboot          - аналогичен 'isoboot', но используется загрузчик
-                                           для PowerPC.
                          efionly-isoboot - вариант 'isoboot' только с EFI-загрузчиком
                                            (без isolinux)
                          grubpc-isoboot  - вариант 'isoboot' c grub-pc вместо isolinux
@@ -359,7 +357,7 @@ GLOBAL_BOOT_LANG,
 BOOT_LANG              - Устанавливает язык, используемый по умолчанию в gfxboot.
 
 BOOT_TYPE              - Описывает, каким образом будет загружаться образ. Доступные
-                         значения: 'isolinux', 'pxelinux', 'syslinux', 'yaboot', 'efiboot',
+                         значения: 'isolinux', 'pxelinux', 'syslinux', 'efiboot',
                          'grubaa64boot', 'grubpcboot', 'ieee1275boot', 'e2kboot'.
                          Возможно указать несколько значений сразу, в этом случае в образ
                          попадут конфигурации для всех перечисленных методов.
@@ -474,14 +472,12 @@ ISOHYBRID              - Непустое значение указывает н
 PACKAGES_REQUIRED_INITROOT           = basesystem
 PACKAGES_REQUIRED_BUILD_PROPAGATOR   = mar propagator glibc-utils
 PACKAGES_REQUIRED_PACK_CPIO          = cpio
-PACKAGES_REQUIRED_PACK_YABOOT        = mkisofs
 PACKAGES_REQUIRED_PACK_ISOBOOT       = xorriso
 PACKAGES_REQUIRED_PACK_ISODATA       = xorriso
 PACKAGES_REQUIRED_PACK_TAR           = tar
 PACKAGES_REQUIRED_PACK_GZIP          = gzip
 PACKAGES_REQUIRED_PACK_BZIP2         = bzip2
 PACKAGES_REQUIRED_PACK_LZMA          = lzma
-PACKAGES_REQUIRED_COPY_YABOOT        = yaboot kernel-bootwrapper binutils
 PACKAGES_REQUIRED_COPY_ISOLINUX      = syslinux
 PACKAGES_REQUIRED_COPY_SYSLINUX      = syslinux
 PACKAGES_REQUIRED_COPY_PXELINUX      = syslinux
