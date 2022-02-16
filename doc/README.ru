@@ -327,11 +327,11 @@ MKI_PACK_RESULTS       - Этот параметр комбинирует MKI_PA
                          SUBDIR - поддиректория в рабочем чруте, которую нужно запаковать.
 
 MKI_TAR_COMPRESS       - Переменная указывает метод сжатия tar-архива.
-                         Доступные значения: `bzip2' и `gzip'. Если переменная пуста,
-                         сжатие не производится.
+                         Доступные значения: `bzip2', `gzip', `xz', `lzma', `zst' и `lz4'.
+                         Если переменная пуста, сжатие не производится.
 
 MKI_CPIO_COMPRESS      - Переменная указывает метод сжатия cpio-архива.
-                         Доступные значения: `bzip2' и `gzip'.
+                         Доступные значения: `bzip2' и `gzip', `xz', `zst', `lz4'.
 
 MKI_SPLIT              - Параметр позволяет разбить MKI_DESTDIR на поддиректории
                          с определённым размером. Формат переменной следующий:
@@ -474,6 +474,8 @@ PACKAGES_REQUIRED_PACK_TAR           = tar
 PACKAGES_REQUIRED_PACK_GZIP          = gzip
 PACKAGES_REQUIRED_PACK_BZIP2         = bzip2
 PACKAGES_REQUIRED_PACK_LZMA          = lzma
+PACKAGES_REQUIRED_PACK_ZSTD          = zstd
+PACKAGES_REQUIRED_PACK_LZ4           = lz4
 PACKAGES_REQUIRED_COPY_ISOLINUX      = syslinux
 PACKAGES_REQUIRED_COPY_SYSLINUX      = syslinux
 PACKAGES_REQUIRED_COPY_PXELINUX      = syslinux

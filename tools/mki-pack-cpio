@@ -38,6 +38,14 @@ case "${MKI_CPIO_COMPRESS:-}" in
 		compress='bzip2'
 		pkgs="$pkgs  ${PACKAGES_REQUIRED_PACK_BZIP2:-}"
 		;;
+	zst|zstd)
+		compress='zstd'
+		pkgs="$pkgs ${PACKAGES_REQUIRED_PACK_ZSTD:-}"
+		;;
+	lz4)
+		compress='lz4'
+		pkgs="$pkgs ${PACKAGES_REQUIRED_PACK_LZ4:-}"
+		;;
 esac
 
 [ -d "$chroot" ] ||
