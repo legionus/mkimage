@@ -15,6 +15,8 @@ verbose "has started executing."
 
 handler="${MKI_HANDLER:?handler required}"
 
+pkgs="${PACKAGES_REQUIRED_PACK_CUSTOM:-}"
+
 outname="${MKI_OUTNAME:-outname}"
 outname="${outname##*/}"
 
@@ -23,6 +25,10 @@ imgsubdir="${imgsubdir#/}"
 
 [ -d "$chroot" ] ||
 	fatal "$dir: not look like a work directory of hasher."
+
+[ -z "$pkgs" ] ||
+	mki-install $pkgs ||
+	fatal "failed to install packages: $pkgs."
 
 [ -x "$handler" ] ||
 	fatal "$handler: not executable."

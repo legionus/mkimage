@@ -468,6 +468,7 @@ ISOHYBRID              - Непустое значение указывает н
 PACKAGES_REQUIRED_INITROOT           = basesystem
 PACKAGES_REQUIRED_BUILD_PROPAGATOR   = mar propagator glibc-utils
 PACKAGES_REQUIRED_PACK_CPIO          = cpio
+PACKAGES_REQUIRED_PACK_CUSTOM        =
 PACKAGES_REQUIRED_PACK_ISOBOOT       = xorriso
 PACKAGES_REQUIRED_PACK_ISODATA       = xorriso
 PACKAGES_REQUIRED_PACK_TAR           = tar
