@@ -7,6 +7,8 @@ verbose="${verbose-}"
 EFI_CERT="${EFI_CERT-}"
 EFI_BOOTLOADER="${EFI_BOOTLOADER-}"
 EFI_BOOTARGS="${EFI_BOOTARGS-}"
+EFI_FILES_COPY="${EFI_FILES_COPY-}"
+EFI_FILES_REPLACE="${EFI_FILES_REPLACE-}"
 
 cd /.image
 
@@ -525,6 +527,14 @@ copy_refind()
 write_efiboot_img () {
 	imgsize="$(( $(du -lsB32k $efi | cut -f1) + 10 ))"
 
+	# additional files or directories for efiboot.img
+	for efi_file in $EFI_FILES_COPY $EFI_FILES_REPLACE; do
+		[ -n "${efi_file##*/*}" ] ||
+			fatal "EFI_FILES_COPY or EFI_FILES_REPLACE contains '/': $efi_file"
+		[ -e "$efi_file" ] || fatal "$efi_file does not exist"
+		imgsize="$(( imgsize + $(du -lsB32k "$efi_file" | cut -f1) ))"
+	done
+
 	dd if=/dev/zero of="$img" bs=32k count="$imgsize"
 
 	# dosfstools-4.0 has dropped those ancient symlinks, *sigh*
@@ -558,7 +568,11 @@ write_efiboot_img () {
 		mcopy $verbose "$shell" -i "$img" ::
 	fi
 
-	mcopy $verbose -i "$img" -s "$efi" ::
+	mcopy $verbose -i "$img" -s "$efi" \
+		$EFI_FILES_COPY $EFI_FILES_REPLACE ::
+
+	# cleanup additional files for efiboot.img only
+	[ -z "$EFI_FILES_REPLACE" ] || rm -r $EFI_FILES_REPLACE
 
 	mv "$img" "$efi/"
 }
