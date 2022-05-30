@@ -226,11 +226,13 @@ copy_elilo()
 }
 
 copy_grub_primary() {
+	boot_prefix=grub
+	[ -n "$EFI_CERT" ] || boot_prefix=boot
 	if [ -f "$efi_bindir/grubx64.efi" ] && [ -d "$grub_modules/x86_64-efi" ]; then
-		cp $verbose -pLf "$efi_bindir/grubx64.efi" "$boot/grubx64.efi"
+		cp $verbose -pLf "$efi_bindir/grubx64.efi" "$boot/${boot_prefix}x64.efi"
 	fi
 	if [ -f "$efi_bindir/grubia32.efi" ]; then
-		cp $verbose -pLf "$efi_bindir/grubia32.efi" "$boot/grubia32.efi"
+		cp $verbose -pLf "$efi_bindir/grubia32.efi" "$boot/${boot_prefix}ia32.efi"
 	fi
 	if [ -f "$efi_bindir/grubaa64.efi" ]; then
 		cp $verbose -pLf "$efi_bindir/grubaa64.efi" "$boot/bootaa64.efi"
