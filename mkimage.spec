@@ -68,7 +68,7 @@ if grep -Fqsx 1 "%procfile"; then
 fi
 
 %post preinstall
-if grep -Fqsx 1 "%procfile"; then
+if grep -Fqsx 1 "%procfile" && [ -w %procfile ]; then
 	echo "%name-preinstall: allowing to hardlink non-owned files..." >&2
 	echo 0 > %procfile
 fi
