@@ -15,7 +15,7 @@
 verbose "has started executing."
 
 [ -d "$subchroot" ] ||
-	hsh_initroot "$subdir"
+	hsh_initroot_image "$subdir"
 
 ln $verbose -nsf -- "$WORKDIRNAME/chroot" "$chroot/.image"
 

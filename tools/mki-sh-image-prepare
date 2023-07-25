@@ -30,6 +30,7 @@ hsh_initroot() {
 		${HSH_EXCLUDE_DOCS:+--excludedocs} \
 		${HSH_CACHEDIR:+--cache-dir="$HSH_CACHEDIR"} \
 		${IMAGE_INIT_LIST:+--pkg-init-list="$IMAGE_INIT_LIST"} \
+		"$@" \
 		-- "$wdir" ||
 	fatal "$wdir: unable to make initial chroot: rc=$?"
 
@@ -85,4 +86,9 @@ hsh_initroot() {
 	fi
 
 	rm -rf -- "$wdir/repo" "$wdir/chroot/.out"
+}
+
+hsh_initroot_image() {
+	hsh_initroot "$1" \
+		${MKI_IMAGE_INITROOT_PREDB:+--predb-prog="$MKI_IMAGE_INITROOT_PREDB"}
 }
