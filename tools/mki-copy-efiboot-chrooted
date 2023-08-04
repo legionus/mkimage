@@ -242,6 +242,9 @@ copy_grub_primary() {
 	if [ -f "$efi_bindir/grubriscv64.efi" ] && [ -d "$grub_modules/riscv64-efi" ]; then
 		cp $verbose -pLf "$efi_bindir/grubriscv64.efi" "$boot/bootriscv64.efi"
 	fi
+	if [ -f "$efi_bindir/grubloongarch64.efi" ] && [ -d "$grub_modules/loongarch64-efi" ]; then
+		cp $verbose -pLf "$efi_bindir/grubloongarch64.efi" "$boot/bootloongarch64.efi"
+	fi
 }
 
 copy_grub_secondary() {
@@ -263,6 +266,10 @@ copy_grub_secondary() {
 	if [ -d "$grub_modules/riscv64-efi" ]; then
 		cp $verbose -arf "$grub_modules/riscv64-efi" "$boot_grub"
 		find "$boot_grub/riscv64-efi" -type f -name '*.module' -delete ||:
+	fi
+	if [ -d "$grub_modules/loongarch64-efi" ]; then
+		cp $verbose -arf "$grub_modules/loongarch64-efi" "$boot_grub"
+		find "$boot_grub/loongarch64-efi" -type f -name '*.module' -delete ||:
 	fi
 
 	cp $verbose -Lf /boot/grub/fonts/unicode.pf2 "$boot_grub/fonts"
