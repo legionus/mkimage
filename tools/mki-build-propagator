@@ -9,6 +9,7 @@
 # which should be included with mkimage as the file COPYING.
 #
 
+# shellcheck source=tools/mki-sh-functions
 . "${0%/*}"/mki-sh-functions
 
 verbose "has started executing."
@@ -30,7 +31,7 @@ make_exec "$chroot/.host/packimage.sh" <<EOF
 
 libdir="\$(getconf LIBDIR)"
 
-case "`arch`" in
+case "`arch ||:`" in
 	e2k)
 		kname=image
 		;;

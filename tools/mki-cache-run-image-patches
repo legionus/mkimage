@@ -12,6 +12,8 @@
 patchesdir="${MKI_IMAGE_PATCHDIR:?Patches directory required}"
 
 payload() {
+	makefile="${makefile:?mki-sh-functions not included}"
+
 	stat --printf='%A\t%s\t%Y\n' "$makefile"
 
 	[ -d "$patchesdir" ] ||
@@ -20,7 +22,7 @@ payload() {
 	cd "$patchesdir" ||
 		return 1
 
-	find -mindepth 1 -mindepth 1 -name '*.patch' -execdir sha256sum '{}' '+' |
+	find . -mindepth 1 -mindepth 1 -name '*.patch' -execdir sha256sum '{}' '+' |
 		cut -d\  -f1 |
 		sort
 }

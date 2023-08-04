@@ -14,11 +14,13 @@ pkgboxdir="${PKGBOX:?directory required}"
 pkgbox="$pkgboxdir/aptbox"
 
 payload() {
+	makefile="${makefile:?mki-sh-functions not included}"
+
 	stat --printf='%A\t%s\t%Y\n' "$makefile"
 
 	if [ -d "$pkgbox/var" ]; then
 		cd "$pkgbox/var"
-		find -name '*_release' -exec cat '{}' '+'
+		find . -name '*_release' -exec cat '{}' '+'
 		cd - >/dev/null
 	fi
 

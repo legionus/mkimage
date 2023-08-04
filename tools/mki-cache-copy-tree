@@ -12,16 +12,18 @@
 data_tree="${COPY_TREE:?Data tree required}"
 
 payload() {
+	makefile="${makefile:?mki-sh-functions not included}"
+
 	stat --printf='%A\t%s\t%Y\n' "$makefile"
 
 	local d dir
-	for dir in $COPY_TREE; do
+	for dir in $data_tree; do
 		d="$(readlink -ve "$dir")" ||
 			fatal "$dir: not available."
 
 		if [ -d "$d" ]; then
 			cd "$d"
-			find -mindepth 1 -printf '%M\t%s\t%T@\t%p\n'
+			find . -mindepth 1 -printf '%M\t%s\t%T@\t%p\n'
 		else
 			cd "${d%/*}"
 			stat --printf='%A\t%s\t%Y\t%n\n' "${d##*/}"

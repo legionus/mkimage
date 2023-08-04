@@ -9,31 +9,35 @@
 # which should be included with mkimage as the file COPYING.
 #
 
-aptbox="$dir/aptbox"
-
 workdir_check_status() {
-	[ ! -d "$workdir_changed" ]
+	[ ! -d "${workdir_changed:?must be defined in mki-cache}" ]
 }
 
 workdir_change_status() {
-	[ ! -d "$workdir_changed" ] ||
+	[ ! -d "${workdir_changed:?must be defined in mki-cache}" ] ||
 		rmdir -- "$workdir_changed"
 }
 
 payload() {
+	aptbox="${dir:?mki-sh-functions not included}/aptbox"
+	makefile="${makefile:?mki-sh-functions not included}"
+	curdir="${curdir:?mki-sh-functions not included}"
+	workdirname="${workdirname:?mki-sh-functions not included}"
+	outdirname="${outdirname:?mki-sh-functions not included}"
+
 	stat --printf='%A\t%s\t%Y\n' "$makefile"
 
 	printf '%s\n' "${MKI_OUTNAME:-}"
 
 	if [ -d "$aptbox/var" ]; then
 		cd "$aptbox/var"
-		find -name '*_release' -exec cat '{}' '+'
+		find . -name '*_release' -exec cat '{}' '+'
 		cd - >/dev/null
 	fi
 
 	if [ -d "$outdir" ]; then
 		cd "$outdir"
-		find -mindepth 1 -printf '%M\t%s\t%T@\t%p\n'
+		find . -mindepth 1 -printf '%M\t%s\t%T@\t%p\n'
 		cd - >/dev/null
 	fi
 
@@ -43,7 +47,7 @@ payload() {
 			continue
 
 		cd "$curdir/$d/$workdirname/$outdirname"
-		find -mindepth 1 -printf '%M\t%s\t%T@\t%p\n'
+		find . -mindepth 1 -printf '%M\t%s\t%T@\t%p\n'
 		cd - >/dev/null
 	done
 }

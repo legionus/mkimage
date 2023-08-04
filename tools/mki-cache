@@ -12,6 +12,7 @@
 # retval = 0 - cached
 # retval = 1 - not cached
 
+# shellcheck source=tools/mki-sh-functions
 . "${0%/*}"/mki-sh-functions
 
 verbose "has started executing."

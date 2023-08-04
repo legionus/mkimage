@@ -10,6 +10,7 @@
 #
 
 include_without_workdir_check=1
+# shellcheck source=tools/mki-sh-functions
 . "${0%/*}"/mki-sh-functions
 
 verbose "has started executing."

@@ -9,6 +9,7 @@
 # which should be included with mkimage as the file COPYING.
 #
 
+# shellcheck disable=SC2034
 pkgbox="${PKGBOX:?aptbox required}"
 target="${TARGET:+--target="$TARGET"}"
 with_qemu="${HSH_USE_QEMU:+--with-qemu="$HSH_USE_QEMU"}"
@@ -24,7 +25,7 @@ hsh_initroot() {
 		--without-stuff \
 		--pkg-build-list='' \
 		--save-fakeroot \
-		$verbose $quiet $target $with_qemu $apt_config $apt_prefix \
+		${verbose-} ${quiet-} ${target-} ${with_qemu-} ${apt_config-} ${apt_prefix-} \
 		${HSH_LANGS:+--install-langs="$HSH_LANGS"} \
 		${HSH_NUMBER:+--number="$HSH_NUMBER"} \
 		${HSH_EXCLUDE_DOCS:+--excludedocs} \
@@ -38,7 +39,7 @@ hsh_initroot() {
 	if [ -n "$pkgs" ]; then
 		env -i PATH="$PATH" \
 		hsh-install \
-			$verbose $quiet \
+			${verbose-} ${quiet-} \
 			${HSH_NUMBER:+--number="$HSH_NUMBER"} \
 			${HSH_EXCLUDE_DOCS:+--excludedocs} \
 			-- "$wdir" $pkgs ||
@@ -69,7 +70,7 @@ hsh_initroot() {
 		"600 /dev/tty0 c 4 0" \
 		"666 /dev/tty c 5 0" \
 		"666 /dev/ptmx c 5 2" |
-	while read mode name type major minor ; do
+	while read -r mode name type major minor ; do
 		[ ! -e "$wdir/chroot/$name" ] ||
 			continue
 		mki-fakedev \

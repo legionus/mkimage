@@ -53,3 +53,6 @@ install: all
 
 clean:
 	$(RM) $(TARGETS) *~
+
+verify:
+	@shellcheck --format=gcc --severity=info bin/* tools/mki-*

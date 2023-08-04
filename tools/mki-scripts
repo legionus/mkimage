@@ -9,7 +9,9 @@
 # which should be included with mkimage as the file COPYING.
 #
 
+# shellcheck source=tools/mki-sh-functions
 . "${0%/*}"/mki-sh-functions
+# shellcheck source=/bin/shell-quote
 . shell-quote
 
 verbose "has started executing."
@@ -36,7 +38,7 @@ addenv() {
 	verbose "Translate variables from Makefile to scripts:"
 	printenv |
 		sed -ne 's/^\(\(GLOBAL\|INFO\)_[^=]\+\)=/\1\t/p' |
-	while read n v; do
+	while read -r n v; do
 		verbose "export $n='$v'"
 		printf 'export %s="%s"\n' "$n" "$(quote_shell "$v")"
 	done
@@ -51,11 +53,12 @@ EOF
 
 find "$scriptdir/" -mindepth 1 -maxdepth 1 -type f -o -type l |
 	sort -n |
-while read script; do
+while read -r script; do
 	[ -x "$script" ] || continue
 
 	case "$script" in
 		*~|*.bak|*.rpmnew|*.rpmsave) continue ;;
+		*) ;;
 	esac
 
 	cp -f -- "$script" "$dir/chroot/.host/script.sh"

@@ -9,6 +9,7 @@
 # which should be included with mkimage as the file COPYING.
 #
 
+# shellcheck source=tools/mki-sh-functions
 . "${0%/*}"/mki-sh-functions
 
 verbose "has started executing."
@@ -17,5 +18,7 @@ case "$1" in
 	pack-image)
 		[ -z "${MKI_OUTNAME:-}" ] && [ -z "${MKI_PACKTYPE:-}" ] ||
 			fatal 'ERROR: Variables MKI_OUTNAME and MKI_PACKTYPE are obsolete. Use MKI_PACK_RESULTS instead.'
+		;;
+	*)
 		;;
 esac

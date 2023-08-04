@@ -124,8 +124,8 @@ copy_mt86()
 		return 0
 
 	cp $verbose -pLf "$src" "$dest/memtest86.efi" &&
-	find /usr/share/efi-memtest86 -type f |
-		xargs cp $verbose -pLft "$dest"
+	find /usr/share/efi-memtest86 -type f \
+		-exec cp $verbose -pLft "$dest" -- '{}' '+'
 }
 
 purge_mt86()
@@ -192,7 +192,9 @@ copy_kernel()
 		return 0
 
 	if [ -f syslinux/alt0/vmlinuz ]; then
-		cp $verbose -lpLft "$boot" -- syslinux/alt0/{vmlinuz,full.cz}
+		cp $verbose -lpLft "$boot" -- \
+			syslinux/alt0/vmlinuz \
+			syslinux/alt0/full.cz
 		return 0
 	fi
 
@@ -278,8 +280,9 @@ copy_grub_secondary() {
 		cp $verbose -arf /boot/grub/themes "$boot_grub"
 	if [ ! -e "$boot_grub/locale" ]; then
 		mkdir "$boot_grub/locale"
-		for i in $(find /usr/share/locale/ -name grub.mo); do
-			lct="$(echo $i | cut -d/ -f5)"
+		find /usr/share/locale/ -name grub.mo -print |
+		while read -r i; do
+			lct="$(printf '%s\n' "$i" | cut -d/ -f5)"
 			cp $verbose -arf "$i" "$boot_grub/locale/$lct.mo"
 		done
 	fi
@@ -465,8 +468,8 @@ copy_refind()
 
 	mkdir $verbose -p "$boot/icons"
 	find "$refind_icons/" \
-		-name 'func_*' -o -name 'tool_*' -o -name 'vol_*' -o -name "$scan_icon" |
-		xargs -r cp $verbose -lpft "$boot/icons"
+		\( -name 'func_*' -o -name 'tool_*' -o -name 'vol_*' -o -name "$scan_icon" \) \
+		-exec cp $verbose -lpft "$boot/icons" -- '{}' '+'
 
 	[ ! -d "$refind_aux/altlinux" ] ||
 		mv "$refind_aux/altlinux" "$boot/icons"

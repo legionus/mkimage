@@ -1,0 +1,4 @@
+shell=dash
+external-sources=true
+enable=all
+disable=SC1001,SC2015,SC2086,SC2310,SC2312,SC2317

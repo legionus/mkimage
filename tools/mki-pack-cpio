@@ -9,6 +9,7 @@
 # which should be included with mkimage as the file COPYING.
 #
 
+# shellcheck source=tools/mki-sh-functions
 . "${0%/*}"/mki-sh-functions
 
 verbose "has started executing."
@@ -24,7 +25,6 @@ imgsubdir="${imgsubdir#/}"
 [ "$MKI_OUTNAME" = "${MKI_OUTNAME##*/}" ] ||
 	outdir="$(readlink -ev "${MKI_OUTNAME%/*}")"
 
-compress='cat'
 case "${MKI_CPIO_COMPRESS:-}" in
 	xz)
 		compress='xz'
@@ -45,6 +45,9 @@ case "${MKI_CPIO_COMPRESS:-}" in
 	lz4)
 		compress='lz4'
 		pkgs="$pkgs ${PACKAGES_REQUIRED_PACK_LZ4:-}"
+		;;
+	*)
+		compress='cat'
 		;;
 esac
 

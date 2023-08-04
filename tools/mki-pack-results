@@ -9,6 +9,7 @@
 # which should be included with mkimage as the file COPYING.
 #
 
+# shellcheck source=tools/mki-sh-functions
 . "${0%/*}"/mki-sh-functions
 
 verbose "has started executing."
@@ -60,7 +61,7 @@ parse() {
 }
 
 run_pack() {
-	local MKI_PACKMOD= MKI_PACKTYPE= MKI_OUTNAME= MKI_IMAGESUBDIR= MKI_EXCLUDE=
+	local MKI_PACKMOD='' MKI_OUTNAME='' MKI_IMAGESUBDIR='' MKI_EXCLUDE='' MKI_HANDLER=''
 
 	case "$1" in
 		custom|custom:*)
@@ -71,8 +72,8 @@ run_pack() {
 			;;
 	esac
 
-	export MKI_OUTNAME MKI_IMAGESUBDIR MKI_EXCLUDE
-	mki-pack-$MKI_PACKMOD
+	export MKI_OUTNAME MKI_IMAGESUBDIR MKI_EXCLUDE MKI_HANDLER
+	"mki-pack-$MKI_PACKMOD"
 }
 
 set -- $typeslist

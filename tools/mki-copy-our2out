@@ -9,6 +9,7 @@
 # which should be included with mkimage as the file COPYING.
 #
 
+# shellcheck source=tools/mki-sh-functions
 . "${0%/*}"/mki-sh-functions
 
 cleanup="${CLEANUP_OUTDIR:-}"
@@ -16,7 +17,7 @@ subprofile="${SUBPROFILE:-0}"
 
 verbose "has started executing."
 
-if [ "$MKI_OUTNAME" != "${MKI_OUTNAME##*/}" ]; then
+if [ "${MKI_OUTNAME:?}" != "${MKI_OUTNAME##*/}" ]; then
 	outdir="$(readlink -ev "${MKI_OUTNAME%/*}")"
 	cleanup=
 fi
@@ -27,10 +28,10 @@ fi
 get_copy_args "$outdir" "$chroot/.our"
 
 [ -z "$cleanup" ] || [ "$subprofile" = 0 ] ||
-	find "$outdir/" -mindepth 1 -maxdepth 1 -execdir rm $verbose -rf -- '{}' '+'
+	find "$outdir/" -mindepth 1 -maxdepth 1 -execdir rm ${verbose-} -rf -- '{}' '+'
 
 cd "$chroot/.our"
-find -mindepth 1 -maxdepth 1 |
-	xargs -r cp $cp_args $verbose -aft "$outdir" --
+find . -mindepth 1 -maxdepth 1 \
+	-exec cp ${cp_args-} ${verbose-} -aft "$outdir" -- '{}' '+'
 
 mki-run /.host/find /.our -mindepth 1 -maxdepth 1 -execdir rm -rf -- '{}' '+'

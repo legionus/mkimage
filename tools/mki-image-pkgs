@@ -9,23 +9,26 @@
 # which should be included with mkimage as the file COPYING.
 #
 
+# shellcheck source=tools/mki-sh-functions
 . "${0%/*}"/mki-sh-functions
 
 verbose "has started executing."
 
+expand_pkgs="${EXPAND_PKGS:?script to expand list of packages required}"
+
 handler=
 case "$1" in
-	copy)    handler="$CHROOT_COPY_PKGS"     ;;
-	install) handler="$CHROOT_IMAGE_INSTALL" ;;
+	copy)    handler="${CHROOT_COPY_PKGS:?handler required}"     ;;
+	install) handler="${CHROOT_IMAGE_INSTALL:?handler_required}" ;;
 	*)
 		fatal "Unknown argument: $1"
 		;;
 esac
 
-[ -n "$IMAGE_PACKAGES" ] || [ -n "$IMAGE_PACKAGES_REGEXP" ] ||
+[ -n "${IMAGE_PACKAGES-}" ] || [ -n "${IMAGE_PACKAGES_REGEXP-}" ] ||
 	exit 0
 {
-	$EXPAND_PKGS simple $IMAGE_PACKAGES &&
-	$EXPAND_PKGS regexp $IMAGE_PACKAGES_REGEXP ||
+	"$expand_pkgs" simple $IMAGE_PACKAGES &&
+	"$expand_pkgs" regexp $IMAGE_PACKAGES_REGEXP ||
 		fatal "Unable expand chroot packages"
 } |xargs -r "$handler"

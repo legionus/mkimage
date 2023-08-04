@@ -9,6 +9,7 @@
 # which should be included with mkimage as the file COPYING.
 #
 
+# shellcheck source=tools/mki-sh-functions
 . "${0%/*}"/mki-sh-functions
 
 verbose "has started executing."
@@ -24,7 +25,6 @@ imgsubdir="${imgsubdir#/}"
 [ "$MKI_OUTNAME" = "${MKI_OUTNAME##*/}" ] ||
 	outdir="$(readlink -ev "${MKI_OUTNAME%/*}")"
 
-method=
 case "${MKI_TAR_COMPRESS:-}" in
 	xz)                  method='--xz';    pkgs="$pkgs ${PACKAGES_REQUIRED_PACK_XZ:-}" ;;
 	lzma)                method='--lzma';  pkgs="$pkgs ${PACKAGES_REQUIRED_PACK_LZMA:-}" ;;
@@ -32,6 +32,7 @@ case "${MKI_TAR_COMPRESS:-}" in
 	gzip|gz|targz|-z)    method='--gzip';  pkgs="$pkgs ${PACKAGES_REQUIRED_PACK_GZIP:-}" ;;
 	zst|zstd)            method='--zstd';  pkgs="$pkgs ${PACKAGES_REQUIRED_PACK_ZSTD:-}" ;;
 	lz4)                 method='--lz4';   pkgs="$pkgs ${PACKAGES_REQUIRED_PACK_LZ4:-}" ;;
+	*)                   method='' ;;
 esac
 
 [ -d "$chroot" ] ||

@@ -9,6 +9,7 @@
 # which should be included with mkimage as the file COPYING.
 #
 
+# shellcheck source=tools/mki-sh-functions
 . "${0%/*}"/mki-sh-functions
 
 MKI_DESTDIR="${MKI_DESTDIR:-}"
@@ -79,7 +80,7 @@ move_files() {
 	local size fn
 
 	mki-run mkdir $verbose -p -- "/.image/$destdir"
-	while read size fn; do
+	while read -r size fn; do
 		mki-run mv -f -- "$fn" "/.image/$destdir"
 	done < "$1"
 }
@@ -102,7 +103,7 @@ for p in $MKI_SPLIT; do
 
 	bytes="${p%%:*}"
 	type="${bytes##*[0-9]}"
-	bytes="${bytes%$type}"
+	bytes="${bytes%"$type"}"
 
 	case "$type" in
 		\*)
@@ -113,6 +114,7 @@ for p in $MKI_SPLIT; do
 		G|Gb) size_to_bytes 3 ;;
 		M|Mb) size_to_bytes 2 ;;
 		K|Kb) size_to_bytes 1 ;;
+		*) ;;
 	esac
 
 	split_list part

@@ -9,12 +9,14 @@
 # which should be included with mkimage as the file COPYING.
 #
 
+# shellcheck source=tools/mki-sh-functions
 . "${0%/*}"/mki-sh-functions
 
 target=
 [ "$#" -eq 0 ] ||
 	target="$1"
 
+# shellcheck disable=SC2016
 verbose "has started executing${target:+ for '${target##*/}'}."
 
 [ -d "$cachedir" ] ||
@@ -23,5 +25,5 @@ verbose "has started executing${target:+ for '${target##*/}'}."
 if [ -z "$target" ]; then
 	find "$cachedir/" -mindepth 1 -maxdepth 1 -execdir rm -rf -- '{}' '+'
 else
-	rm -rf -- "$cachedir/$target"
+	rm -rf -- "${cachedir:?}/$target"
 fi

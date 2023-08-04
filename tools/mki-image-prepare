@@ -9,7 +9,9 @@
 # which should be included with mkimage as the file COPYING.
 #
 
+# shellcheck source=tools/mki-sh-functions
 . "${0%/*}"/mki-sh-functions
+# shellcheck source=tools/mki-sh-image-prepare
 . "${0%/*}"/mki-sh-image-prepare
 
 verbose "has started executing."

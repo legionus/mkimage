@@ -9,21 +9,25 @@
 # which should be included with mkimage as the file COPYING.
 #
 
+# shellcheck source=tools/mki-sh-functions
 . "${0%/*}"/mki-sh-functions
+# shellcheck source=tools/mki-sh-image-prepare
 . "${0%/*}"/mki-sh-image-prepare
 
 verbose "has started executing."
 
 # Instrumental chroot should not have docs.
+# shellcheck disable=SC2034
 HSH_EXCLUDE_DOCS=1
 
 # Instrumental chroot should have its own list of initial packages.
+# shellcheck disable=SC2034
 IMAGE_INIT_LIST=${WORK_INIT_LIST-}
 
 run_mkaptbox() {
 	rm -rf -- "$pkgbox/aptbox"
 	env -i PATH="$PATH" \
-	mkaptbox --without-stuff $verbose $quiet $target $apt_config $apt_prefix -- "$pkgbox"
+	mkaptbox --without-stuff ${verbose-} ${quiet-} ${target-} ${apt_config-} ${apt_prefix-} -- "$pkgbox"
 }
 
 if [ ! -d "$pkgbox/aptbox" ]; then
@@ -54,10 +58,12 @@ ownership="$(stat -c '%u:%g' "$chroot/")" ||
 
 our="$chroot/.our"
 verbose "Output directory for rooter user: $our."
+# shellcheck disable=SC2174
 mkdir $verbose -p -m1770 -- "$our"
 chown $verbose "$ownership" -- "$our"
 
 verbose "Subwork directory: $subdir."
+# shellcheck disable=SC2174
 mkdir $verbose -p -m1770 -- "$subdir"
 chown $verbose "$ownership" -- "$subdir"
 

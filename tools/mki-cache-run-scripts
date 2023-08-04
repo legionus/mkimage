@@ -9,12 +9,14 @@
 # which should be included with mkimage as the file COPYING.
 #
 
-case "$cache_type" in
+case "${cache_type:?must be defined in mki-cache}" in
 	*-image-*)	scriptdir="${MKI_IMAGE_SCRIPTDIR:?Script directory required}" ;;
 	*)		scriptdir="${MKI_SCRIPTDIR:?Script directory required}" ;;
 esac
 
 payload() {
+	makefile="${makefile:?mki-sh-functions not included}"
+
 	stat --printf='%A\t%s\t%Y\n' "$makefile"
 
 	[ -d "$scriptdir" ] ||
@@ -23,7 +25,7 @@ payload() {
 	cd "$scriptdir" ||
 		return 1
 
-	find -type f -executable \
+	find . -type f -executable \
 			\( \
 				   \! -name '*~' \
 				-a \! -name '*.bak' \

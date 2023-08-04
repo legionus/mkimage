@@ -9,12 +9,12 @@
 # which should be included with mkimage as the file COPYING.
 #
 
+# shellcheck source=tools/mki-sh-functions
 . "${0%/*}"/mki-sh-functions
 
 verbose "has started executing."
 
 destdir="${MKI_DESTDIR:-}"
-aptboxdir="${PKGBOX:?global aptbox required}"
 
 tempdir="$dir/$PROG.verbose"
 exit_handler() {
@@ -46,8 +46,8 @@ if [ ! -s "$reqfile" ]; then
 	exit 0
 fi
 
-> "$lstfile"
-> "$errfile"
+:> "$lstfile"
+:> "$errfile"
 
 buildlist() {
 	local rc=0
@@ -61,7 +61,7 @@ buildlist() {
 	fi
 
 	local conflicts
-	if ! conflicts="$(LANG=C egrep ': (Conflicts|Depends): ' "$errfile")"; then
+	if ! conflicts="$(LANG=C grep -E ': (Conflicts|Depends): ' "$errfile")"; then
 		cat -- "$errfile" >&2
 		fatal 'could not copy packages.'
 	fi

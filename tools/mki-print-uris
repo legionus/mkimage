@@ -9,6 +9,7 @@
 # which should be included with mkimage as the file COPYING.
 #
 
+# shellcheck source=/bin/shell-error
 . shell-error
 
 export LC_ALL=C LANG=C LANGUAGE=C
@@ -80,6 +81,7 @@ if [ -n "${MKI_RPMI_PRINT_FILES-}" ]; then
 	exit
 fi
 
+# shellcheck source=tools/mki-sh-functions
 . "${0%/*}"/mki-sh-functions
 
 verbose "has started executing."

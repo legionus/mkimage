@@ -20,6 +20,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 
+# shellcheck source=tools/mki-sh-functions
 . mki-sh-functions
 
 show_help()
@@ -99,7 +100,6 @@ else
 	workdir="$HOME/hasher"
 fi
 chroot="$workdir/chroot"
-entry="$chroot/.host/entry"
 
 name=
 type=

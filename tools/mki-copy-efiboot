@@ -10,6 +10,7 @@
 # which should be included with mkimage as the file COPYING.
 #
 
+# shellcheck source=tools/mki-sh-functions
 . "${0%/*}"/mki-sh-functions
 
 verbose "has started executing."
@@ -33,14 +34,16 @@ pkgs="$pkgs $EFI_BOOTLOADER"
 	pkgs="$pkgs alt-uefi-certs shim-signed shim-unsigned"
 
 case "${EFI_BOOTLOADER:-}" in
-refind)	# won't boot unsigned kernels in SB mode
-	# elilo for x86_64 boot stack compatibility
-	# grub-efi for ia32 EFI on x86_64
-	pkgs="$pkgs elilo grub-efi"
-	;;
-grub-efi)
-	pkgs="$pkgs grub-efi"
-	;;
+	refind)	# won't boot unsigned kernels in SB mode
+		# elilo for x86_64 boot stack compatibility
+		# grub-efi for ia32 EFI on x86_64
+		pkgs="$pkgs elilo grub-efi"
+		;;
+	grub-efi)
+		pkgs="$pkgs grub-efi"
+		;;
+	*)
+		;;
 esac
 
 [ -z "${EFI_MEMTEST86:-}" ] ||
@@ -49,7 +52,7 @@ esac
 mki-install $pkgs ||
 	fatal "failed to install packages: $pkgs."
 
-cp $verbose -f -- "$bindir/mki-copy-efiboot-chrooted" "$chroot/.host/efiboot-chrooted"
+cp ${verbose-} -f -- "$bindir/mki-copy-efiboot-chrooted" "$chroot/.host/efiboot-chrooted"
 
 make_exec "$chroot/.host/efiboot.sh" <<EOF
 #!/bin/sh -efu${verbose:+x}

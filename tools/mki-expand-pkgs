@@ -9,6 +9,7 @@
 # which should be included with mkimage as the file COPYING.
 #
 
+# shellcheck source=tools/mki-sh-functions
 . "${0%/*}"/mki-sh-functions
 
 method="$1"; shift
@@ -52,11 +53,14 @@ mkdir $verbose -- "$tempdir" >&2
 mki_list_pkgs "$@" > "$tempdir/in-list"
 
 cd "$tempdir"
-> 'add-regexp' > 'rem-regexp' > 'pkg-list'
+:> 'add-regexp'
+:> 'rem-regexp'
+:> 'pkg-list'
 
 is_regexp() {
 	case "$1" in
 		*[\[\]\(\)\|\{\}\^\$\*\?]*) return 0 ;;
+		*) ;;
 	esac
 	return 1
 }
@@ -85,6 +89,6 @@ done < 'in-list'
 
 export LC_ALL=C LANG=C LANGUAGE=C
 
-egrep -f 'add-regexp' "$aptbox/var/cache/pkgnames" |
-	egrep -vf 'rem-regexp' |
+grep -E -f 'add-regexp' "$aptbox/var/cache/pkgnames" |
+	grep -E -vf 'rem-regexp' |
 	cat 'pkg-list' -

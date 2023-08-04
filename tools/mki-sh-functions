@@ -12,25 +12,30 @@
 if [ -z "${__included_mki_sh_functions:-}" ]; then
 __included_mki_sh_functions=1
 
+# shellcheck source=/bin/shell-error
 . shell-error
+# shellcheck source=/bin/shell-args
 . shell-args
 
-verbose="${VERBOSE:+-v}"
-quiet="${QUIET:+-q}"
+# shellcheck disable=SC2034
+{
+	verbose="${VERBOSE:+-v}"
+	quiet="${QUIET:+-q}"
 
-workdirname=${WORKDIRNAME:?Work directory name required}
-outdirname=${OUTDIRNAME:?Out directory name required}
-#cachedirname=${CACHEDIRNAME:?Cache directory name required}
+	workdirname=${WORKDIRNAME:?Work directory name required}
+	outdirname=${OUTDIRNAME:?Out directory name required}
+	#cachedirname=${CACHEDIRNAME:?Cache directory name required}
 
-bindir="${TOOLSDIR:?Helper directory required}"
-bindir="$(opt_check_dir 'TOOLSDIR' "$bindir")"
+	bindir="${TOOLSDIR:?Helper directory required}"
+	bindir="$(opt_check_dir 'TOOLSDIR' "$bindir")"
 
-curdir="${CURDIR:?Current directory required}"
-curdir="$(opt_check_dir 'CURDIR' "$curdir")"
+	curdir="${CURDIR:?Current directory required}"
+	curdir="$(opt_check_dir 'CURDIR' "$curdir")"
 
-cachedir="${CACHEDIR:?cache required}"
-outdir="${OUTDIR:?Output directory required}"
-dir="${WORKDIR:?Work directory required}"
+	cachedir="${CACHEDIR:?cache required}"
+	outdir="${OUTDIR:?Output directory required}"
+	dir="${WORKDIR:?Work directory required}"
+}
 
 if [ -z "${include_without_workdir_check-}" ]; then
 	cachedir="$(opt_check_dir 'CACHEDIR' "$cachedir")"
@@ -38,13 +43,16 @@ if [ -z "${include_without_workdir_check-}" ]; then
 	dir="$(opt_check_dir 'WORKDIR' "$dir")"
 fi
 
-chroot="$dir/chroot"
+# shellcheck disable=SC2034
+{
+	chroot="$dir/chroot"
 
-subdir="$chroot/$WORKDIRNAME"
-subchroot="$subdir/chroot"
+	subdir="$chroot/$WORKDIRNAME"
+	subchroot="$subdir/chroot"
 
-makefile="${MYMAKEFILE:?makefile required}"
-makefile="$(opt_check_read 'MYMAKEFILE' "$makefile")"
+	makefile="${MYMAKEFILE:?makefile required}"
+	makefile="$(opt_check_read 'MYMAKEFILE' "$makefile")"
+}
 
 [ -s "$makefile" ] ||
 	fatal "$makefile: Makefile is empty"
@@ -57,8 +65,9 @@ get_copy_args() {
 		fatal "get_copy_args(): more arguments required"
 
 	cp_args=
-	[ $(find "$@" -printf '%D\n' 2>/dev/null |sort -u |wc -l) -eq 1 ] ||
+	[ "$(find "$@" -printf '%D\n' 2>/dev/null |sort -u |wc -l)" -eq 1 ] ||
 		return 0
+	# shellcheck disable=SC2034
 	cp_args='-l'
 }
 
