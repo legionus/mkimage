@@ -23,15 +23,14 @@ payload() {
 	cd "$scriptdir" ||
 		return 1
 
-	find -type f -printf '%p %M %s %T@\n' |
-	while read script stamp; do
-		[ -x "$script" ] ||
-			continue
-
-		case "$script" in
-			*~|*.bak|*.rpmnew|*.rpmsave) continue ;;
-		esac
-
-		printf '%s\n' "$stamp"
-	done
+	find -type f -executable \
+			\( \
+				   \! -name '*~' \
+				-a \! -name '*.bak' \
+				-a \! -name '*.rpmnew' \
+				-a \! -name '*.rpmsave' \
+			\) \
+			-execdir sha256sum '{}' '+' |
+		cut -d\  -f1 |
+		sort
 }
