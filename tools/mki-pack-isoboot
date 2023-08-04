@@ -3,7 +3,7 @@
 # mki-pack-isoboot
 #
 # This file is part of mkimage
-# Copyright (C) 2007-2009  Alexey Gladkov <gladkov.alexey@gmail.com>
+# Copyright (C) 2007-2023  Alexey Gladkov <gladkov.alexey@gmail.com>
 # Copyright (C) 2012       Michael Shigorin <mike@altlinux.org>
 #
 # This file is covered by the GNU General Public License,

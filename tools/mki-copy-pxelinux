@@ -3,7 +3,7 @@
 # mki-copy-pxelinux
 #
 # This file is part of mkimage
-# Copyright (C) 2007-2009  Alexey Gladkov <gladkov.alexey@gmail.com>
+# Copyright (C) 2007-2023  Alexey Gladkov <gladkov.alexey@gmail.com>
 #
 # This file is covered by the GNU General Public License,
 # which should be included with mkimage as the file COPYING.
