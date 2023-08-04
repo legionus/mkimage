@@ -27,12 +27,10 @@ if [ -n "${NO_CACHE:-}" ] && [ "$action" = 'check' ]; then
 fi
 
 cache_type="$1"
-case "$cache_type" in
-	build-image|copy-packages|copy-subdirs|copy-tree|pack-image) ;;
-	prepare-image-workdir|prepare-workdir|run-scripts|run-image-scripts) ;;
-	run-image-patches) ;;
-	*) fatal "$cache_type: unknown target" ;;
-esac
+
+[ -f "${0%/*}/mki-cache-$cache_type" ] ||
+	fatal "$cache_type: unknown target"
+
 cachefile="$cachedir/mki/$cache_type"
 
 workdir_check_status() {
@@ -44,7 +42,7 @@ workdir_change_status() {
 	mkdir -p -- "$workdir_changed"
 }
 
-. mki-cache-$cache_type
+. "mki-cache-$cache_type"
 
 errlock="$cachedir/mki/$cache_type.error"
 sha="`{ payload || mkdir -- "$errlock"; } |sha256sum - |cut -d\  -f1`"
