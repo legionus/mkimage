@@ -43,11 +43,6 @@ ubivolflags="${PACK_UBI_VOL_FLAGS:-}"
 [ -z "$ubivolflags" ] || ubivolflags=$(printf "vol_flags=%s" $ubivolflags)
 
 
-exclude=
-for d in ${MKI_EXCLUDE:-}; do
-	exclude="$exclude -z $d"
-done
-
 [ -d "$chroot"  ] ||
 	fatal "$dir: not look like work directory of hasher."
 
@@ -57,8 +52,13 @@ mki-install $pkgs ||
 run_chrooted "$chroot" << EOF
 #!/bin/sh -efu
 
+exclude=
+for d in ${MKI_EXCLUDE:-}; do
+	exclude="\$exclude -z \$d"
+done
+
 echo 'mkimage: pack-ubifs: Packing ubifs image ...'
-/usr/sbin/mkfs.ubifs -m $miniosize $ubifsopts $exclude -z .in -z .host -z .fakedata -r $imgdir -o $ubifsimg
+/usr/sbin/mkfs.ubifs -m $miniosize $ubifsopts \$exclude -z .in -z .host -z .fakedata -r $imgdir -o $ubifsimg
 
 cat > $ubicfg << EOT
 [rootfs-image]
