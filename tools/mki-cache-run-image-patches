@@ -1,0 +1,26 @@
+#!/bin/ash -efu
+#
+# mki-cache-run-image-patches
+#
+# This file is part of mkimage
+# Copyright (C) 2023  Alexey Gladkov <gladkov.alexey@gmail.com>
+#
+# This file is covered by the GNU General Public License,
+# which should be included with mkimage as the file COPYING.
+#
+
+patchesdir="${MKI_IMAGE_PATCHDIR:?Patches directory required}"
+
+payload() {
+	stat --printf='%A\t%s\t%Y\n' "$makefile"
+
+	[ -d "$patchesdir" ] ||
+		return 0
+
+	cd "$patchesdir" ||
+		return 1
+
+	find -mindepth 1 -mindepth 1 -name '*.patch' -execdir sha256sum '{}' '+' |
+		cut -d\  -f1 |
+		sort
+}

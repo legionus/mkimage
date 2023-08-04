@@ -30,6 +30,7 @@ cache_type="$1"
 case "$cache_type" in
 	build-image|copy-packages|copy-subdirs|copy-tree|pack-image) ;;
 	prepare-image-workdir|prepare-workdir|run-scripts|run-image-scripts) ;;
+	run-image-patches) ;;
 	*) fatal "$cache_type: unknown target" ;;
 esac
 cachefile="$cachedir/mki/$cache_type"

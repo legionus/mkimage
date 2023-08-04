@@ -63,6 +63,16 @@ run-image-scripts: prepare-image-workdir $(SUBDIRS)
 	    $(CHROOT_CACHE) build $@ || exit 1; \
 	fi
 
+run-image-patches: prepare-image-workdir $(SUBDIRS)
+	@echo "mkimage: Processing '$@' ..."
+	@if ! $(CHROOT_CACHE) check $@; then \
+	    if ! $(CHROOT_IMAGE_PATCHES); then \
+	        $(CHROOT_INVALIDATE_CACHE) mki; \
+	        exit 1; \
+	    fi; \
+	    $(CHROOT_CACHE) build $@ || exit 1; \
+	fi
+
 build-propagator: prepare-workdir $(SUBDIRS)
 	@echo "mkimage: Processing '$@' ..."
 	@$(CHROOT_BUILD_PROPAGATOR)
