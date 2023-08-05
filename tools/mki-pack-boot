@@ -4,6 +4,7 @@
 #
 # This file is part of mkimage
 # Copyright (C) 2007-2023  Alexey Gladkov <gladkov.alexey@gmail.com>
+# Copyright (C) 2023  Gleb Fotengauer-Malinovskiy <glebfm@altlinux.org>
 #
 # This file is covered by the GNU General Public License,
 # which should be included with mkimage as the file COPYING.
@@ -19,18 +20,34 @@ BOOT_TYPE="${BOOT_TYPE:?boot type required}"
 outname="${MKI_OUTNAME:-outname}"
 outname="${outname##*/}"
 
-types=
-for b in ${BOOT_TYPE:-}; do
+set -- ${BOOT_TYPE:-}
+
+boot_isolinux=
+boot_pxelinux=
+boot_syslinux=
+boot_efiboot=
+boot_ieee1275boot=
+boot_grubaa64boot=
+boot_grubpcboot=
+for b; do
 	case "$b" in
-		isolinux|pxelinux|syslinux|efiboot|ieee1275boot|grubaa64boot|grubpcboot) types="$types $b " ;;
+		isolinux) boot_isolinux=1 ;;
+		pxelinux) boot_pxelinux=1 ;;
+		syslinux) boot_syslinux=1 ;;
+		efiboot) boot_efiboot=1 ;;
+		ieee1275boot) boot_ieee1275boot=1 ;;
+		grubaa64boot) boot_grubaa64boot=1 ;;
+		grubpcboot) boot_grubpcboot=1 ;;
 		*) fatal "Unknown boot type" ;;
 	esac
 done
 
-[ -z "${EFI_BOOTLOADER:-}" ] || [ -z "${types##* grubaa64boot *}" ] || [ -z "${types##* efiboot *}" ] ||
-	types="$types efiboot "
+if [ -n "${EFI_BOOTLOADER:-}" ] && [ -z "$boot_grubaa64boot" ] && [ -z "$boot_efiboot" ]; then
+	boot_efiboot=1
+	set -- "$@" efiboot
+fi
 
-[ -n "$types" ] ||
+[ "$#" -gt 0 ] ||
 	fatal "Boot type required"
 
 [ -d "$chroot" ] ||
@@ -39,23 +56,31 @@ done
 [ -z "${PROPAGATOR_MAR_MODULES:-}" ] ||
 	mki-build-propagator
 
-for b in $types; do
+for b; do
 	mki-copy-"$b"
 done
 
-[ -n "${types##* isolinux *}" ] ||
+if [ -n "$boot_isolinux" ]; then
 	exec mki-pack-isoboot
+fi
 
-[ -n "${types##* grubpcboot *}" ] ||
+if [ -n "$boot_grubpcboot" ]; then
 	exec mki-pack-grubpc-isoboot
+fi
 
-[ -n "${types##* ieee1275boot *}" ] ||
+if [ -n "$boot_ieee1275boot" ]; then
 	exec mki-pack-isodata
+fi
 
-[ -n "${types##* grubaa64boot *}" ] ||
+if [ -n "$boot_grubaa64boot" ]; then
 	exec mki-pack-efionly-isoboot
+fi
 
-[ -z "${types##* isolinux *}" ] || [ -z "${types##* grubpcboot *}" ] || [ -n "${types##* efiboot *}" ] ||
+# The hybrid boot modes, grubpcboot (grub-pc + EFI) and isolinux
+# (isolinux + EFI), are supposed to kick in earlier.  As a result, we are
+# opting to use the efionly boot mode at this point.
+if [ -n "$boot_efiboot" ]; then
 	exec mki-pack-efionly-isoboot
+fi
 
 exec mki-pack-data
