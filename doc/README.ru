@@ -307,7 +307,9 @@ MKI_OUTNAME            - Если рабочий чрут пакуется в н
 MKI_PACK_RESULTS       - Этот параметр комбинирует MKI_PACKTYPE и MKI_OUTNAME,
                          делая их устаревшими. Формат этой переменной следующий:
 
-                         <PACKTYPE>:<OUTNAME>[:<SUBDIR>] [<PACKTYPE1>:<OUTNAME1>[:<SUBDIR1>] ...]
+                         <PACKTYPE>:<OUTNAME>[:<SUBDIR>] [...]
+                         custom:<OUTNAME>:<HANDLER_SCRIPT>[:<SUBDIR>] [...]
+                         custompipe:<OUTNAME>:<HANDLER_SCRIPT>[:<SUBDIR>] [...]
 
                          таким образом, один и тот же рабочий чрут можно запаковать
                          несколькими разными способами с разными именами.
@@ -330,7 +332,12 @@ MKI_PACK_RESULTS       - Этот параметр комбинирует MKI_PA
                                            переменной MKI_TAR_COMPRESS сжимает его.
                          cpio            - создаёт cpio-архив и в зависимости от значения
                                            переменной MKI_CPIO_COMPRESS сжимает его.
+                         custom          - запускает HANDLER_SCRIPT в чруте,
+                                           результаты его работы копируются.
+                         custompipe      - запускает HANDLER_SCRIPT в чруте и
+                                           перенаправляет его stdout в файл.
 
+                         HANDLER_SCRIPT  - произвольный скрипт, который будет запущен в чруте.
                          SUBDIR - поддиректория в рабочем чруте, которую нужно запаковать.
 
 MKI_TAR_COMPRESS       - Переменная указывает метод сжатия tar-архива.

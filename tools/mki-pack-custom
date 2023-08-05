@@ -38,7 +38,11 @@ message "$handler: executable file."
 
 install -m755 -- "$handler" "$chroot/.host/script.sh"
 
-run_chrooted "$chroot" <<-EOF
+if [ -n "${MKI_CUSTOM_PIPE-}" ]; then
+	run_chrooted "$chroot" >"$outdir/$outname"
+else
+	run_chrooted "$chroot"
+fi <<-EOF
 #!/bin/sh -efu
 WORKDIR=/.image
 OUTNAME='/.our/$outname'
@@ -48,4 +52,6 @@ export WORKDIR OUTNAME SUBDIR EXCLUDE
 /.host/script.sh
 EOF
 
-mki-copy-our2out
+if [ -z "${MKI_CUSTOM_PIPE-}" ]; then
+	mki-copy-our2out
+fi

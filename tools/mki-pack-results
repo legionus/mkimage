@@ -18,6 +18,7 @@ typeslist="${MKI_PACK_RESULTS:?pack rules required}"
 
 # Format: <MKI_PACKTYPE>[:<MKI_OUTNAME>[:[!]<SUBDIR>,...]]
 # Format: custom[:<MKI_OUTNAME>:<MKI_HANDLER>[:[!]<SUBDIR>,...]]
+# Format: custompipe[:<MKI_OUTNAME>:<MKI_HANDLER>[:[!]<SUBDIR>,...]]
 parse() {
 	local OLD_IFS="$IFS"
 	local IFS=:
@@ -61,18 +62,22 @@ parse() {
 }
 
 run_pack() {
-	local MKI_PACKMOD='' MKI_OUTNAME='' MKI_IMAGESUBDIR='' MKI_EXCLUDE='' MKI_HANDLER=''
+	local MKI_PACKMOD='' MKI_OUTNAME='' MKI_IMAGESUBDIR='' MKI_EXCLUDE='' MKI_HANDLER='' MKI_CUSTOM_PIPE=''
 
 	case "$1" in
 		custom|custom:*)
 			parse 'custom' "$1"
+			;;
+		custompipe|custompipe:*)
+			parse 'custom' "$1"
+			MKI_CUSTOM_PIPE=1
 			;;
 		*)
 			parse 'type' "$1"
 			;;
 	esac
 
-	export MKI_OUTNAME MKI_IMAGESUBDIR MKI_EXCLUDE MKI_HANDLER
+	export MKI_OUTNAME MKI_IMAGESUBDIR MKI_EXCLUDE MKI_HANDLER MKI_CUSTOM_PIPE
 	"mki-pack-$MKI_PACKMOD"
 }
 
