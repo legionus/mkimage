@@ -15,11 +15,7 @@ payload() {
 
 	stat --printf='%A\t%s\t%Y\n' "$makefile"
 
-	if [ -d "$aptbox/var" ]; then
-		cd "$aptbox/var"
-		find . -name '*_release' -exec cat '{}' '+'
-		cd - >/dev/null
-	fi
+	payload_apt_list_release "$aptbox/var"
 
 	local r
 	for r in ${IMAGE_PACKAGES:-} ${IMAGE_PACKAGES_REGEXP:-}; do

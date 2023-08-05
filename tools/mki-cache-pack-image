@@ -29,11 +29,7 @@ payload() {
 
 	printf '%s\n' "${MKI_OUTNAME:-}"
 
-	if [ -d "$aptbox/var" ]; then
-		cd "$aptbox/var"
-		find . -name '*_release' -exec cat '{}' '+'
-		cd - >/dev/null
-	fi
+	payload_apt_list_release "$aptbox/var"
 
 	if [ -d "$outdir" ]; then
 		cd "$outdir"

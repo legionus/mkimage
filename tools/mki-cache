@@ -43,6 +43,22 @@ workdir_change_status() {
 	mkdir -p -- "$workdir_changed"
 }
 
+payload_apt_list_release() {
+	[ -d "$1" ] ||
+		return 0
+	find "$1" \
+		\( \
+			   -name '*_release' \
+			-o -name '*_InRelease' \
+		\) \
+		-execdir sed -rn \
+			-e '/^MD5Sum:/,            /^[^[:space:]]/ { s/^[[:space:]]//p; }' \
+			-e '/^BLAKE[[:alnum:]]+:/, /^[^[:space:]]/ { s/^[[:space:]]//p; }' \
+			-e '/^SHA[[:alnum:]]+:/,   /^[^[:space:]]/ { s/^[[:space:]]//p; }' \
+			'{}' '+' |
+		sort
+}
+
 . "mki-cache-$cache_type"
 
 errlock="$cachedir/mki/$cache_type.error"
