@@ -48,6 +48,32 @@ payload_makefile() {
 		cut -d\  -f1
 }
 
+payload_file_state() {
+	local is_dir=
+	[ ! -d "$1" ] || is_dir=1
+	[ -z "$is_dir" ] || cd "$1"
+
+	stat --printf='%A\t%s\t%Y\t%n\n' "$2"
+
+	[ -z "$is_dir" ] || cd - >/dev/null
+}
+
+payload_directory_state() {
+	[ -d "$1" ] ||
+		return 0
+
+	cd "$1" ||
+		return
+
+	local rc=0
+	find . -mindepth 1 -printf '%M\t%s\t%T@\t%p\n' |
+		sort
+
+	cd - >/dev/null
+	return "$rc"
+}
+
+
 payload_apt_list_release() {
 	[ -d "$1" ] ||
 		return 0
@@ -71,7 +97,7 @@ payload_image_packages()
 		if [ -f "$r" ]; then
 			r="$(readlink -ev "$r")" ||
 				continue
-			stat --printf='%A\t%s\t%Y\n' "$r"
+			payload_file_state / "$r"
 		else
 			printf '%s\n' "$r"
 		fi

@@ -21,11 +21,6 @@ payload() {
 	payload_makefile
 
 	for d in $subdirs; do
-		[ -d "$curdir/$d/$workdirname/$outdirname" ] ||
-			continue
-
-		cd "$curdir/$d/$workdirname/$outdirname"
-		find . -mindepth 1 -printf '%M\t%s\t%T@\t%p\n'
-		cd - >/dev/null
+		payload_directory_state "$curdir/$d/$workdirname/$outdirname"
 	done
 }

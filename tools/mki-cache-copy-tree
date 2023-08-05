@@ -20,12 +20,9 @@ payload() {
 			fatal "$dir: not available."
 
 		if [ -d "$d" ]; then
-			cd "$d"
-			find . -mindepth 1 -printf '%M\t%s\t%T@\t%p\n'
+			payload_directory_state "$d"
 		else
-			cd "${d%/*}"
-			stat --printf='%A\t%s\t%Y\t%n\n' "${d##*/}"
+			payload_file_state "${d%/*}" "${d##*/}"
 		fi
-		cd - >/dev/null
 	done
 }
