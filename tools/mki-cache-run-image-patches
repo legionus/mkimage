@@ -9,9 +9,9 @@
 # which should be included with mkimage as the file COPYING.
 #
 
-patchesdir="${MKI_IMAGE_PATCHDIR:?Patches directory required}"
-
 payload() {
+	patchesdir="${MKI_IMAGE_PATCHDIR:?Patches directory required}"
+
 	payload_makefile
 
 	[ -d "$patchesdir" ] ||

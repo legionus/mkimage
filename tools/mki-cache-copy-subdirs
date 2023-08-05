@@ -9,10 +9,8 @@
 # which should be included with mkimage as the file COPYING.
 #
 
-subdirs="${SUBDIRS:?subdirectories required}"
-
 payload() {
-	local d
+	subdirs="${SUBDIRS:?subdirectories required}"
 
 	curdir="${curdir:?mki-sh-functions not included}"
 	workdirname="${workdirname:?mki-sh-functions not included}"
@@ -20,6 +18,7 @@ payload() {
 
 	payload_makefile
 
+	local d
 	for d in $subdirs; do
 		payload_directory_state "$curdir/$d/$workdirname/$outdirname"
 	done

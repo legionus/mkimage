@@ -9,12 +9,12 @@
 # which should be included with mkimage as the file COPYING.
 #
 
-case "${cache_type:?must be defined in mki-cache}" in
-	*-image-*)	scriptdir="${MKI_IMAGE_SCRIPTDIR:?Script directory required}" ;;
-	*)		scriptdir="${MKI_SCRIPTDIR:?Script directory required}" ;;
-esac
-
 payload() {
+	case "${cache_type:?must be defined in mki-cache}" in
+		*-image-*)	scriptdir="${MKI_IMAGE_SCRIPTDIR:?Script directory required}" ;;
+		*)		scriptdir="${MKI_SCRIPTDIR:?Script directory required}" ;;
+	esac
+
 	payload_makefile
 
 	[ -d "$scriptdir" ] ||

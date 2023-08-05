@@ -9,13 +9,11 @@
 # which should be included with mkimage as the file COPYING.
 #
 
-data_tree="${COPY_TREE:?Data tree required}"
-
 payload() {
 	payload_makefile
 
 	local d dir
-	for dir in $data_tree; do
+	for dir in ${COPY_TREE:-}; do
 		d="$(readlink -ve "$dir")" ||
 			fatal "$dir: not available."
 

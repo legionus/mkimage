@@ -9,11 +9,8 @@
 # which should be included with mkimage as the file COPYING.
 #
 
-pkgboxdir="${PKGBOX:?directory required}"
-
-pkgbox="$pkgboxdir/aptbox"
-
 payload() {
+	pkgbox="${PKGBOX:?directory required}/aptbox"
 	aptbox="${dir:?mki-sh-functions not included}/aptbox"
 
 	payload_makefile
