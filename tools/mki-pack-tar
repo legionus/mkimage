@@ -41,7 +41,7 @@ esac
 mki-install $pkgs ||
 	fatal "failed to install packages: $pkgs."
 
-run_chrooted "$chroot" >"$outdir/$outname" <<EOF
+run_chrooted "$chroot" > "$outdir/$outname" <<EOF
 #!/bin/sh -efu
 cd /.image/
 
@@ -52,11 +52,9 @@ args=
 [ ! -d .host ]     || args="\$args --exclude .host"
 [ ! -f .fakedata ] || args="\$args --exclude .fakedata"
 
-if [ -n "${MKI_EXCLUDE:-}" ]; then
-	for d in ${MKI_EXCLUDE:-}; do
-		args="\$args --exclude \${d#/}"
-	done
-fi
+for dir in ${MKI_EXCLUDE:-}; do
+	args="\$args --exclude \${dir#/}"
+done
 
 exec tar --numeric-owner \$args $method -cf - .
 EOF
