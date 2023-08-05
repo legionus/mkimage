@@ -12,9 +12,7 @@
 data_tree="${COPY_TREE:?Data tree required}"
 
 payload() {
-	makefile="${makefile:?mki-sh-functions not included}"
-
-	stat --printf='%A\t%s\t%Y\n' "$makefile"
+	payload_makefile
 
 	local d dir
 	for dir in $data_tree; do

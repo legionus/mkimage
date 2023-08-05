@@ -20,15 +20,13 @@ workdir_change_status() {
 
 payload() {
 	aptbox="${dir:?mki-sh-functions not included}/aptbox"
-	makefile="${makefile:?mki-sh-functions not included}"
 	curdir="${curdir:?mki-sh-functions not included}"
 	workdirname="${workdirname:?mki-sh-functions not included}"
 	outdirname="${outdirname:?mki-sh-functions not included}"
 
-	stat --printf='%A\t%s\t%Y\n' "$makefile"
-
 	printf '%s\n' "${MKI_OUTNAME:-}"
 
+	payload_makefile
 	payload_apt_list_release "$aptbox/var"
 
 	if [ -d "$outdir" ]; then

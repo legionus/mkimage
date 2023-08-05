@@ -43,6 +43,11 @@ workdir_change_status() {
 	mkdir -p -- "$workdir_changed"
 }
 
+payload_makefile() {
+	sha256sum "$makefile" |
+		cut -d\  -f1
+}
+
 payload_apt_list_release() {
 	[ -d "$1" ] ||
 		return 0

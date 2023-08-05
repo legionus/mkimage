@@ -14,10 +14,7 @@ pkgboxdir="${PKGBOX:?directory required}"
 pkgbox="$pkgboxdir/aptbox"
 
 payload() {
-	makefile="${makefile:?mki-sh-functions not included}"
-
-	stat --printf='%A\t%s\t%Y\n' "$makefile"
-
+	payload_makefile
 	payload_apt_list_release "$pkgbox/var"
 	payload_image_packages
 }

@@ -12,9 +12,7 @@
 patchesdir="${MKI_IMAGE_PATCHDIR:?Patches directory required}"
 
 payload() {
-	makefile="${makefile:?mki-sh-functions not included}"
-
-	stat --printf='%A\t%s\t%Y\n' "$makefile"
+	payload_makefile
 
 	[ -d "$patchesdir" ] ||
 		return 0

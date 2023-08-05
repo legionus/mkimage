@@ -15,9 +15,7 @@ case "${cache_type:?must be defined in mki-cache}" in
 esac
 
 payload() {
-	makefile="${makefile:?mki-sh-functions not included}"
-
-	stat --printf='%A\t%s\t%Y\n' "$makefile"
+	payload_makefile
 
 	[ -d "$scriptdir" ] ||
 		return 0
