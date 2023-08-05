@@ -20,10 +20,7 @@ payload() {
 	[ -d "$scriptdir" ] ||
 		return 0
 
-	cd "$scriptdir" ||
-		return 1
-
-	find . -type f -executable \
+	find "$scriptdir" -type f -executable \
 			\( \
 				   \! -name '*~' \
 				-a \! -name '*.bak' \
