@@ -59,6 +59,21 @@ payload_apt_list_release() {
 		sort
 }
 
+payload_image_packages()
+{
+	local r
+	for r in ${IMAGE_PACKAGES:-} ${IMAGE_PACKAGES_REGEXP:-}; do
+		if [ -f "$r" ]; then
+			r="$(readlink -ev "$r")" ||
+				continue
+			stat --printf='%A\t%s\t%Y\n' "$r"
+		else
+			printf '%s\n' "$r"
+		fi
+	done |
+		sort
+}
+
 . "mki-cache-$cache_type"
 
 errlock="$cachedir/mki/$cache_type.error"
