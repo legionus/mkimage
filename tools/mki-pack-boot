@@ -22,6 +22,12 @@ outname="${outname##*/}"
 
 set -- ${BOOT_TYPE:-}
 
+[ "$#" -gt 0 ] ||
+	fatal "Boot type required"
+
+[ -d "$chroot" ] ||
+	fatal "$dir: does not look like a hasher work directory."
+
 boot_isolinux=
 boot_pxelinux=
 boot_syslinux=
@@ -46,12 +52,6 @@ if [ -n "${EFI_BOOTLOADER:-}" ] && [ -z "$boot_grubaa64boot" ] && [ -z "$boot_ef
 	boot_efiboot=1
 	set -- "$@" efiboot
 fi
-
-[ "$#" -gt 0 ] ||
-	fatal "Boot type required"
-
-[ -d "$chroot" ] ||
-	fatal "$dir: not look like a work directory of hasher."
 
 [ -z "${PROPAGATOR_MAR_MODULES:-}" ] ||
 	mki-build-propagator
