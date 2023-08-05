@@ -60,7 +60,7 @@ payload_directory_state() {
 
 	local rc=0
 	find . -mindepth 1 -printf '%M\t%s\t%T@\t%p\n' |
-		sort
+		LANG=C sort
 
 	cd - >/dev/null
 	return "$rc"
@@ -80,7 +80,7 @@ payload_apt_list_release() {
 			-e '/^BLAKE[[:alnum:]]+:/, /^[^[:space:]]/ { s/^[[:space:]]//p; }' \
 			-e '/^SHA[[:alnum:]]+:/,   /^[^[:space:]]/ { s/^[[:space:]]//p; }' \
 			'{}' '+' |
-		sort
+		LANG=C sort
 }
 
 payload_image_packages()
@@ -95,7 +95,7 @@ payload_image_packages()
 			printf '%s\n' "$r"
 		fi
 	done |
-		sort
+		LANG=C sort
 }
 
 . "mki-cache-$cache_type"
