@@ -35,6 +35,7 @@ boot_efiboot=
 boot_ieee1275boot=
 boot_grubaa64boot=
 boot_grubpcboot=
+boot_e2kboot=
 for b; do
 	case "$b" in
 		isolinux)
@@ -58,6 +59,7 @@ for b; do
 		efiboot) boot_efiboot=1 ;;
 		ieee1275boot) boot_ieee1275boot=1 ;;
 		grubaa64boot) boot_grubaa64boot=1 ;;
+		e2kboot) boot_e2kboot=1 ;;
 		*) fatal "$b: unknown boot type" ;;
 	esac
 done
@@ -101,6 +103,10 @@ if [ -n "$boot_ieee1275boot" ]; then
 	set -- "$@" ieee1275boot
 fi
 
+if [ -n "$boot_e2kboot" ]; then
+	set -- "$@" e2kboot
+fi
+
 # The default is used for pxelinux and syslinux boot types.
 pack_helper=mki-pack-data
 case "$#" in
@@ -111,7 +117,7 @@ case "$#" in
 			pack_helper=mki-pack-grubpc
 		elif [ -n "$boot_efiboot" ] || [ -n "$boot_grubaa64boot" ]; then
 			pack_helper=mki-pack-efiboot
-		elif [ -n "$boot_ieee1275boot" ]; then
+		elif [ -n "$boot_ieee1275boot" ] || [ -n "$boot_e2kboot" ]; then
 			pack_helper=mki-pack-isodata
 		fi
 		;;
