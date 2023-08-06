@@ -14,8 +14,16 @@
 
 verbose "has started executing."
 
+copy_functions() {
+	[ -d "$chroot/.host" ] ||
+		fatal "$chroot/.host directory does not exist"
+
+	cp "${0%/*}"/mki-chroot-sh-functions "$chroot"/.host/mki-chroot-sh-functions
+}
+
 case "$PROG" in
 	*-run)
+		copy_functions
 		exec env -i PATH="$PATH" ${HSH_NETWORK:+share_network=1} \
 		hsh-run --rooter $verbose $quiet \
 			${HSH_NUMBER:+--number="$HSH_NUMBER"} \
@@ -23,6 +31,7 @@ case "$PROG" in
 			"$dir" -- "$@"
 		;;
 	*-exec)
+		copy_functions
 		exec env -i PATH="$PATH" ${HSH_NETWORK:+share_network=1} \
 		hsh-run --rooter $verbose $quiet \
 			${HSH_NUMBER:+--number="$HSH_NUMBER"} \

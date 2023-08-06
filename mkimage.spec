@@ -61,6 +61,7 @@ ln -s 49-%name.conf %buildroot%sysctldir/51-%name.conf	# *sigh*
 
 # This script is executed in chroot.
 %add_findreq_skiplist %_datadir/%name/tools/mki-copy-efiboot-chrooted
+%add_findreq_skiplist %_datadir/%name/tools/mki-chroot-sh-functions
 
 %post
 if grep -Fqsx 1 "%procfile"; then
