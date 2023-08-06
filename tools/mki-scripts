@@ -34,19 +34,31 @@ fi
 [ -d "$dir/chroot" ] ||
 	fatal "$dir: not look like a hasher work directory."
 
-addenv() {
+print_global_environ() {
 	verbose "Translate variables from Makefile to scripts:"
-	printenv |
-		sed -ne 's/^\(\(GLOBAL\|INFO\)_[^=]\+\)=/\1\t/p' |
-	while read -r n v; do
-		verbose "export $n='$v'"
-		printf 'export %s="%s"\n' "$n" "$(quote_shell "$v")"
+
+	print_environ_names | sort |
+	while read -r envname; do
+		case "$envname" in
+			GLOBAL_*|INFO_*)
+				;;
+			*)
+				continue
+				;;
+		esac
+
+		envval=
+		eval "envval=\"\$$envname\""
+		quote_shell_variable envval "$envval"
+
+		verbose "export $envname=\"$envval\""
+		printf 'export %s="%s"\n' "$envname" "$envval"
 	done
 }
 
 make_exec "$dir/chroot/.host/start.sh" <<EOF
 #!/bin/sh -efu
-$(addenv)
+$(print_global_environ)
 export WORKDIR=/.image
 /.host/script.sh
 EOF

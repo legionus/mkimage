@@ -16,26 +16,6 @@ include_without_workdir_check=1
 # shellcheck source=tools/mki-sh-functions
 . "${0%/*}"/mki-sh-functions
 
-showenv() {
-	local n v
-
-	printenv |
-		sed -ne 's/^\(GLOBAL_[^=]\+\)=/\1\t/p' |
-	while read -r n v; do
-		printf '%s="%s"\n' "$n" "$(quote_shell "$v")"
-	done
-
-	for n in MAKEFLAGS MAKELEVEL MFLAGS \
-		PATH PWD SHELL TERM TMP TMPDIR USER;
-	do
-		v=
-		eval v="\${$n:-}"
-
-		[ -n "$v" ] || continue
-		printf '%s="%s"\n' "$n" "$(quote_shell "$v")"
-	done
-}
-
 dir="$1"; shift
 if [ -z "$NO_REMOTES" ] && [ -z "${dir##*=*}" ]; then
 	fatal 'remote build is no longer supported'
@@ -43,5 +23,14 @@ fi
 
 cd "$dir"
 
-# shellcheck disable=SC2046
-eval exec env -i $(showenv) $(quote_shell "$@")
+for envname in $(print_environ_names); do
+	case "$envname" in
+		GLOBAL_*|MAKEFLAGS|MAKELEVEL|MFLAGS|PATH|PWD|SHELL|TERM|TMP|TMPDIR|USER)
+			;;
+		*)
+			unset "$envname"
+			;;
+	esac
+done
+
+exec "$@"

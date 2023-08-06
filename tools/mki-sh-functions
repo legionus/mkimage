@@ -103,4 +103,10 @@ mki_list_pkgs() {
 		}
 }
 
+print_environ_names() {
+	printenv -0 |
+		tr '\n\0' '_\n' |
+		sed -rn -e 's#^([^=]+)=.*#\1#p'
+}
+
 fi
