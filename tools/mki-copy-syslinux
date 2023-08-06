@@ -28,8 +28,17 @@ mki-install $pkgs ||
 
 run_chrooted "$chroot" <<EOF
 #!/bin/sh -efu
+
 mkdir $verbose -p -- /.image/syslinux/alt0
-cp $verbose -aLf /boot/vmlinuz /.image/syslinux/alt0/vmlinuz
+
+if [ -L /boot/vmlinuz ]; then
+       kimage="\$(readlink -ev /boot/vmlinuz)"
+else
+       kimage="\$(find /boot -type f -name 'vmlinuz-*' -print -quit)"
+fi
+
+cp $verbose -aLf "\$kimage" /.image/syslinux/alt0/vmlinuz
+
 [ ! -f /boot/full.cz ] ||
 	cp $verbose -aLf /boot/full.cz /.image/syslinux/alt0/full.cz
 EOF
