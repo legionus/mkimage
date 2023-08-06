@@ -1,0 +1,103 @@
+#!/bin/ash -efu
+#
+# mki-pack-isoboot
+#
+# This file is part of mkimage
+# Copyright (C) 2007-2023  Alexey Gladkov <gladkov.alexey@gmail.com>
+# Copyright (C) 2012       Michael Shigorin <mike@altlinux.org>
+#
+# This file is covered by the GNU General Public License,
+# which should be included with mkimage as the file COPYING.
+#
+
+# shellcheck source=tools/mki-sh-functions
+. "${0%/*}"/mki-sh-functions
+
+verbose "has started executing."
+
+pkgs="${PACKAGES_REQUIRED_PACK_ISOBOOT:-}"
+
+outname="${MKI_OUTNAME:-outname}"
+outname="${outname##*/}"
+
+imgsubdir="${MKI_IMAGESUBDIR:-}"
+imgsubdir="${imgsubdir#/}"
+
+[ "$MKI_OUTNAME" = "${MKI_OUTNAME##*/}" ] ||
+	outdir="$(readlink -ev "${MKI_OUTNAME%/*}")"
+
+[ -d "$chroot" ] ||
+	fatal "$dir: not look like a work directory of hasher."
+
+[ -f "$chroot/.image/$imgsubdir/syslinux/isolinux.cfg" ] ||
+	fatal "/.image/$imgsubdir/syslinux/isolinux.cfg: not found."
+
+# isohybrid bootsector
+[ -z "${ISOHYBRID:-}" ] ||
+	pkgs="$pkgs syslinux"
+
+mki-install $pkgs ||
+	fatal "failed to install packages: $pkgs."
+
+run_chrooted "$chroot"  >"$outdir/$outname" <<EOF
+#!/bin/sh -efu
+
+imgdir=/.image
+[ -z "$imgsubdir" ] || [ ! -d "/.image/$imgsubdir" ] ||
+	imgdir="/.image/$imgsubdir"
+
+if [ ! -f \$imgdir/syslinux/isolinux.bin ]; then
+	printf '%s\\n' "$PROG: \$imgdir/syslinux/isolinux.bin: not found" >&2
+	exit 1
+fi
+
+if [ -n "${BOOT_LANG-}" ]; then
+	mkdir -p -- \$imgdir/syslinux
+	printf '%s\\n' "${BOOT_LANG-}" > \$imgdir/syslinux/lang
+fi
+
+cd /tmp
+cat > .mkisofsrc <<-__EOF__
+	APPI=${BOOT_APPI:-}
+	COPY=${BOOT_COPY:-}
+	ABST=${BOOT_ABST:-}
+	BIBL=${BOOT_BIBL:-}
+	PREP=${BOOT_PREP:-}
+	PUBL=${BOOT_PUBL:-}
+	SYSI=${BOOT_SYSI:-}
+	VOLI=${BOOT_VOLI:-}
+	VOLS=${BOOT_VOLS:-}
+__EOF__
+
+if [ -n "${MKI_EXCLUDE:-}" ]; then
+	for d in ${MKI_EXCLUDE:-}; do
+		printf '%s\\n' "\$d"
+	done
+fi > .exclude
+
+isohybrid_opts=
+if [ -n "${ISOHYBRID:-}" ]; then
+	isohybrid_opts="\
+	-isohybrid-mbr /usr/lib/syslinux/isohdpfx.bin \
+	-partition_offset 16 \
+"
+fi
+
+rc=0
+xorriso -follow param \
+	-read_mkisofsrc \
+	${UUID_ISO_SHRT:+-volume_date uuid "$UUID_ISO_SHRT"} \
+	-as mkisofs \
+	$verbose -J -l -r \
+	-b syslinux/isolinux.bin \
+	-c syslinux/boot.cat \
+	-exclude-list /tmp/.exclude \
+	-no-emul-boot \
+	-boot-load-size 4 \
+	-boot-info-table \
+	\$isohybrid_opts \
+	"\$imgdir/" || rc=\$?
+
+rm -f -- .mkisofsrc .exclude
+exit \$rc
+EOF
