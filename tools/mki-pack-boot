@@ -37,21 +37,97 @@ boot_grubaa64boot=
 boot_grubpcboot=
 for b; do
 	case "$b" in
-		isolinux) boot_isolinux=1 ;;
+		isolinux)
+			message 'WARNING: the isolinux boot type is deprecated!'
+			message 'WARNING: use either isolinux-boot (if you want isolinux),'
+			message 'WARNING: or "isolinux-boot efiboot" (if you want isolinux + EFI).'
+			boot_isolinux=1
+			boot_efiboot=1
+			;;
+		grubpcboot)
+			message 'WARNING: the grubpcboot boot type is deprecated!'
+			message 'WARNING: use either grub-pc-boot (if you want grub-pc),'
+			message 'WARNING: or "grub-pc-boot efiboot" (if you want grub-pc + EFI).'
+			boot_grubpcboot=1
+			boot_efiboot=1
+			;;
+		isolinux-boot) boot_isolinux=1 ;;
+		grub-pc-boot) boot_grubpcboot=1 ;;
 		pxelinux) boot_pxelinux=1 ;;
 		syslinux) boot_syslinux=1 ;;
 		efiboot) boot_efiboot=1 ;;
 		ieee1275boot) boot_ieee1275boot=1 ;;
 		grubaa64boot) boot_grubaa64boot=1 ;;
-		grubpcboot) boot_grubpcboot=1 ;;
-		*) fatal "Unknown boot type" ;;
+		*) fatal "$b: unknown boot type" ;;
 	esac
 done
 
-if [ -n "${EFI_BOOTLOADER:-}" ] && [ -z "$boot_grubaa64boot" ] && [ -z "$boot_efiboot" ]; then
-	boot_efiboot=1
+# The grubaa64boot is very similar, but it is not affected by
+# the EFI_BOOTLOADER variable because it implies grub-efi.
+if [ -n "$boot_efiboot" ] && [ -z ${EFI_BOOTLOADER:-} ]; then
+	fatal 'ERROR: efiboot is enabled but the EFI_BOOTLOADER variable is not defined!'
+fi
+
+# Recreate and reorder the boot types list for mki-copy* helpers
+# and further processing.  Some boot type keywords are translated into two
+# boot types (like isolinux -> isolinux-boot efiboot).
+set --
+
+if [ -n "$boot_isolinux" ]; then
+	set -- "$@" isolinux
+fi
+
+if [ -n "$boot_grubpcboot" ]; then
+	set -- "$@" grubpcboot
+fi
+
+if [ -n "$boot_efiboot" ]; then
 	set -- "$@" efiboot
 fi
+
+if [ -n "$boot_pxelinux" ]; then
+	set -- "$@" pxelinux
+fi
+
+if [ -n "$boot_syslinux" ]; then
+	set -- "$@" syslinux
+fi
+
+if [ -n "$boot_grubaa64boot" ]; then
+	set -- "$@" grubaa64boot
+fi
+
+if [ -n "$boot_ieee1275boot" ]; then
+	set -- "$@" ieee1275boot
+fi
+
+# The default is used for pxelinux and syslinux boot types.
+pack_helper=mki-pack-data
+case "$#" in
+	1)
+		if [ -n "$boot_isolinux" ]; then
+			pack_helper=mki-pack-isolinux
+		elif [ -n "$boot_grubpcboot" ]; then
+			pack_helper=mki-pack-grubpc
+		elif [ -n "$boot_efiboot" ] || [ -n "$boot_grubaa64boot" ]; then
+			pack_helper=mki-pack-efionly-isoboot
+		elif [ -n "$boot_ieee1275boot" ]; then
+			pack_helper=mki-pack-isodata
+		fi
+		;;
+	2)
+		if [ -n "$boot_isolinux" ] && [ -n "$boot_efiboot" ]; then
+			pack_helper=mki-pack-isoboot
+		elif [ -n "$boot_grubpcboot" ] && [ -n "$boot_efiboot" ]; then
+			pack_helper=mki-pack-grubpc-isoboot
+		else
+			fatal "The '${BOOT_TYPE:-}' boot type combination is not supported"
+		fi
+		;;
+	*)
+		fatal "The '${BOOT_TYPE:-}' boot type combination is not supported"
+		;;
+esac
 
 [ -z "${PROPAGATOR_MAR_MODULES:-}" ] ||
 	mki-build-propagator
@@ -60,27 +136,4 @@ for b; do
 	mki-copy-"$b"
 done
 
-if [ -n "$boot_isolinux" ]; then
-	exec mki-pack-isoboot
-fi
-
-if [ -n "$boot_grubpcboot" ]; then
-	exec mki-pack-grubpc-isoboot
-fi
-
-if [ -n "$boot_ieee1275boot" ]; then
-	exec mki-pack-isodata
-fi
-
-if [ -n "$boot_grubaa64boot" ]; then
-	exec mki-pack-efionly-isoboot
-fi
-
-# The hybrid boot modes, grubpcboot (grub-pc + EFI) and isolinux
-# (isolinux + EFI), are supposed to kick in earlier.  As a result, we are
-# opting to use the efionly boot mode at this point.
-if [ -n "$boot_efiboot" ]; then
-	exec mki-pack-efionly-isoboot
-fi
-
-exec mki-pack-data
+exec "$pack_helper"

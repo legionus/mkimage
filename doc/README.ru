@@ -367,10 +367,12 @@ GLOBAL_BOOT_LANG,
 BOOT_LANG              - Устанавливает язык, используемый по умолчанию в gfxboot.
 
 BOOT_TYPE              - Описывает, каким образом будет загружаться образ. Доступные
-                         значения: 'isolinux', 'pxelinux', 'syslinux', 'efiboot',
-                         'grubaa64boot', 'grubpcboot', 'ieee1275boot', 'e2kboot'.
+                         значения: 'isolinux-boot', 'pxelinux', 'syslinux', 'efiboot',
+                         'grubaa64boot', 'grub-pc-boot', 'ieee1275boot', 'e2kboot'.
                          Возможно указать несколько значений сразу, в этом случае в образ
-                         попадут конфигурации для всех перечисленных методов.
+                         попадут конфигурации для всех перечисленных методов. В данный
+                         момент поддерживаются комбинации 'isolinux-boot efiboot' и
+                         'grub-pc-boot efiboot'.
 
 EFI_BOOTLOADER         - Указывает, какой использовать загрузчик для (U)EFI.
                          Поддерживаются: 'elilo', 'refind', 'grub-efi' (требуется только одно
