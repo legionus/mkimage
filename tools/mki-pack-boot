@@ -110,7 +110,7 @@ case "$#" in
 		elif [ -n "$boot_grubpcboot" ]; then
 			pack_helper=mki-pack-grubpc
 		elif [ -n "$boot_efiboot" ] || [ -n "$boot_grubaa64boot" ]; then
-			pack_helper=mki-pack-efionly-isoboot
+			pack_helper=mki-pack-efiboot
 		elif [ -n "$boot_ieee1275boot" ]; then
 			pack_helper=mki-pack-isodata
 		fi
