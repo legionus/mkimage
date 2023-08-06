@@ -22,11 +22,6 @@ outname="${MKI_OUTNAME:-outname}"
 outname="${outname##*/}"
 outname="/.our/$outname"
 
-ubifsimg='/tmp/ubifs.img'
-ubicfg='/tmp/ubi.ini'
-imgdir='/.image'
-
-
 # must be specified
 miniosize="${PACK_UBI_MIN_IO_SIZE:?PACK_UBI_MIN_IO_SIZE must be specified}"
 ubivoltype="${PACK_UBI_VOL_TYPE:?PACK_UBI_VOL_TYPE must be specified}"
@@ -52,18 +47,21 @@ mki-install $pkgs ||
 run_chrooted "$chroot" << EOF
 #!/bin/sh -efu
 
+ubifsimg='/tmp/ubifs.img'
+ubicfg='/tmp/ubi.ini'
+
 exclude=
 for d in ${MKI_EXCLUDE:-}; do
 	exclude="\$exclude -z \$d"
 done
 
 echo 'mkimage: pack-ubifs: Packing ubifs image ...'
-/usr/sbin/mkfs.ubifs -m $miniosize $ubifsopts \$exclude -z .in -z .host -z .fakedata -r $imgdir -o $ubifsimg
+/usr/sbin/mkfs.ubifs -m $miniosize $ubifsopts \$exclude -z .in -z .host -z .fakedata -r /.image -o "\$ubifsimg"
 
-cat > $ubicfg << EOT
+cat > "\$ubicfg" << EOT
 [rootfs-image]
 mode=ubi
-image=$ubifsimg
+image=\$ubifsimg
 vol_id=$ubivolid
 vol_type=$ubivoltype
 vol_name=$ubivolname
@@ -73,10 +71,10 @@ $ubivolflags
 EOT
 
 echo 'mkimage: pack-ubifs: Ubinizing ubifs image ...'
-/usr/sbin/ubinize -o $outname -m $miniosize $ubiopts $ubicfg
+/usr/sbin/ubinize -o $outname -m $miniosize $ubiopts "\$ubicfg"
 
-rm -f $ubifsimg
-rm -f $ubicfg
+rm -f -- "\$ubifsimg"
+rm -f -- "\$ubicfg"
 
 echo "mkimage: pack-ubifs: Pack result: $outname ..."
 EOF
