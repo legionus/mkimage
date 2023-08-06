@@ -117,7 +117,7 @@ case "$#" in
 		;;
 	2)
 		if [ -n "$boot_isolinux" ] && [ -n "$boot_efiboot" ]; then
-			pack_helper=mki-pack-isoboot
+			pack_helper=mki-pack-hybrid-isolinux-efiboot
 		elif [ -n "$boot_grubpcboot" ] && [ -n "$boot_efiboot" ]; then
 			pack_helper=mki-pack-grubpc-isoboot
 		else
