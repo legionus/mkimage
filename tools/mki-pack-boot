@@ -119,7 +119,7 @@ case "$#" in
 		if [ -n "$boot_isolinux" ] && [ -n "$boot_efiboot" ]; then
 			pack_helper=mki-pack-hybrid-isolinux-efiboot
 		elif [ -n "$boot_grubpcboot" ] && [ -n "$boot_efiboot" ]; then
-			pack_helper=mki-pack-grubpc-isoboot
+			pack_helper=mki-pack-hybrid-grubpc-efiboot
 		else
 			fatal "The '${BOOT_TYPE:-}' boot type combination is not supported"
 		fi
