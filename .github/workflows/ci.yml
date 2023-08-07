@@ -1,0 +1,69 @@
+name: "CI"
+on:
+  push:
+    branches:
+      - "master"
+      - "for-master"
+      - "patchset/**"
+    paths-ignore:
+      - "**.md"
+jobs:
+  verify:
+    name: "Verify"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout Repository"
+        uses: actions/checkout@v3
+
+      - name: "Tests"
+        run: tests/github-verify-altlinux
+
+
+  tests:
+    name: "Test"
+    needs: [ verify ]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        testcase: [
+          "boot-simple-efiboot-grub-efi.iso",
+          "boot-simple-grubpc.iso",
+          "boot-simple-hybrid-grubpc-efiboot-grub-efi.iso",
+          "boot-simple-hybrid-isolinux-efiboot-grub-efi.iso",
+          "boot-simple-isolinux.iso",
+          "boot-simple-pxelinux.data",
+          "boot-simple-syslinux.data",
+          "files.cpio",
+          "files.data",
+          "files.iso",
+          "files.squash",
+          "files.tar",
+          "files.tar.bz2",
+          "files.tar.gz",
+          "files.tar.lz4",
+          "files.tar.xz",
+          "files.tar.zst",
+          "pkgs-main.cpio",
+          "pkgs-main.data",
+          "pkgs-main.iso",
+          "pkgs-main.squash",
+          "pkgs-main.tar",
+          "pkgs.cpio",
+          "pkgs.data",
+          "pkgs.iso",
+          "pkgs.squash",
+          "pkgs.tar",
+          "subdir.cpio",
+          "subdir.data",
+          "subdir.iso",
+          "subdir.squash",
+          "subdir.tar",
+        ]
+      fail-fast: false
+    steps:
+      - name: "Checkout Repository"
+        uses: actions/checkout@v3
+
+      - name: "Tests"
+        run: sudo tests/github-test-altlinux ${{ matrix.testcase }}
+

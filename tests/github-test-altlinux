@@ -1,0 +1,81 @@
+#!/bin/bash -efux
+
+testcase="$1"; shift
+
+curdir="$(readlink -ev "$0")"
+curdir="${curdir%/*}"
+topdir="${curdir%/*}"
+
+readonly builddir=/srv
+readonly IMAGE=alt:sisyphus
+
+echo 0 > /proc/sys/fs/protected_hardlinks
+
+git clone https://github.com/altlinux/hasher-priv
+
+mkdir -v -p -- "$curdir/tmp"
+cat > "$curdir/tmp/run.sh" <<-EOF
+#!/bin/bash -eux
+
+apt-get -y -qq update
+
+: hasher-priv requires
+apt-get -y -qq install \
+	help2man setproctitle-devel gcc make glibc-utils
+
+: mkimage requires
+apt-get -y -qq install \
+	dash libshell hasher make shellcheck \
+	cpio diffutils findutils tar squashfs-tools bsdtar file sed
+
+cd "$builddir"
+
+cd hasher-priv/hasher-priv
+	sed -i \
+		-e 's# "\$caller_uid" -gt 0 # "\$caller_uid" -gt -1 #' \
+		-- hasher-useradd.in
+
+	sed -i \
+		-e 's#pw->pw_[ug]id < MIN_CHANGE_[UG]ID# 0 #' \
+		-- caller_config.c
+
+	sed -i \
+		-e 's#[ug]id < MIN_CHANGE_[UG]ID || [ug]id == get[ug]id()# 0 #' \
+		-- hasher-privd.c
+
+	make install
+cd -
+
+id
+
+hasher-useradd "\$(id -u -n)"
+mkdir -p -- \$HOME/hasher
+
+: "Prepare services"
+tee /etc/syslog.conf <<EOF1
+*.* -/var/log/syslog/messages
+EOF1
+
+tee /etc/hasher-priv/system <<EOF1
+prefix=~:/tmp/.private:$builddir
+allowed_mountpoints=/proc,/dev/pts,/dev
+EOF1
+
+hasher-privd -D -l debug
+
+: "Build"
+make
+
+: "Tests"
+rc=0
+make check TESTS="$testcase" || rc=\$?
+
+cat tests/*.log ||:
+exit \$rc
+EOF
+
+chmod +x -- "$curdir/tmp/run.sh"
+
+podman run --privileged --systemd=false --rm --tty --interactive \
+	--volume="$topdir:$builddir" \
+	"$IMAGE" "$builddir/tests/tmp/run.sh"

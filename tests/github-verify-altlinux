@@ -1,0 +1,30 @@
+#!/bin/bash -efu
+
+curdir="$(readlink -ev "$0")"
+curdir="${curdir%/*}"
+topdir="${curdir%/*}"
+
+readonly builddir=/srv
+readonly IMAGE=alt:sisyphus
+
+mkdir -v -p -- "$curdir/tmp"
+cat > "$curdir/tmp/run.sh" <<-EOF
+#!/bin/bash -eux
+
+apt-get -y -qq update
+apt-get -y -qq install dash libshell make shellcheck
+
+cd "$builddir"
+
+: "Build"
+make
+
+: "Shellcheck"
+make verify
+EOF
+
+chmod +x -- "$curdir/tmp/run.sh"
+
+podman run --privileged --systemd=false --rm --tty --interactive \
+	--volume="$topdir:$builddir" \
+	"$IMAGE" "$builddir/tests/tmp/run.sh"

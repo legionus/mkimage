@@ -6,6 +6,9 @@ export GLOBAL_PREFIX = $(shell dirname $(CURDIR))
 export GLOBAL_CONFIGDIR = $(GLOBAL_PREFIX)
 DRIVER = $(CURDIR)/test-image
 
+#
+# NOTE: don't forget to sync this list with the .github/workflows/ci.yml .
+#
 TESTS = \
 	files.cpio \
 	files.data \
