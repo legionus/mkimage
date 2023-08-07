@@ -32,6 +32,7 @@ fi
 mkdir $verbose -- "$tempdir"
 
 lstfile="$tempdir/lst"
+flstfile="$tempdir/flst"
 errfile="$tempdir/err"
 reqfile="$tempdir/req"
 
@@ -124,9 +125,18 @@ processfile "$reqfile" "$(wc -l < "$reqfile")" ||
 	fatal 'could not copy packages: empty list.'
 
 sort -u "$lstfile" |
-	tr ' ' '\n' |
-	xargs -r cp $verbose -ut "$chroot/.in/" -- ||
-	fatal 'could not copy packages: copy failed.'
+	tr ' ' '\n' > "$flstfile"
+
+qf='%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}.rpm'
+
+while read -r path; do {
+	[ -n "$path" ] || continue
+	nname="$(rpmquery -q --qf "$qf" -p "$path")"
+	[ ! -e "$chroot/.in/$nname" ] ||
+		fatal "$path: $nname package has already been copied"
+	cp $verbose "$path" "$chroot/.in/$nname" ||
+		fatal "$path: could not copy $nname package: copy failed."
+} </dev/null; done <"$flstfile"
 
 make_exec "$chroot/.host/script.sh" <<EOF
 #!/bin/sh -efu
