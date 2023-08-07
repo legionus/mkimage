@@ -10,7 +10,7 @@
 
 # shellcheck shell=dash
 
-# shellcheck source=/usr/share/mkimage/tools/mki-sh-functions
+# shellcheck source=tools/mki-sh-functions
 . "${0%/*}"/mki-sh-functions
 # shellcheck source=/bin/shell-quote
 . shell-quote
