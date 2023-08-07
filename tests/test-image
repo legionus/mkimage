@@ -1,0 +1,186 @@
+#!/bin/sh -efu
+#
+# test-image
+#
+# This file is part of mkimage
+# Copyright (C) 2023  Gleb Fotengauer-Malinovskiy <glebfm@altlinux.org>
+#
+# This file is covered by the GNU General Public License,
+# which should be included with mkimage as the file COPYING.
+#
+
+export LC_ALL=C
+
+. shell-temp
+
+PROG="${PROG:-${0##*/}}"
+
+TEST="$1"; shift
+job="$1"; shift
+
+exec 3>&2 1>"$TEST".log 2>&1
+
+message()
+{
+	printf >&2 %s\\n "$PROG: $*"
+	printf >&3 %s\\n "$PROG: $*"
+}
+
+fatal()
+{
+	message "$@"
+	exit 1
+}
+
+subdir="${TEST%%.*}"
+format="${TEST#*.}"
+boot_type=
+
+case "$TEST" in
+	boot-simple-*)
+		subdir=boot-simple
+		boot_type="${TEST##boot-simple-}"
+		boot_type="${boot_type%%.*}"
+		;;
+	*)
+		;;
+esac
+
+if [ -d "$subdir" ]; then
+	if [ -d "$TEST" ]; then
+		make -C "$TEST" distclean ||:
+		rm -rf "$TEST"
+	fi
+	cp -aT "$subdir" "$TEST"
+fi
+
+case "$format" in
+	cpio|data|squash|tar)
+		export GLOBAL_TEST_MKI_PACK_RESULTS="$format:$TEST"
+		;;
+	tar.xz)
+		export GLOBAL_TEST_MKI_PACK_RESULTS="tar:$TEST"
+		export GLOBAL_TEST_MKI_TAR_COMPRESS=xz
+		;;
+	tar.gz)
+		export GLOBAL_TEST_MKI_PACK_RESULTS="tar:$TEST"
+		export GLOBAL_TEST_MKI_TAR_COMPRESS=gz
+		;;
+	tar.bz2)
+		export GLOBAL_TEST_MKI_PACK_RESULTS="tar:$TEST"
+		export GLOBAL_TEST_MKI_TAR_COMPRESS=bz2
+		;;
+	tar.zst)
+		export GLOBAL_TEST_MKI_PACK_RESULTS="tar:$TEST"
+		export GLOBAL_TEST_MKI_TAR_COMPRESS=zst
+		;;
+	tar.lz4)
+		export GLOBAL_TEST_MKI_PACK_RESULTS="tar:$TEST"
+		export GLOBAL_TEST_MKI_TAR_COMPRESS=lz4
+		;;
+	cpio.xz)
+		export GLOBAL_TEST_MKI_PACK_RESULTS="cpio:$TEST"
+		export GLOBAL_TEST_MKI_TAR_COMPRESS=xz
+		;;
+	iso)
+		export GLOBAL_TEST_MKI_PACK_RESULTS=isodata:"$TEST"
+		;;
+esac
+
+case "$boot_type" in
+	isolinux)
+		export GLOBAL_TEST_MKI_PACK_RESULTS=boot:"$TEST"
+		export GLOBAL_TEST_BOOT_TYPE=isolinux-boot
+		export GLOBAL_TEST_EFI_BOOTLOADER=
+		export GLOBAL_TEST_CHROOT_PACKAGES=kernel-image-std-def
+		;;
+	grubpc)
+		export GLOBAL_TEST_MKI_PACK_RESULTS=boot:"$TEST"
+		export GLOBAL_TEST_BOOT_TYPE=grub-pc-boot
+		export GLOBAL_TEST_EFI_BOOTLOADER=
+		export GLOBAL_TEST_CHROOT_PACKAGES=kernel-image-std-def
+		;;
+	pxelinux|syslinux)
+		export GLOBAL_TEST_MKI_PACK_RESULTS=boot:"$TEST"
+		export GLOBAL_TEST_BOOT_TYPE="$boot_type"
+		export GLOBAL_TEST_EFI_BOOTLOADER=
+		export GLOBAL_TEST_CHROOT_PACKAGES=kernel-image-std-def
+		;;
+	efiboot-grub-efi)
+		export GLOBAL_TEST_MKI_PACK_RESULTS=boot:"$TEST"
+		export GLOBAL_TEST_BOOT_TYPE=efiboot
+		export GLOBAL_TEST_EFI_BOOTLOADER=grub-efi
+		export GLOBAL_TEST_CHROOT_PACKAGES=kernel-image-std-def
+		;;
+	hybrid-isolinux-efiboot-grub-efi)
+		export GLOBAL_TEST_MKI_PACK_RESULTS=boot:"$TEST"
+		export GLOBAL_TEST_BOOT_TYPE="isolinux-boot efiboot"
+		export GLOBAL_TEST_EFI_BOOTLOADER=grub-efi
+		export GLOBAL_TEST_CHROOT_PACKAGES=kernel-image-std-def
+		;;
+	hybrid-grubpc-efiboot-grub-efi)
+		export GLOBAL_TEST_MKI_PACK_RESULTS=boot:"$TEST"
+		export GLOBAL_TEST_BOOT_TYPE="grub-pc-boot efiboot"
+		export GLOBAL_TEST_EFI_BOOTLOADER=grub-efi
+		export GLOBAL_TEST_CHROOT_PACKAGES=kernel-image-std-def
+		;;
+	*)
+		;;
+esac
+
+create_temporary tmpdir
+
+result="$TEST/.work/.out/$TEST"
+case "$subdir" in
+	subdir) result="$TEST"/.work/.out/"$subdir".data ;;
+esac
+
+flist="$TEST".filelist
+
+check_result() {
+	file -z "$result"
+	local bname="$(basename "$result")"
+	local ftype="${bname#*.}"
+	case "$ftype" in
+		cpio) cpio -tv --quiet -I "$result" | awk '{print $1, $3, $4, $5, $9}' ;;
+		data) find "$result" -type d -printf '/%P %m\n' -or -printf '/%P %m %s\n' >"$tmpdir"/flist_
+		      sort "$tmpdir"/flist_
+		      ;;
+		tar*) tar tvf "$result" | awk '{print $1, $2, $3, $6}' ;;
+		squash) unsquashfs -ll "$result" | awk '{print $1, $2, $3, $6}' ;;
+		iso) bsdtar -tvf "$result" | awk '{print $1, $3, $4, $5, $9}' ;;
+		*) fatal "$ftype is not supported" ;;
+	esac > "$tmpdir"/flist
+
+	case "$TEST" in
+		boot-simple-grubpc.iso|boot-simple-hybrid-grubpc-efiboot-grub-efi.iso)
+			# The size of this file may differ with each execution.
+			sed -E 's|[0-9]* (boot/grub/bios\.img)$|VOLATILE \1|' -i "$tmpdir"/flist
+			;;
+	esac
+
+	if [ -s "$flist" ]; then
+		rc=0
+		diff -u "$flist" "$tmpdir"/flist ||
+			fatal "$TEST: file list FAIL"
+	else
+		cat "$tmpdir"/flist >"$flist"
+	fi
+	message "$TEST: file list OK"
+}
+
+if [ "$job" = all ]; then
+	make -C "$TEST" distclean
+	make -C "$TEST" "$job"
+
+	find "$result" -ls
+	check_result
+
+	make -C "$TEST" distclean
+	rm -r "$TEST"
+elif [ "$job" = distclean ]; then
+	make -C "$TEST" distclean
+	rm -r "$TEST"
+else
+	make -C "$TEST" "$job"
+fi

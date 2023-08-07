@@ -45,6 +45,9 @@ all: $(TARGETS) $(bin_TARGETS)
 	$(TOUCH_R) $< $@
 	chmod --reference=$< $@
 
+check: all
+	make -C tests all
+
 install: all
 	$(MKDIR_P) -m755 $(DESTDIR)$(prefixdir) $(DESTDIR)$(bindir)
 	$(CP) -- tools $(DESTDIR)$(prefixdir)/
