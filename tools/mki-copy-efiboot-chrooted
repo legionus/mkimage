@@ -203,7 +203,7 @@ copy_kernel()
 	fi
 
 	if [ -n "$kimage" ]; then
-		cp $verbose -af /boot/$kimage $boot/vmlinuz
+		cp $verbose -af "$kimage" "$boot"/vmlinuz
 		[ ! -f /boot/full.cz ] ||
 			cp $verbose -af /boot/full.cz $boot/full.cz
 	fi
