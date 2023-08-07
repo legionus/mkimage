@@ -15,17 +15,6 @@ EFI_FILES_REPLACE="${EFI_FILES_REPLACE-}"
 
 cd /.image
 
-message()
-{
-	printf '%s: %s\n' "$PROG" "$*" >&2
-}
-
-fatal()
-{
-	message "$*"
-	exit 1
-}
-
 n_stages=0
 stage2=
 for i in altinst live rescue; do

@@ -11,12 +11,16 @@
 
 PROG="${PROG:-${0##*/}}"
 
-fatal()
+message()
 {
-	printf >&2 '%s\n' "$PROG: $*"
-	exit 1
+	printf '%s: %s\n' "$PROG" "$*" >&2
 }
 
+fatal()
+{
+	message "$*"
+	exit 1
+}
 
 # This helper function attempts to locate the default kernel, and if it
 # is unavailable, it will match *any* installed kernel instead.
