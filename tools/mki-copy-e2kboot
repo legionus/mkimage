@@ -1,15 +1,8 @@
 #!/bin/ash -efu
-#
-# mki-copy-e2kboot
-#
-# This file is part of mkimage
+# SPDX-License-Identifier: GPL-3.0-or-later
 # Copyright (C) 2008  Michael A. Kangin <mak@rsmu.ru>
 # Copyright (C) 2008-2023  Alexey Gladkov <gladkov.alexey@gmail.com>
 # Copyright (C) 2018  Michael Shigorin <mike@altlinux.org>
-#
-# This file is covered by the GNU General Public License,
-# which should be included with mkimage as the file COPYING.
-#
 
 # shellcheck source=tools/mki-sh-functions
 . "${0%/*}"/mki-sh-functions

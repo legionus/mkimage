@@ -1,12 +1,5 @@
-#
-# config-squash.mk
-#
-# This file is part of mkimage
+# SPDX-License-Identifier: GPL-3.0-or-later
 # Copyright (C) 2007-2009  Alexey Gladkov <gladkov.alexey@gmail.com>
-#
-# This file is covered by the GNU General Public License,
-# which should be included with mkimage as the file COPYING.
-#
 
 INCLUDED_CONFIG_SQUASH_MK = 1
 

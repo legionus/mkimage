@@ -1,13 +1,6 @@
 #!/bin/ash -efu
-#
-# mki-pack-squash
-#
-# This file is part of mkimage
+# SPDX-License-Identifier: GPL-3.0-or-later
 # Copyright (C) 2007-2023  Alexey Gladkov <gladkov.alexey@gmail.com>
-#
-# This file is covered by the GNU General Public License,
-# which should be included with mkimage as the file COPYING.
-#
 
 # shellcheck source=tools/mki-sh-functions
 . "${0%/*}"/mki-sh-functions

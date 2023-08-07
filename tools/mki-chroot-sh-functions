@@ -1,13 +1,6 @@
 #!/bin/sh -efu
-#
-# mki-chroot-sh-functions
-#
-# This file is a part of mkimage
+# SPDX-License-Identifier: GPL-3.0-or-later
 # Copyright (C) 2023  Gleb Fotengauer-Malinovskiy <glebfm@altlinux.org>
-#
-# This file is covered by the GNU General Public License,
-# which should be included with mkimage as the file COPYING.
-#
 
 PROG="${PROG:-${0##*/}}"
 

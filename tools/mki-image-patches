@@ -1,12 +1,6 @@
 #!/bin/ash -efu
-#
-# mki-image-patches
-#
+# SPDX-License-Identifier: GPL-3.0-or-later
 # Copyright (C) 2021  Gleb Fotengauer-Malinovskiy <glebfm@altlinux.org>
-#
-# This file is covered by the GNU General Public License,
-# which should be included with mkimage as the file COPYING.
-#
 
 # shellcheck shell=dash
 

@@ -1,4 +1,6 @@
 #!/bin/bash -efux
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2023  Alexey Gladkov <gladkov.alexey@gmail.com>
 
 testcase="$1"; shift
 

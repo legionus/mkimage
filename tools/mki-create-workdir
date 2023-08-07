@@ -1,13 +1,6 @@
 #!/bin/ash -efu
-#
-# mki-create-workdir
-#
-# This file is part of mkimage
+# SPDX-License-Identifier: GPL-3.0-or-later
 # Copyright (C) 2008-2023  Alexey Gladkov <gladkov.alexey@gmail.com>
-#
-# This file is covered by the GNU General Public License,
-# which should be included with mkimage as the file COPYING.
-#
 
 include_without_workdir_check=1
 # shellcheck source=tools/mki-sh-functions

@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2007-2023  Alexey Gladkov <gladkov.alexey@gmail.com>
+
 PROJECT = mkimage
 VERSION = $(shell sed '/^Version: */!d;s///;q' mkimage.spec)
 

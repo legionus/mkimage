@@ -1,4 +1,6 @@
 #!/bin/sh -efu
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2020-2023  Alexey Gladkov <gladkov.alexey@gmail.com>
 
 # shellcheck source=tools/mki-chroot-sh-functions
 . /.host/mki-chroot-sh-functions
