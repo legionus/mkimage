@@ -1,5 +1,8 @@
 #!/bin/sh -efu
 
+# shellcheck source=tools/mki-chroot-sh-functions
+. /.host/mki-chroot-sh-functions
+
 PROG='mki-copy-efiboot-chrooted'
 
 # External globals
@@ -186,6 +189,7 @@ copy_shim()
 	fi
 }
 
+kimage=
 copy_kernel()
 {
 	[ ! -s "$boot/vmlinuz" ] && [ ! -s "$boot/full.cz" ] ||
@@ -196,12 +200,6 @@ copy_kernel()
 			syslinux/alt0/vmlinuz \
 			syslinux/alt0/full.cz
 		return 0
-	fi
-
-	if [ -L /boot/vmlinuz ]; then
-		kimage="$(readlink -v /boot/vmlinuz)"
-	else
-		kimage="$(find /boot -type f -name 'vmlinuz-*' -print -quit)"
 	fi
 
 	if [ -n "$kimage" ]; then
@@ -609,6 +607,10 @@ case "$EFI_BOOTLOADER" in
 		fatal "Unable to handle '$EFI_BOOTLOADER'."
 		;;
 esac
+
+# The find_vmlinuz() function defines the kimage variable, which is
+# subsequently used by the copy_kernel() function.
+find_vmlinuz kimage
 
 if [ "$EFI_BOOTLOADER" = grub-efi ]; then
 	[ -d "$boot_grub" ] || mkdir -p "$boot_grub"

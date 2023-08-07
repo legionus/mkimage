@@ -1,1 +1,32 @@
 #!/bin/sh -efu
+#
+# mki-chroot-sh-functions
+#
+# This file is a part of mkimage
+# Copyright (C) 2023  Gleb Fotengauer-Malinovskiy <glebfm@altlinux.org>
+#
+# This file is covered by the GNU General Public License,
+# which should be included with mkimage as the file COPYING.
+#
+
+PROG="${PROG:-${0##*/}}"
+
+fatal()
+{
+	printf >&2 '%s\n' "$PROG: $*"
+	exit 1
+}
+
+
+# This helper function attempts to locate the default kernel, and if it
+# is unavailable, it will match *any* installed kernel instead.
+# If the kernel image cannot be found at all, the variable will remain empty.
+find_vmlinuz()
+{
+	if [ -L /boot/vmlinuz ]; then
+		set -- "$1" "$(readlink -ev /boot/vmlinuz)"
+	else
+		set -- "$1" "$(find /boot -maxdepth 1 -type f -name 'vmlinuz-*' -print -quit)"
+	fi
+	eval "$1=\"\$2\""
+}

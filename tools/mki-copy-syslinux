@@ -29,13 +29,15 @@ mki-install $pkgs ||
 run_chrooted "$chroot" <<EOF
 #!/bin/sh -efu
 
+. /.host/mki-chroot-sh-functions
+
 mkdir $verbose -p -- /.image/syslinux/alt0
 
-if [ -L /boot/vmlinuz ]; then
-       kimage="\$(readlink -ev /boot/vmlinuz)"
-else
-       kimage="\$(find /boot -type f -name 'vmlinuz-*' -print -quit)"
-fi
+kimage=
+find_vmlinuz kimage
+
+[ -n "\$kimage" ] ||
+	fatal 'Kernel vmlinuz image could not be located in /boot directory!'
 
 cp $verbose -aLf "\$kimage" /.image/syslinux/alt0/vmlinuz
 

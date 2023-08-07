@@ -27,6 +27,8 @@ mki-install $pkgs ||
 run_chrooted "$chroot" <<EOF
 #!/bin/sh -efu
 
+. /.host/mki-chroot-sh-functions
+
 libdir=/usr/lib64
 [ -d "\$libdir" ] ||
 	libdir=/usr/lib
@@ -66,11 +68,8 @@ cp $verbose -Lf /boot/grub/unifont.pf2 boot/grub/
 [ ! -d /boot/grub/themes ] || [ -d boot/grub/themes ] ||
 	cp $verbose -arf /boot/grub/themes boot/grub/
 
-if [ -L /boot/vmlinuz ]; then
-	kimage="\$(readlink -ev /boot/vmlinuz)"
-else
-	kimage="\$(find /boot -type f -name 'vmlinuz-*' -print -quit)"
-fi
+kimage=
+find_vmlinuz kimage
 
 if [ -n "\$kimage" ]; then
 	cp $verbose -af \$kimage boot/vmlinuz

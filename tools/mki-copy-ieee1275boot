@@ -28,6 +28,8 @@ mki-install $pkgs ||
 run_chrooted "$chroot" <<EOF
 #!/bin/sh -efu
 
+. /.host/mki-chroot-sh-functions
+
 GRUB_DIR=/usr/lib/grub/$grub_format
 [ -d "\$GRUB_DIR" ] || GRUB_DIR=/usr/lib64/grub/$grub_format
 
@@ -45,11 +47,8 @@ cp $verbose -af "\$GRUB_DIR"/bootinfo.txt -t ppc
 cp $verbose -arf "\$GRUB_DIR" boot/grub
 find boot/grub/"$grub_format" -type f -name '*.module' -delete ||:
 
-if [ -L /boot/vmlinuz ]; then
-	kimage="\$(readlink -ev /boot/vmlinuz)"
-else
-	kimage="\$(find /boot -type f -name 'vmlinuz-*' -print -quit)"
-fi
+kimage=
+find_vmlinuz kimage
 
 if [ -n "\$kimage" ]; then
 	cp $verbose -af \$kimage boot/vmlinuz
