@@ -5,15 +5,23 @@ bindir  = /usr/bin
 datadir = /usr/share
 DESTDIR =
 
+prefixdir ?= $(datadir)/$(PROJECT)
+ifdef MKLOCAL
+prefixdir = $(CURDIR)
+endif
+
 CP = cp -a
 MKDIR_P = mkdir -p
 TOUCH_R = touch -r
 
-prefixdir ?= $(datadir)/$(PROJECT)
+SED = sed \
+      -e 's,@VERSION@,$(VERSION),g' \
+      -e 's,@PREFIXDIR@,$(prefixdir),g'
 
-ifdef MKLOCAL
-prefixdir = $(CURDIR)
-endif
+VERBOSE ?= $(V)
+Q = $(if $(VERBOSE),,@)
+
+quiet_cmd   = $(if $(VERBOSE),$(3),$(Q)printf "  %-08s%s\n" "$(1)" $(2); $(3))
 
 EXAMPLES = \
 	examples/example1/Makefile \
@@ -38,24 +46,22 @@ TARGETS = actions.mk config.mk \
 all: $(TARGETS) $(bin_TARGETS)
 
 %: %.in
-	sed \
-		-e 's,@VERSION@,$(VERSION),g' \
-		-e 's,@PREFIXDIR@,$(prefixdir),g' \
-		<$< >$@
-	$(TOUCH_R) $< $@
-	chmod --reference=$< $@
+	$(Q)mkdir -p -- $(dir $@)
+	$(call quiet_cmd,SED,$@,$(SED)) < $< > $@
+	$(Q)$(TOUCH_R) $< $@
+	$(Q)chmod --reference=$< $@
 
 check: all
-	make -C tests all
+	$(Q)make -C tests all
 
 install: all
-	$(MKDIR_P) -m755 $(DESTDIR)$(prefixdir) $(DESTDIR)$(bindir)
-	$(CP) -- tools $(DESTDIR)$(prefixdir)/
-	$(CP) -- *.mk $(DESTDIR)$(prefixdir)/
-	$(CP) -- bin/* $(DESTDIR)$(bindir)/
+	$(Q)$(MKDIR_P) -m755 $(DESTDIR)$(prefixdir) $(DESTDIR)$(bindir)
+	$(Q)$(CP) -- tools $(DESTDIR)$(prefixdir)/
+	$(Q)$(CP) -- *.mk $(DESTDIR)$(prefixdir)/
+	$(Q)$(CP) -- bin/* $(DESTDIR)$(bindir)/
 
 clean:
-	$(RM) $(TARGETS) *~
+	$(Q)$(RM) $(TARGETS) *~
 
 verify:
-	@shellcheck --format=gcc --severity=info bin/* tools/mki-*
+	$(Q)shellcheck --format=gcc --severity=info bin/* tools/mki-*
