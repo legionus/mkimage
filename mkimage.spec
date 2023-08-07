@@ -77,7 +77,7 @@ fi
 %files
 %_bindir/*
 %_datadir/%name
-%doc examples doc/README.ru
+%doc doc/README.ru
 
 %files preinstall
 %config(noreplace) %sysctldir/??-%name.conf

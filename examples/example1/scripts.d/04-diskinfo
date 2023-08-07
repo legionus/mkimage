@@ -1,4 +1,0 @@
-#!/bin/sh
-
-mkdir -p -- "$WORKDIR/.disk"
-echo "${INFO_PUBLISHER:+$INFO_PUBLISHER }${INFO_VERSION:+$INFO_VERSION }${INFO_LABEL:+$INFO_LABEL }${INFO_CODENAME:+($INFO_CODENAME)} build $(date +%F)" > "$WORKDIR/.disk/info"

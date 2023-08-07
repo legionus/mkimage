@@ -1,3 +1,0 @@
-#!/bin/bash
-
-subst 's/^UTC=true/UTC=false/' "$WORKDIR"/etc/sysconfig/clock ||:

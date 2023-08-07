@@ -1,4 +1,0 @@
-#!/bin/sh
-
-mkdir -p -- "$WORKDIR/.disk"
-echo "ALT Linux example" > "$WORKDIR/.disk/info"
