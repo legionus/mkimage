@@ -36,9 +36,6 @@ run_chrooted "$chroot" <<EOF
 kimage=
 find_vmlinuz kimage
 
-[ -n "\$kimage" ] ||
-	fatal 'Kernel vmlinuz image could not be located in /boot directory!'
-
 mkdir $verbose -p -- /.image/$imgsubdir/syslinux
 cd /.image/$imgsubdir/syslinux
 
