@@ -48,32 +48,9 @@ if [ -n "\$kimage" ]; then
 	cp $verbose -af /boot/full.cz boot/full.cz
 fi
 
-[ ! -s 'boot/grub/grub.cfg' ] || exit 0
-
-cat > boot/grub/grub.cfg <<@@@
-insmod echo
-insmod gzio
-insmod minicmd
-insmod normal
-insmod test
-
-@@@
-
-syslinux_cfg="syslinux/ieee1275boot.cfg"
-if [ -s "\$syslinux_cfg" ]; then
-	grub-syslinux2cfg -T '' "\$syslinux_cfg" |
-	  sed "s,alt0,EFI/BOOT,g;s,'/',/,g" >> boot/grub/grub.cfg
-	rm "\$syslinux_cfg"
-	rmdir syslinux ||:
-else
-	cat >> boot/grub/grub.cfg <<@@@
-menuentry "Install ALT" {
-	linux /boot/vmlinuz changedisk fastboot automatic=method:cdrom showopts
-	initrd /boot/full.cz
-}
-@@@
-fi
+[ ! -f 'EFI/BOOT/grub.cfg' ] || {
+       echo >&2 'GRUB config EFI/BOOT/grub.cfg does not exist!'
+       exit 1
 
 exit 0
-
 EOF
