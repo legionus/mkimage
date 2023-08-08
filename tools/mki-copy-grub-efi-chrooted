@@ -158,33 +158,27 @@ copy_grub_secondary() {
 	[ -d "$boot_grub/fonts" ] ||
 		mkdir $verbose -p "$boot_grub/fonts"
 
-	if [ -d "$grub_modules/x86_64-efi" ]; then
-		cp $verbose -arf "$grub_modules/x86_64-efi" "$boot_grub"
-		find "$boot_grub/x86_64-efi" -type f -name '*.module' -delete ||:
-	fi
-	if [ -d "$grub_modules/i386-efi" ]; then
-		cp $verbose -arf "$grub_modules/i386-efi" "$boot_grub"
-		find "$boot_grub/i386-efi" -type f -name '*.module' -delete ||:
-	fi
-	if [ -d "$grub_modules/arm64-efi" ]; then
-		cp $verbose -arf "$grub_modules/arm64-efi" "$boot_grub"
-		find "$boot_grub/arm64-efi" -type f -name '*.module' -delete ||:
-	fi
-	if [ -d "$grub_modules/riscv64-efi" ]; then
-		cp $verbose -arf "$grub_modules/riscv64-efi" "$boot_grub"
-		find "$boot_grub/riscv64-efi" -type f -name '*.module' -delete ||:
-	fi
-	if [ -d "$grub_modules/loongarch64-efi" ]; then
-		cp $verbose -arf "$grub_modules/loongarch64-efi" "$boot_grub"
-		find "$boot_grub/loongarch64-efi" -type f -name '*.module' -delete ||:
-	fi
+	local grub_arch
+
+	for grub_arch in x86_64-efi i386-efi arm64-efi riscv64-efi loongarch64-efi; do
+		[ -d "$grub_modules/$grub_arch" ] ||
+			continue
+
+		mkdir -p -- "$boot_grub/$grub_arch"
+
+		find "$grub_modules/$grub_arch" -type f \! -name '*.module' \
+			-exec cp $verbose -arf -t "$boot_grub/$grub_arch" -- '{}' '+'
+	done
 
 	cp $verbose -Lf /boot/grub/fonts/unicode.pf2 "$boot_grub/fonts"
 	cp $verbose -Lf /boot/grub/unifont.pf2 "$boot_grub"
+
 	[ ! -d /boot/grub/themes ] || [ -d "$boot_grub/themes" ] ||
 		cp $verbose -arf /boot/grub/themes "$boot_grub"
+
 	if [ ! -e "$boot_grub/locale" ]; then
 		mkdir "$boot_grub/locale"
+
 		find /usr/share/locale/ -name grub.mo -print |
 		while read -r i; do
 			lct="$(printf '%s\n' "$i" | cut -d/ -f5)"
