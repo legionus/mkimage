@@ -96,6 +96,8 @@ copy-ieee1275boot: prepare-workdir $(SUBDIRS)
 	@$(CHROOT_COPY_IEEE1275BOOT)
 
 copy-grubaa64boot: prepare-workdir $(SUBDIRS)
+	@echo "mkimage: WARNING: '$@' is deprecated!"
+	@echo "mkimage: WARNING: use copy-grub-efi instead"
 	@echo "mkimage: Processing '$@' ..."
 	@$(CHROOT_COPY_GRUBAA64BOOT)
 

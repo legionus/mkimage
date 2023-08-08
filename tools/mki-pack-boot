@@ -26,7 +26,6 @@ boot_isolinux=
 boot_pxelinux=
 boot_syslinux=
 boot_ieee1275boot=
-boot_grubaa64boot=
 boot_grubpcboot=
 boot_e2kboot=
 boot_grub_efi=
@@ -46,8 +45,8 @@ for b; do
 			boot_grubpcboot=1
 			boot_grub_efi=1
 			;;
-		efiboot)
-			message 'WARNING: the efiboot boot type is deprecated!'
+		efiboot|grubaa64boot)
+			message "WARNING: the '$b' boot type is deprecated!"
 			message 'WARNING: use the grub-efi boot type instead.'
 			boot_grub_efi=1
 			;;
@@ -56,7 +55,6 @@ for b; do
 		pxelinux) boot_pxelinux=1 ;;
 		syslinux) boot_syslinux=1 ;;
 		ieee1275boot) boot_ieee1275boot=1 ;;
-		grubaa64boot) boot_grubaa64boot=1 ;;
 		e2kboot) boot_e2kboot=1 ;;
 		grub-efi) boot_grub_efi=1 ;;
 		*) fatal "$b: unknown boot type" ;;
@@ -96,10 +94,6 @@ if [ -n "$boot_syslinux" ]; then
 	set -- "$@" syslinux
 fi
 
-if [ -n "$boot_grubaa64boot" ]; then
-	set -- "$@" grubaa64boot
-fi
-
 if [ -n "$boot_ieee1275boot" ]; then
 	set -- "$@" ieee1275boot
 fi
@@ -116,7 +110,7 @@ case "$#" in
 			pack_helper=mki-pack-isolinux
 		elif [ -n "$boot_grubpcboot" ]; then
 			pack_helper=mki-pack-grubpc
-		elif [ -n "$boot_grub_efi" ] || [ -n "$boot_grubaa64boot" ]; then
+		elif [ -n "$boot_grub_efi" ]; then
 			pack_helper=mki-pack-grub-efi
 		elif [ -n "$boot_ieee1275boot" ] || [ -n "$boot_e2kboot" ]; then
 			pack_helper=mki-pack-isodata
