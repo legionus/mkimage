@@ -59,8 +59,8 @@ mkdir -p %buildroot%sysctldir
 echo "fs.protected_hardlinks = 0" > %buildroot%sysctldir/49-%name.conf
 ln -s 49-%name.conf %buildroot%sysctldir/51-%name.conf	# *sigh*
 
-# This script is executed in chroot.
-%add_findreq_skiplist %_datadir/%name/tools/mki-copy-efiboot-chrooted
+# These scripts are executed in the chrooted environment.
+%add_findreq_skiplist %_datadir/%name/tools/mki-copy-grub-efi-chrooted
 %add_findreq_skiplist %_datadir/%name/tools/mki-chroot-sh-functions
 
 %post
