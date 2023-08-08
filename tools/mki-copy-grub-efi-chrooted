@@ -193,15 +193,29 @@ copy_grub_secondary() {
 	fi
 }
 
-# grub.cfg for .efiboot.img
 add_grub_cfg() {
-	{
-		cat <<- GRUB_EOF
-			search --file --set=root /.disk/info
-			set prefix=(\$root)/$boot_grub
-			source \$prefix/grub.cfg
-		GRUB_EOF
-	} > "$boot/grub.cfg"
+	local main_grub_cfg="$boot_grub/grub.cfg"
+	local interim_grub_cfg="$boot/grub.cfg"
+
+	# If both the main and intermediate grub.cfg files already exist,
+	# no action is required.
+	if [ -f "$interim_grub_cfg" ] && [ -f "$main_grub_cfg" ]; then
+		return 0
+	fi
+
+	# If the intermediate grub.cfg exists, but the main grub.cfg doesn't
+	# use it as the main one.
+	if [ -f "$interim_grub_cfg" ] && [ ! -f "$main_grub_cfg" ]; then
+		mv -T "$interim_grub_cfg" "$main_grub_cfg"
+	fi
+
+	# The intermediate grub.cfg is essential to minimize the size
+	# of the efiboot.img.
+	cat >"$interim_grub_cfg" <<-GRUB_EOF
+		search --file --set=root /.disk/info
+		set prefix=(\$root)/$boot_grub
+		source \$prefix/grub.cfg
+	GRUB_EOF
 }
 
 write_efiboot_img () {
@@ -236,8 +250,6 @@ write_efiboot_img () {
 	# and dosfstools-4.0 doesn't follow that anymore
 	echo "mtools_skip_check=1" >~/.mtoolsrc
 
-	[ ! -f "$boot/grub.cfg" ] || [ -f "$boot_grub/grub.cfg" ] ||
-		mv "$boot/grub.cfg" "$boot_grub"
 	add_grub_cfg
 
 	mcopy $verbose -i "$img" -s EFI \
