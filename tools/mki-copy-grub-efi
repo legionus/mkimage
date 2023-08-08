@@ -8,23 +8,18 @@
 
 verbose "has started executing."
 
-pkgs="${PACKAGES_REQUIRED_COPY_EFIBOOT:-}"
+# The EFI_BOOTLOADER had previously supported other values here.  Therefore,
+# it's better to fail early if the profile specifies an EFI bootloader that is
+# not supported.
+case "${EFI_BOOTLOADER:-}" in
+	''|grub-efi) ;;
+	*) fatal "$EFI_BOOTLOADER EFI bootloader is not supported!" ;;
+esac
+
+pkgs="${PACKAGES_REQUIRED_COPY_GRUB_EFI:-}"
 
 [ -d "$chroot" ] ||
 	fatal "$dir: does not look like a hasher work directory."
-
-# should be a package name
-[ -n "${EFI_BOOTLOADER:-}" ] ||
-	fatal "EFI_BOOTLOADER variable is empty."
-
-case "$EFI_BOOTLOADER" in
-	grub-efi)
-		pkgs="$pkgs grub-efi"
-		;;
-	*)
-		fatal "$EFI_BOOTLOADER EFI bootloader is not supported!"
-		;;
-esac
 
 [ -z "${EFI_CERT:-}" ] ||
 	pkgs="$pkgs alt-uefi-certs shim-signed shim-unsigned"
@@ -32,9 +27,9 @@ esac
 mki-install $pkgs ||
 	fatal "failed to install packages: $pkgs."
 
-cp ${verbose-} -f -- "$bindir/mki-copy-efiboot-chrooted" "$chroot/.host/efiboot-chrooted"
+cp ${verbose-} -f -- "$bindir/mki-copy-grub-efi-chrooted" "$chroot/.host/grub-efi-chrooted"
 
-make_exec "$chroot/.host/efiboot.sh" <<EOF
+make_exec "$chroot/.host/grub-efi.sh" <<EOF
 #!/bin/sh -efu${verbose:+x}
 
 verbose="$verbose"
@@ -42,11 +37,11 @@ EFI_CERT="${EFI_CERT-}"
 EFI_FILES_COPY="${EFI_FILES_COPY-}"
 EFI_FILES_REPLACE="${EFI_FILES_REPLACE-}"
 
-. /.host/efiboot-chrooted
+. /.host/grub-efi-chrooted
 EOF
 
 rc=0
-mki-run "/.host/efiboot.sh" || rc=$?
-rm -f -- "$chroot/.host/efiboot.sh"
+mki-run "/.host/grub-efi.sh" || rc=$?
+rm -f -- "$chroot/.host/grub-efi.sh"
 find "$chroot/.in" -mindepth 1 -maxdepth 1 -exec rm -rf -- '{}' '+'
 exit $rc

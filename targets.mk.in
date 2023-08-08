@@ -75,8 +75,14 @@ copy-isolinux: prepare-workdir $(SUBDIRS)
 	@$(CHROOT_COPY_ISOLINUX)
 
 copy-efiboot: prepare-workdir $(SUBDIRS)
+	@echo "mkimage: WARNING: '$@' is deprecated!"
+	@echo "mkimage: WARNING: use copy-grub-efi instead"
 	@echo "mkimage: Processing '$@' ..."
 	@$(CHROOT_COPY_EFIBOOT)
+
+copy-grub-efi: prepare-workdir $(SUBDIRS)
+	@echo "mkimage: Processing '$@' ..."
+	@$(CHROOT_COPY_GRUB_EFI)
 
 copy-pxelinux: prepare-workdir $(SUBDIRS)
 	@echo "mkimage: Processing '$@' ..."
