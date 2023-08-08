@@ -585,6 +585,7 @@ dr-xr-xr-x 0 0 2048 syslinux/alt0
 -r--r--r-- 0 0 8836352 EFI/BOOT/vmlinuz
 -r--r--r-- 0 0 0 syslinux/alt0/vmlinuz
 -r--r--r-- 0 0 22116 syslinux/gfxboot.c32
--r--r--r-- 0 0 0 boot/grub/i386-efi/fdt.lst
 -r--r--r-- 0 0 0 syslinux/isolinux.cfg
+-r--r--r-- 0 0 0 boot/grub/grub.cfg
 -r--r--r-- 0 0 0 boot/grub/x86_64-efi/fdt.lst
+-r--r--r-- 0 0 0 boot/grub/i386-efi/fdt.lst

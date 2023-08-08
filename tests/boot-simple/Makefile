@@ -15,9 +15,19 @@ ifeq ($(GLOBAL_TEST_NAME),boot-simple-isolinux.iso)
 COPY_TREE = ./isolinux
 all: copy-tree pack-image
 
+else ifeq ($(GLOBAL_TEST_NAME),boot-simple-efiboot-grub-efi.iso)
+
+COPY_TREE = ./grub-efi-files
+all: copy-tree pack-image
+
+else ifeq ($(GLOBAL_TEST_NAME),boot-simple-hybrid-grubpc-efiboot-grub-efi.iso)
+
+COPY_TREE = ./grub-efi-files
+all: copy-tree pack-image
+
 else ifeq ($(GLOBAL_TEST_NAME),boot-simple-hybrid-isolinux-efiboot-grub-efi.iso)
 
-COPY_TREE = ./isolinux
+COPY_TREE = ./isolinux ./grub-efi-files
 MKI_SCRIPTDIR = hybrid-isolinux-efiboot-scripts.d
 all: copy-tree run-scripts pack-image
 
