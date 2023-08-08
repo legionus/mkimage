@@ -14,7 +14,7 @@ cat > "$curdir/tmp/run.sh" <<-EOF
 #!/bin/bash -eux
 
 apt-get -y -qq update
-apt-get -y -qq install dash libshell make shellcheck
+apt-get -y -qq install libshell make shellcheck
 
 cd "$builddir"
 

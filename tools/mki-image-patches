@@ -1,8 +1,6 @@
-#!/bin/ash -efu
+#!/bin/sh -efu
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Copyright (C) 2021  Gleb Fotengauer-Malinovskiy <glebfm@altlinux.org>
-
-# shellcheck shell=dash
 
 # shellcheck source=tools/mki-sh-functions
 . "${0%/*}"/mki-sh-functions

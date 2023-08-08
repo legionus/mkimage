@@ -27,7 +27,7 @@ apt-get -y -qq install \
 
 : mkimage requires
 apt-get -y -qq install \
-	dash libshell hasher make shellcheck \
+	libshell hasher make shellcheck \
 	cpio diffutils findutils tar squashfs-tools bsdtar file sed
 
 cd "$builddir"
