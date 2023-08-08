@@ -30,7 +30,7 @@ bin_TARGETS = bin/mkimage-reset-cache
 
 TARGETS = actions.mk config.mk \
 	config-hasher.mk config-requires.mk config-squash.mk config-propagator.mk \
-	tools.mk rules.mk targets.mk
+	tools.mk targets.mk
 
 all: $(TARGETS) $(bin_TARGETS)
 
