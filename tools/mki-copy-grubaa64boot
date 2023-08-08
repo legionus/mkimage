@@ -75,32 +75,10 @@ if [ -n "\$kimage" ]; then
 	cp $verbose -af /boot/full.cz EFI/BOOT/full.cz
 fi
 
-[ ! -s 'EFI/BOOT/grub.cfg' ] || exit 0
-
-cat > EFI/BOOT/grub.cfg <<GRUB_CONF
-insmod echo
-insmod gzio
-insmod minicmd
-insmod normal
-insmod test
-
-GRUB_CONF
-
-syslinux_cfg="syslinux/grubaa64boot.cfg"
-if [ -s "\$syslinux_cfg" ]; then
-	grub-syslinux2cfg -T '' "\$syslinux_cfg" |
-	  sed "s,alt0,EFI/BOOT,g;s,'/',/,g" >> EFI/BOOT/grub.cfg
-	rm -f "\$syslinux_cfg"
-	rmdir syslinux ||:
-else
-	cat >> EFI/BOOT/grub.cfg <<GRUB_CONF
-menuentry 'Install ALT' {
-    linux /EFI/BOOT/vmlinuz fastboot live lowmem showopts automatic=method:cdrom
-    initrd /EFI/BOOT/full.cz
+[ ! -f 'EFI/BOOT/grub.cfg' ] || {
+	echo >&2 'GRUB config EFI/BOOT/grub.cfg does not exist!'
+	exit 1
 }
-
-GRUB_CONF
-fi
 
 exit 0
 
