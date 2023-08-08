@@ -47,6 +47,8 @@ if [ -d "$subdir" ]; then
 	cp -aT "$subdir" "$TEST"
 fi
 
+export GLOBAL_TEST_NAME="$TEST"
+
 case "$format" in
 	cpio|data|squash|tar)
 		export GLOBAL_TEST_MKI_PACK_RESULTS="$format:$TEST"

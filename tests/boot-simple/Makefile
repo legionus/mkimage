@@ -10,12 +10,12 @@ EFI_BOOTLOADER = $(GLOBAL_TEST_EFI_BOOTLOADER)
 
 include $(CONFIGDIR)/targets.mk
 
-ifeq ($(GLOBAL_TEST_BOOT_TYPE),isolinux-boot)
+ifeq ($(GLOBAL_TEST_NAME),boot-simple-isolinux.iso)
 
 COPY_TREE = ./isolinux
 all: copy-tree pack-image
 
-else ifeq ($(GLOBAL_TEST_BOOT_TYPE) $(GLOBAL_TEST_EFI_BOOTLOADER),isolinux-boot efiboot grub-efi)
+else ifeq ($(GLOBAL_TEST_NAME),boot-simple-hybrid-isolinux-efiboot-grub-efi.iso)
 
 COPY_TREE = ./isolinux
 MKI_SCRIPTDIR = hybrid-isolinux-efiboot-scripts.d
