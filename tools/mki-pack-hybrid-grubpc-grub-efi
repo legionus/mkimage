@@ -60,17 +60,6 @@ if [ -n "${MKI_EXCLUDE:-}" ]; then
 	done
 fi > .exclude
 
-efi_opts=
-if [ -n "${EFI_BOOTLOADER:-}" ]; then
-	efi_opts="\
-	-eltorito-alt-boot \
-	-e EFI/.efiboot.img \
-	-no-emul-boot \
-	-append_partition 2 0xef /.image/EFI/.efiboot.img \
-	-appended_part_as_gpt \
-"
-fi
-
 rc=0
 xorriso -follow param \
 	-read_mkisofsrc \
@@ -87,7 +76,11 @@ xorriso -follow param \
 	--grub2-boot-info \
 	--grub2-mbr \$libdir/grub/i386-pc/boot_hybrid.img \
 	--mbr-force-bootable \
-	\$efi_opts \
+	-eltorito-alt-boot \
+	-e EFI/.efiboot.img \
+	-no-emul-boot \
+	-append_partition 2 0xef /.image/EFI/.efiboot.img \
+	-appended_part_as_gpt \
 	"\$imgdir/" || rc=\$?
 
 rm -f -- .mkisofsrc .exclude
