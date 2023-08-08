@@ -15,32 +15,19 @@ pkgs="${PACKAGES_REQUIRED_COPY_EFIBOOT:-}"
 
 # should be a package name
 [ -n "${EFI_BOOTLOADER:-}" ] ||
-	fatal "EFI_BOOTLOADER is empty."
+	fatal "EFI_BOOTLOADER variable is empty."
 
-pkgs="$pkgs $EFI_BOOTLOADER"
-
-# should be a package name
-[ -z "${EFI_SHELL:-}" ] ||
-	pkgs="$pkgs $EFI_SHELL"
-
-[ -z "${EFI_CERT:-}" ] ||
-	pkgs="$pkgs alt-uefi-certs shim-signed shim-unsigned"
-
-case "${EFI_BOOTLOADER:-}" in
-	refind)	# won't boot unsigned kernels in SB mode
-		# elilo for x86_64 boot stack compatibility
-		# grub-efi for ia32 EFI on x86_64
-		pkgs="$pkgs elilo grub-efi"
-		;;
+case "$EFI_BOOTLOADER" in
 	grub-efi)
 		pkgs="$pkgs grub-efi"
 		;;
 	*)
+		fatal "$EFI_BOOTLOADER EFI bootloader is not supported!"
 		;;
 esac
 
-[ -z "${EFI_MEMTEST86:-}" ] ||
-	pkgs="$pkgs $EFI_MEMTEST86"
+[ -z "${EFI_CERT:-}" ] ||
+	pkgs="$pkgs alt-uefi-certs shim-signed shim-unsigned"
 
 mki-install $pkgs ||
 	fatal "failed to install packages: $pkgs."
@@ -52,8 +39,6 @@ make_exec "$chroot/.host/efiboot.sh" <<EOF
 
 verbose="$verbose"
 EFI_CERT="${EFI_CERT-}"
-EFI_BOOTLOADER="${EFI_BOOTLOADER-}"
-EFI_BOOTARGS="${EFI_BOOTARGS-}"
 EFI_FILES_COPY="${EFI_FILES_COPY-}"
 EFI_FILES_REPLACE="${EFI_FILES_REPLACE-}"
 
