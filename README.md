@@ -39,3 +39,4 @@ Mailing list [devel-en](https://lists.altlinux.org/mailman/listinfo/devel-en)
 
 - Alexey Gladkov
 - Michael Shigorin
+- Gleb Fotengauer-Malinovskiy
