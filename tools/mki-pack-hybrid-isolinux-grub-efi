@@ -26,7 +26,7 @@ imgsubdir="${imgsubdir#/}"
 	fatal "/.image/$imgsubdir/syslinux/isolinux.cfg: not found."
 
 # isohybrid bootsector
-[ -z "${EFI_BOOTLOADER:-}" ] && [ -z "${ISOHYBRID:-}" ] ||
+[ -z "${ISOHYBRID:-}" ] ||
 	pkgs="$pkgs syslinux"
 
 mki-install $pkgs ||
@@ -68,24 +68,6 @@ if [ -n "${MKI_EXCLUDE:-}" ]; then
 	done
 fi > .exclude
 
-isohybrid_opts=
-if [ -n "${EFI_BOOTLOADER:-}" ] || [ -n "${ISOHYBRID:-}" ]; then
-	isohybrid_opts="\
-	-isohybrid-mbr /usr/lib/syslinux/isohdpfx.bin \
-	-partition_offset 16 \
-"
-fi
-
-efi_opts=
-if [ -n "${EFI_BOOTLOADER:-}" ]; then
-	efi_opts="\
-	-eltorito-alt-boot \
-	-e EFI/.efiboot.img \
-	-no-emul-boot \
-	-isohybrid-gpt-basdat \
-"
-fi
-
 rc=0
 xorriso -follow param \
 	-read_mkisofsrc \
@@ -98,8 +80,12 @@ xorriso -follow param \
 	-no-emul-boot \
 	-boot-load-size 4 \
 	-boot-info-table \
-	\$isohybrid_opts \
-	\$efi_opts \
+	-isohybrid-mbr /usr/lib/syslinux/isohdpfx.bin \
+	-partition_offset 16 \
+	-eltorito-alt-boot \
+	-e EFI/.efiboot.img \
+	-no-emul-boot \
+	-isohybrid-gpt-basdat \
 	"\$imgdir/" || rc=\$?
 
 rm -f -- .mkisofsrc .exclude
