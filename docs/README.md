@@ -1,0 +1,2 @@
+- [General information about the project](Design.md).
+- [Configuration file](Makefile.md).
