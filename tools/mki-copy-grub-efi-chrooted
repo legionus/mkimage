@@ -209,6 +209,9 @@ add_grub_cfg() {
 		mv -T "$interim_grub_cfg" "$main_grub_cfg"
 	fi
 
+	[ -f "$main_grub_cfg" ] ||
+		fatal "GRUB config $main_grub_cfg doesn't exist!"
+
 	# The intermediate grub.cfg is essential to minimize the size
 	# of the efiboot.img.
 	cat >"$interim_grub_cfg" <<-GRUB_EOF
