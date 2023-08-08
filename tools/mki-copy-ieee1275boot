@@ -51,6 +51,7 @@ fi
 [ ! -f 'EFI/BOOT/grub.cfg' ] || {
        echo >&2 'GRUB config EFI/BOOT/grub.cfg does not exist!'
        exit 1
+}
 
 exit 0
 EOF
