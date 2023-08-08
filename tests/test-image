@@ -155,11 +155,12 @@ check_result() {
 	esac
 
 	if [ -s "$flist" ]; then
-		rc=0
 		diff -u "$flist" "$tmpdir"/flist ||
 			fatal "$TEST: file list FAIL"
 	else
-		cat "$tmpdir"/flist >"$flist"
+		message "$TEST: $flist: file list is not available"
+		cat >&2 "$tmpdir"/flist
+		fatal "$TEST: file list FAIL"
 	fi
 	message "$TEST: file list OK"
 }
