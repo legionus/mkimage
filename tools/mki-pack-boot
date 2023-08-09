@@ -9,6 +9,7 @@
 verbose "has started executing."
 
 BOOT_TYPE="${BOOT_TYPE:?boot type required}"
+EFI_BOOTLOADER="${EFI_BOOTLOADER:-}"
 
 outname="${MKI_OUTNAME:-outname}"
 outname="${outname##*/}"
@@ -36,14 +37,18 @@ for b; do
 			message 'WARNING: use either isolinux-boot (if you want isolinux),'
 			message 'WARNING: or "isolinux-boot grub-efi" (if you want isolinux + EFI).'
 			boot_isolinux=1
-			boot_grub_efi=1
+			if [ "$EFI_BOOTLOADER" = grub-efi ]; then
+				boot_grub_efi=1
+			fi
 			;;
 		grubpcboot)
 			message 'WARNING: the grubpcboot boot type is deprecated!'
 			message 'WARNING: use either grub-pc-boot (if you want grub-pc),'
 			message 'WARNING: or "grub-pc-boot grub-efi" (if you want grub-pc + EFI).'
 			boot_grubpcboot=1
-			boot_grub_efi=1
+			if [ "$EFI_BOOTLOADER" = grub-efi ]; then
+				boot_grub_efi=1
+			fi
 			;;
 		efiboot|grubaa64boot)
 			message "WARNING: the '$b' boot type is deprecated!"
@@ -64,7 +69,7 @@ done
 # The EFI_BOOTLOADER had previously supported other values here.  Therefore,
 # it's better to fail early if the profile specifies an EFI bootloader that is
 # not supported.
-case "${EFI_BOOTLOADER:-}" in
+case "$EFI_BOOTLOADER" in
 	''|grub-efi) ;;
 	*) fatal "$EFI_BOOTLOADER EFI bootloader is not supported!" ;;
 esac
