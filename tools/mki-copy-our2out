@@ -5,12 +5,13 @@
 # shellcheck source=tools/mki-sh-functions
 . "${0%/*}"/mki-sh-functions
 
+MKI_OUTNAME="${MKI_OUTNAME:-}"
 cleanup="${CLEANUP_OUTDIR:-}"
 subprofile="${SUBPROFILE:-0}"
 
 verbose "has started executing."
 
-if [ "${MKI_OUTNAME:?}" != "${MKI_OUTNAME##*/}" ]; then
+if [ "$MKI_OUTNAME" != "${MKI_OUTNAME##*/}" ]; then
 	outdir="$(readlink -ev "${MKI_OUTNAME%/*}")"
 	cleanup=
 fi
