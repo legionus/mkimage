@@ -1,5 +1,5 @@
 Name: mkimage
-Version: 0.2.47
+Version: 0.3.0
 Release: alt1
 
 Summary: Simple image creator
@@ -77,7 +77,7 @@ fi
 %files
 %_bindir/*
 %_datadir/%name
-%doc doc/README.ru
+%doc docs/*.md
 
 %files preinstall
 %config(noreplace) %sysctldir/??-%name.conf
@@ -87,6 +87,23 @@ fi
 # - maybe Require: %%name-preinstall in the main package sometime later
 
 %changelog
+* Wed Aug 09 2023 Alexey Gladkov <legion@altlinux.ru> 0.3.0-alt1
+- Add loongarch64 support.
+- Add custompipe pack method.
+- Add mki-chroot-sh-functions to store common functions for chrooted scripts.
+- mki-pack-*boot: Major refactoring and code cleanup.
+- mki-copy-{pxe,sys}linux: Add compatibility with bootloader-utils >= 0.4.11-alt1.
+- mki-pack-boot: Add proper support for e2kboot.
+- mki-copy-pkgs: Rename copied RPM packages based on their header information.
+- Drop support of elilo and refind EFI bootloaders.
+- Obsolete grubaa64boot boot type.
+- Replace /bin/ash -> /bin/sh.
+- Drop obsolete rules.mk.
+- Drop obsolete examples.
+- mki-cache-*: Major refactoring and code cleanup.
+- mki-cache: Allow custom caching scripts.
+- Add a way to change the image through patches.
+
 * Wed Jul 26 2023 Alexey Gladkov <legion@altlinux.ru> 0.2.47-alt1
 - mki-image-prepare: Allowed to run script just after unpack IMAGE_INIT_LIST.
 - Increased the minimum required version of hasher.
