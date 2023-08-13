@@ -1,5 +1,5 @@
 Name: mkimage
-Version: 0.3.0
+Version: 0.3.1
 Release: alt1
 
 Summary: Simple image creator
@@ -87,6 +87,10 @@ fi
 # - maybe Require: %%name-preinstall in the main package sometime later
 
 %changelog
+* Sun Aug 13 2023 Alexey Gladkov <legion@altlinux.ru> 0.3.1-alt1
+- mki-pack-boot: Do not imply grub-efi for isolinux and grubpcboot boot types.
+- mki-copy-our2out: MKI_OUTNAME may be empty.
+
 * Wed Aug 09 2023 Alexey Gladkov <legion@altlinux.ru> 0.3.0-alt1
 - Add loongarch64 support.
 - Add custompipe pack method.
