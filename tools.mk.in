@@ -42,6 +42,6 @@ CHROOT_COPY_GRUB_EFI	?= $(TOOLSDIR)/mki-copy-grub-efi
 CHROOT_COPY_E2KBOOT	?= $(TOOLSDIR)/mki-copy-e2kboot
 CHROOT_INSTALL		?= $(TOOLSDIR)/mki-install
 CHROOT_IMAGE_INSTALL	?= $(TOOLSDIR)/mki-image-install
-CHROOT_IMAGE_PATCHES	?= $(CURDIR)/mki-image-patches
+CHROOT_IMAGE_PATCHES	?= $(TOOLSDIR)/mki-image-patches
 
 endif
