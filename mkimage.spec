@@ -10,7 +10,8 @@ Packager: Alexey Gladkov <legion@altlinux.ru>
 BuildArch: noarch
 
 Requires: libshell >= 0.0.2
-Requires: hasher >= 1.7.2-alt1
+# for --predb-prog support
+Requires: hasher >= 1.7.2
 
 Url: http://altlinux.org/mkimage
 Source: %name-%version.tar
