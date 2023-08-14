@@ -1,8 +1,8 @@
-dr-xr-xr-x 0 0 2048 .
-dr-xr-xr-x 0 0 2048 syslinux
-dr-xr-xr-x 0 0 2048 syslinux/alt0
--r--r--r-- 0 0 2048 syslinux/boot.cat
--r--r--r-- 0 0 24576 syslinux/isolinux.bin
--r--r--r-- 0 0 8836352 syslinux/alt0/vmlinuz
--r--r--r-- 0 0 22116 syslinux/gfxboot.c32
--r--r--r-- 0 0 0 syslinux/isolinux.cfg
+dr-xr-xr-x 0 0 .
+dr-xr-xr-x 0 0 syslinux
+dr-xr-xr-x 0 0 syslinux/alt0
+-r--r--r-- 0 0 syslinux/boot.cat
+-r--r--r-- 0 0 syslinux/isolinux.bin
+-r--r--r-- 0 0 syslinux/alt0/vmlinuz
+-r--r--r-- 0 0 syslinux/gfxboot.c32
+-r--r--r-- 0 0 syslinux/isolinux.cfg

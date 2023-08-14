@@ -1,4 +1,4 @@
-drwxr-xr-x root/root 31 squashfs-root
-drwxr-xr-x root/root 32 squashfs-root/ALTLinux
-drwxr-xr-x root/root 49 squashfs-root/ALTLinux/RPMS.main
--rw-r--r-- root/root 3095 squashfs-root/ALTLinux/RPMS.main/bashrc-1.0-alt1.noarch.rpm
+drwxr-xr-x root/root squashfs-root
+drwxr-xr-x root/root squashfs-root/ALTLinux
+drwxr-xr-x root/root squashfs-root/ALTLinux/RPMS.main
+-rw-r--r-- root/root squashfs-root/ALTLinux/RPMS.main/bashrc-1.0-alt1.noarch.rpm

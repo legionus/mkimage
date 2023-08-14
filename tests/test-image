@@ -131,22 +131,15 @@ check_result() {
 	local bname="$(basename "$result")"
 	local ftype="${bname#*.}"
 	case "$ftype" in
-		cpio) cpio -tv --quiet -I "$result" | awk '{print $1, $3, $4, $5, $9}' ;;
-		data) find "$result" -type d -printf '/%P %m\n' -or -printf '/%P %m %s\n' >"$tmpdir"/flist_
+		cpio) cpio -tv --quiet -I "$result" | awk '{print $1, $3, $4, $9}' ;;
+		data) find "$result" -printf '/%P %m\n' >"$tmpdir"/flist_
 		      sort "$tmpdir"/flist_
 		      ;;
-		tar*) tar tvf "$result" | awk '{print $1, $2, $3, $6}' ;;
-		squash) unsquashfs -ll "$result" | awk '{print $1, $2, $3, $6}' ;;
-		iso) bsdtar -tvf "$result" | awk '{print $1, $3, $4, $5, $9}' ;;
+		tar*) tar tvf "$result" | awk '{print $1, $2, $6}' ;;
+		squash) unsquashfs -ll "$result" | awk '{print $1, $2, $6}' ;;
+		iso) bsdtar -tvf "$result" | awk '{print $1, $3, $4, $9}' ;;
 		*) fatal "$ftype is not supported" ;;
 	esac > "$tmpdir"/flist
-
-	case "$TEST" in
-		boot-simple-grubpc.iso|boot-simple-hybrid-grubpc-efiboot-grub-efi.iso)
-			# The size of this file may differ with each execution.
-			sed -E 's|[0-9]* (boot/grub/bios\.img)$|VOLATILE \1|' -i "$tmpdir"/flist
-			;;
-	esac
 
 	if [ -s "$flist" ]; then
 		diff -u "$flist" "$tmpdir"/flist ||

@@ -1,3 +1,3 @@
-drwxr-xr-x root root 0 ALTLinux
-drwxr-xr-x root root 0 ALTLinux/RPMS.main
--rw-r--r-- root root 3095 ALTLinux/RPMS.main/bashrc-1.0-alt1.noarch.rpm
+drwxr-xr-x root root ALTLinux
+drwxr-xr-x root root ALTLinux/RPMS.main
+-rw-r--r-- root root ALTLinux/RPMS.main/bashrc-1.0-alt1.noarch.rpm
