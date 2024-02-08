@@ -106,6 +106,8 @@ These variables affect how hasher behaves when creating chroots.
   the chroot.
 - `HSH_PROC`, `GLOBAL_HSH_PROC` - A non-empty value requests that /proc be
   mounted into a instrumental chroot.
+- `HSH_INSTAL_PROC`, `GLOBAL_HSH_INSTALL_PROC` - A non-empty value requests that
+  /proc be mounted into a instrumental chroot for install packages only.
 - `HSH_NETWORK`, `GLOBAL_HSH_NETWORK` - If not empty, then the hasher will be
   allowed to use the network.
 
