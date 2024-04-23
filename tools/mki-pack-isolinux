@@ -81,7 +81,7 @@ xorriso -follow param \
 	-read_mkisofsrc \
 	${UUID_ISO_SHRT:+-volume_date uuid "$UUID_ISO_SHRT"} \
 	-as mkisofs \
-	$verbose -J -l -r \
+	$verbose -J -l -r -joliet-long \
 	-b syslinux/isolinux.bin \
 	-c syslinux/boot.cat \
 	-exclude-list /tmp/.exclude \

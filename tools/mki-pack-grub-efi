@@ -63,7 +63,7 @@ xorriso -follow param \
 	-read_mkisofsrc \
 	${UUID_ISO_SHRT:+-volume_date uuid "$UUID_ISO_SHRT"} \
 	-as mkisofs \
-	$verbose -J -l -r \
+	$verbose -J -l -r -joliet-long \
 	-c EFI/BOOT/boot.cat \
 	-exclude-list /tmp/.exclude \
 	-no-emul-boot \
