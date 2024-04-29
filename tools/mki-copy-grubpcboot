@@ -45,8 +45,8 @@ GRUB_CONF
 	grub-mkstandalone \
 		--format="$grub_format" \
 		--output=boot/core.img \
-		--install-modules="linux normal iso9660 biosdisk memdisk part_gpt search tar ls" \
-		--modules="linux normal iso9660 biosdisk part_gpt search" \
+		--install-modules="linux normal iso9660 f2fs ext2 fat exfat ntfs ntfscomp biosdisk memdisk part_gpt search tar ls minicmd reboot halt cat" \
+		--modules="linux normal iso9660 f2fs ext2 fat exfat ntfs ntfscomp biosdisk part_gpt search" \
 		--locales="" \
 		--fonts="" \
 		"boot/grub/grub.cfg=boot/grub.cfg"
