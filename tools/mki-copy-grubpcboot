@@ -30,10 +30,14 @@ cd "$imgdir"
 
 mkdir $verbose -p boot/grub/fonts
 
+if [ -n "${UUID_ISO:-}" ]; then
+	touch "${UUID_ISO:-}"
+fi
+
 # make eltorito.img
 if [ ! -f boot/grub/bios.img ]; then
 	cat >> 'boot/grub.cfg' <<'GRUB_CONF'
-search --file --set=root /.disk/info
+search --file --set=root /${UUID_ISO:-.disk/info}
 set prefix=(\$root)/boot/grub
 source \$prefix/grub.cfg
 GRUB_CONF

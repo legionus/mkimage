@@ -12,6 +12,7 @@ verbose="${verbose-}"
 EFI_CERT="${EFI_CERT-}"
 EFI_FILES_COPY="${EFI_FILES_COPY-}"
 EFI_FILES_REPLACE="${EFI_FILES_REPLACE-}"
+UUID_ISO="${UUID_ISO:-}"
 
 cd /.image
 
@@ -22,6 +23,10 @@ boot_grub="boot/grub"
 cert="EFI/enroll"
 efi_bindir='/usr/lib64/efi'
 grub_modules='/usr/lib64/grub'
+
+if [ -n "$UUID_ISO" ]; then
+	touch "$UUID_ISO"
+fi
 
 mkdir $verbose -p -- "$boot"
 
@@ -209,7 +214,7 @@ add_grub_cfg() {
 	# The intermediate grub.cfg is essential to minimize the size
 	# of the efiboot.img.
 	cat >"$interim_grub_cfg" <<-GRUB_EOF
-		search --file --set=root /.disk/info
+		search --file --set=root /${UUID_ISO:-.disk/info}
 		set prefix=(\$root)/$boot_grub
 		source \$prefix/grub.cfg
 	GRUB_EOF

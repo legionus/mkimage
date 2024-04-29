@@ -36,6 +36,7 @@ verbose="$verbose"
 EFI_CERT="${EFI_CERT-}"
 EFI_FILES_COPY="${EFI_FILES_COPY-}"
 EFI_FILES_REPLACE="${EFI_FILES_REPLACE-}"
+UUID_ISO="${UUID_ISO:-}"
 
 . /.host/grub-efi-chrooted
 EOF
