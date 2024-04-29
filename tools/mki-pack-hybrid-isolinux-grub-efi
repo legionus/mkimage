@@ -68,10 +68,15 @@ if [ -n "${MKI_EXCLUDE:-}" ]; then
 	done
 fi > .exclude
 
+uuid_iso=
+if [ -n "${UUID_ISO:-}" ]; then
+	uuid_iso="-volume_date uuid $(echo ${UUID_ISO:-} | sed 's/-//g')"
+fi
+
 rc=0
 xorriso -follow param \
 	-read_mkisofsrc \
-	${UUID_ISO_SHRT:+-volume_date uuid "$UUID_ISO_SHRT"} \
+	\$uuid_iso \
 	-as mkisofs \
 	$verbose -J -l -r -joliet-long \
 	-b syslinux/isolinux.bin \

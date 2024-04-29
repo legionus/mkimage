@@ -215,8 +215,8 @@ Packs the work chroot according to the described format.
 - `EFI_FILES_REPLACE` - Files and directories to be copied from the root of the
   image to the ESP partition. These directories and files will be removed from
   the image. The variable must not contain the `/` character and spaces.
-- `UUID_ISO_SHRT` - Specifies the UUID for the ISO image in short form:
-  `YYYYMMDDhhmmsscc`.  The image will get UUID `YYYY-MM-DD-hh-mm-ss-cc`. An
+- `UUID_ISO` - Specifies the UUID for the ISO image in short form:
+  `YYYY-MM-DD-hh-mm-ss-cc`.  The image will get UUID `YYYY-MM-DD-hh-mm-ss-cc`. An
   empty value will set the UUID at the pack time.
 
 ### run-scripts
