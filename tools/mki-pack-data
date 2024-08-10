@@ -15,7 +15,7 @@ outname="${outname##*/}"
 
 args=
 for d in ${MKI_EXCLUDE:-}; do
-	args="$args -a \\\\! -wholename '$d'"
+	args="$args -a \\! -wholename '$d'"
 done
 
 run_chrooted "$chroot" <<EOF
