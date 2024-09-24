@@ -147,15 +147,15 @@ copy_grub_primary() {
 		cp $verbose -pLf "$efi_bindir/grubia32.efi" "$boot/${boot_prefix}ia32.efi"
 	fi
 	if [ -f "$efi_bindir/grubaa64.efi" ]; then
-		cp $verbose -pLf "$efi_bindir/grubaa64.efi" "$boot/bootaa64.efi"
+		cp $verbose -pLf "$efi_bindir/grubaa64.efi" "$boot/BOOTAA64.EFI"
 	elif [ -f "$efi_bindir/grubx64.efi" ] && [ -d "$grub_modules/arm64-efi" ]; then
-		cp $verbose -pLf "$efi_bindir/grubx64.efi" "$boot/bootaa64.efi"
+		cp $verbose -pLf "$efi_bindir/grubx64.efi" "$boot/BOOTAA64.EFI"
 	fi
 	if [ -f "$efi_bindir/grubriscv64.efi" ] && [ -d "$grub_modules/riscv64-efi" ]; then
-		cp $verbose -pLf "$efi_bindir/grubriscv64.efi" "$boot/bootriscv64.efi"
+		cp $verbose -pLf "$efi_bindir/grubriscv64.efi" "$boot/BOOTRISCV64.EFI"
 	fi
 	if [ -f "$efi_bindir/grubloongarch64.efi" ] && [ -d "$grub_modules/loongarch64-efi" ]; then
-		cp $verbose -pLf "$efi_bindir/grubloongarch64.efi" "$boot/bootloongarch64.efi"
+		cp $verbose -pLf "$efi_bindir/grubloongarch64.efi" "$boot/BOOTLOONGARCH64.EFI"
 	fi
 }
 
