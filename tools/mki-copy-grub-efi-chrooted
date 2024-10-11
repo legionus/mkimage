@@ -92,25 +92,22 @@ copy_kernel()
 }
 
 copy_grub_primary() {
-	boot_prefix=grub
-	[ -n "$EFI_CERT" ] || boot_prefix=boot
-	if [ -f "$efi_bindir/grubx64.efi" ] && [ -d "$grub_modules/x86_64-efi" ]; then
-		cp $verbose -pLf "$efi_bindir/grubx64.efi" "$boot/${boot_prefix}x64.efi"
-	fi
-	if [ -f "$efi_bindir/grubia32.efi" ]; then
-		cp $verbose -pLf "$efi_bindir/grubia32.efi" "$boot/${boot_prefix}ia32.efi"
-	fi
-	if [ -f "$efi_bindir/grubaa64.efi" ]; then
-		cp $verbose -pLf "$efi_bindir/grubaa64.efi" "$boot/BOOTAA64.EFI"
-	elif [ -f "$efi_bindir/grubx64.efi" ] && [ -d "$grub_modules/arm64-efi" ]; then
-		cp $verbose -pLf "$efi_bindir/grubx64.efi" "$boot/BOOTAA64.EFI"
-	fi
-	if [ -f "$efi_bindir/grubriscv64.efi" ] && [ -d "$grub_modules/riscv64-efi" ]; then
-		cp $verbose -pLf "$efi_bindir/grubriscv64.efi" "$boot/BOOTRISCV64.EFI"
-	fi
-	if [ -f "$efi_bindir/grubloongarch64.efi" ] && [ -d "$grub_modules/loongarch64-efi" ]; then
-		cp $verbose -pLf "$efi_bindir/grubloongarch64.efi" "$boot/BOOTLOONGARCH64.EFI"
-	fi
+	local efi_arch
+	for efi_arch in x64 ia32 aa64 riscv64 loongarch64-efi; do
+		[ -f "$efi_bindir/grub${efi_arch}.efi" ] || continue
+		if [ "${efi_arch}" = x64 ] && [ -d "$grub_modules/arm64-efi" ]; then
+			# for p9 branch
+			EFI_ARCH=aa64
+		else
+			EFI_ARCH="${efi_arch}"
+		fi
+		if [ -n "$EFI_CERT" ]; then
+			cp $verbose -pLf "$efi_bindir/grub${efi_arch}.efi" "$boot/grub${EFI_ARCH}.efi"
+		else
+			EFI_ARCH="$(echo "$EFI_ARCH" | tr '[:lower:]' '[:upper:]')"
+			cp $verbose -pLf "$efi_bindir/grub${efi_arch}.efi" "$boot/BOOT${EFI_ARCH}.EFI"
+		fi
+	done
 }
 
 copy_grub_secondary() {
