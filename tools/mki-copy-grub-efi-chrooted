@@ -16,7 +16,6 @@ UUID_ISO="${UUID_ISO:-}"
 
 cd /.image
 
-ia32efi_flag="present"
 img='.efiboot.img'
 boot="EFI/BOOT"
 boot_grub="boot/grub"
@@ -29,48 +28,6 @@ if [ -n "$UUID_ISO" ]; then
 fi
 
 mkdir $verbose -p -- "$boot"
-
-shim_path=
-if [ -n "$EFI_CERT" ]; then
-	shim_path="$boot/bootx64.efi"
-fi
-
-# find out if shim version is not less than 15
-# looking at directory structure
-# ia32 binaries should be present since that version
-check_shim_teen_path()
-{
-	local shim_max_version shim_dir_prefix
-
-	shim_dir_prefix="/usr/share/shim"
-
-	[ -d "$shim_dir_prefix" ] ||
-		return 0
-
-	shim_max_version="$(find  "$shim_dir_prefix" -maxdepth 1 -type d | sed 's|\./||' | sort -n -r | head -1)"
-
-	if [ ! "$shim_max_version" = "$shim_dir_prefix" ]; then
-		shimia32_dir="$shim_max_version/ia32"
-	else
-		ia32efi_flag="absent"
-	fi
-}
-
-# check if shim and grub-efi include ia32 EFI binaries
-# if signed shim is absent try to fallback to unsigned one
-check_ia32efi_stack_full()
-{
-	[ -f "$efi_bindir/shimia32.efi" ] ||
-		check_shim_teen_path
-
-	[ -f "$efi_bindir/grubia32.efi" ] ||
-		ia32efi_flag="absent"
-
-	[ "$ia32efi_flag" != "absent" ] ||
-		message "WARNING:" \
-			"Some of required bootloader packages in current branch" \
-			"miss ia32 binaries, ia32 EFI support is therefore disabled."
-}
 
 copy_cert()
 {
@@ -88,32 +45,26 @@ copy_cert()
 
 copy_shim()
 {
-	[ -n "${shim_path:-}" ] ||
-		return 0
 	copy_cert
-	if [ -s "$efi_bindir/shimx64.efi" ]; then
-		cp $verbose -pLf "$efi_bindir/shimx64.efi" "$shim_path"
-		cp $verbose -pLf "$efi_bindir/mmx64.efi" "$boot"
-	else
-		# compatibility with shim-signed-0.4
-		cp $verbose -pLf "$efi_bindir/shim.efi" "$shim_path"
-		cp $verbose -pLf "$efi_bindir/MokManager.efi" "$boot"
-	fi
 
-	# injection of ia32 binaries
-	[ "$ia32efi_flag" = "present" ] ||
-		return 0
+	local shim_max_version shim_dir_prefix shim_arch
+	shim_max_version=
+	shim_dir_prefix="/usr/share/shim"
 
-	if [ -s "$efi_bindir/shimia32.efi" ]; then
-		# shimia32.efi binary is a first stage loader therefore renamed
-		cp $verbose -pLf "$efi_bindir/shimia32.efi" "$boot/bootia32.efi"
-		cp $verbose -pLf "$efi_bindir/mmia32.efi" "$boot"
-	else
-		# use unsigned shim if signed is not available
-		cp $verbose -pLf "$shimia32_dir/shimia32.efi" "$boot/bootia32.efi"
-		cp $verbose -pLf "$shimia32_dir/mmia32.efi" "$boot"
-		cp $verbose -pLf "$shimia32_dir/shimia32.hash" "$boot/bootia32.hash"
-	fi
+	[ ! -d "$shim_dir_prefix" ] ||
+		shim_max_version="$(find "$shim_dir_prefix" -maxdepth 1 -mindepth 1 -type d | sed 's|\./||' | sort -n -r | head -1)"
+
+	for shim_arch in ia32 x64; do
+		if [ -s "$efi_bindir/shim${shim_arch}.efi" ]; then
+			cp $verbose -pLf "$efi_bindir/shim${shim_arch}.efi" "$boot/boot${shim_arch}.efi"
+			cp $verbose -pLf "$efi_bindir/mm${shim_arch}.efi" "$boot"
+		elif [ -n "$shim_max_version" ] && [ -s "$shim_max_version/${shim_arch}/shim${shim_arch}.efi" ]; then
+			# use unsigned shim if signed is not available
+			cp $verbose -pLf "$shim_max_version/${shim_arch}/shim${shim_arch}.efi" "$boot/boot${shim_arch}.efi"
+			cp $verbose -pLf "$shim_max_version/${shim_arch}/mm${shim_arch}.efi" "$boot"
+			cp $verbose -pLf "$shim_max_version/${shim_arch}/shim${shim_arch}.hash" "$boot/boot${shim_arch}.hash"
+		fi
+	done
 }
 
 kimage=
@@ -262,9 +213,6 @@ write_efiboot_img () {
 
 	mv "$img" EFI/
 }
-
-#find out if all bootloader stages have ia32 binaries in the package
-check_ia32efi_stack_full
 
 [ -z "$EFI_CERT" ] ||
 	copy_shim
