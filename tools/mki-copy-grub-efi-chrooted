@@ -55,14 +55,15 @@ copy_shim()
 		shim_max_version="$(find "$shim_dir_prefix" -maxdepth 1 -mindepth 1 -type d | sed 's|\./||' | sort -n -r | head -1)"
 
 	for shim_arch in ia32 x64; do
+		SHIM_ARCH="$(echo "$shim_arch" | tr '[:lower:]' '[:upper:]')"
 		if [ -s "$efi_bindir/shim${shim_arch}.efi" ]; then
-			cp $verbose -pLf "$efi_bindir/shim${shim_arch}.efi" "$boot/boot${shim_arch}.efi"
+			cp $verbose -pLf "$efi_bindir/shim${shim_arch}.efi" "$boot/BOOT${SHIM_ARCH}.EFI"
 			cp $verbose -pLf "$efi_bindir/mm${shim_arch}.efi" "$boot"
 		elif [ -n "$shim_max_version" ] && [ -s "$shim_max_version/${shim_arch}/shim${shim_arch}.efi" ]; then
 			# use unsigned shim if signed is not available
-			cp $verbose -pLf "$shim_max_version/${shim_arch}/shim${shim_arch}.efi" "$boot/boot${shim_arch}.efi"
+			cp $verbose -pLf "$shim_max_version/${shim_arch}/shim${shim_arch}.efi" "$boot/BOOT${SHIM_ARCH}.EFI"
 			cp $verbose -pLf "$shim_max_version/${shim_arch}/mm${shim_arch}.efi" "$boot"
-			cp $verbose -pLf "$shim_max_version/${shim_arch}/shim${shim_arch}.hash" "$boot/boot${shim_arch}.hash"
+			cp $verbose -pLf "$shim_max_version/${shim_arch}/shim${shim_arch}.hash" "$boot/BOOT${SHIM_ARCH}.hash"
 		fi
 	done
 }
