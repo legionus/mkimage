@@ -19,3 +19,32 @@ hasher_args="$verbose $quiet ${HSH_EXCLUDE_DOCS:+--excludedocs} ${HSH_NUMBER:+--
 
 mki_list_pkgs "$@" |
 	xargs -r env -i PATH="$PATH" hsh-install $hasher_args -- "$dir"
+
+# shellcheck disable=SC2249
+[ -z "${PROG##*-image-*}" ] ||
+       exit 0
+
+hsh-run --rooter -- "$dir" which apt-mark >/dev/null 2>&1 ||
+       exit 0
+
+tempdir=
+exit_handler() {
+       local rc=$?
+       trap - EXIT
+       [ -z "$tempdir" ] || rm -rf -- "$tempdir"
+       exit $rc
+}
+
+trap exit_handler HUP INT QUIT TERM EXIT
+tempdir="$(mktemp -d "$dir/$PROG.XXXXXX")"
+
+export LC_ALL=C LANG=C LANGUAGE=C
+
+mki-expand-pkgs regexp "$@" |
+       xargs -r hsh-run --rooter -- "$dir" rpm -q --whatprovides --qf='%{NAME}\n' |
+       sort -uo "$tempdir/install_pkgs"
+
+hsh-run --rooter -- "$dir" rpm -q --all --qf='%{NAME}\n' |
+       sort -u |
+       comm -23 - "$tempdir/install_pkgs" |
+       xargs -r hsh-run --rooter -- "$dir" apt-mark auto
