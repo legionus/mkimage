@@ -93,7 +93,7 @@ copy_kernel()
 
 copy_grub_primary() {
 	local efi_arch
-	for efi_arch in x64 ia32 aa64 riscv64 loongarch64-efi; do
+	for efi_arch in x64 ia32 aa64 riscv64 loongarch64; do
 		[ -f "$efi_bindir/grub${efi_arch}.efi" ] || continue
 		if [ "${efi_arch}" = x64 ] && [ -d "$grub_modules/arm64-efi" ]; then
 			# for p9 branch
