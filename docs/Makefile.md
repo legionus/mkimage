@@ -218,6 +218,7 @@ Packs the work chroot according to the described format.
 - `UUID_ISO` - Specifies the UUID for the ISO image in short form:
   `YYYY-MM-DD-hh-mm-ss-cc`.  The image will get UUID `YYYY-MM-DD-hh-mm-ss-cc`. An
   empty value will set the UUID at the pack time.
+- `ISO_LEVEL` - Option `-iso-level` of mkisofs. By default 2. See `man mkisofs`.
 
 ### run-scripts
 

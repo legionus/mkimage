@@ -87,6 +87,7 @@ xorriso -follow param \
 	\$uuid_iso \
 	-as mkisofs \
 	$verbose -J -l -r -joliet-long \
+	-iso-level ${ISO_LEVEL:-2} \
 	-b syslinux/isolinux.bin \
 	-c syslinux/boot.cat \
 	-exclude-list /tmp/.exclude \

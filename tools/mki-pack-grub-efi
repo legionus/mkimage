@@ -68,6 +68,7 @@ xorriso -follow param \
 	\$uuid_iso \
 	-as mkisofs \
 	$verbose -J -l -r -joliet-long \
+	-iso-level ${ISO_LEVEL:-2} \
 	-c EFI/BOOT/boot.cat \
 	-exclude-list /tmp/.exclude \
 	-no-emul-boot \

@@ -71,6 +71,7 @@ xorriso -follow param \
 	\$uuid_iso \
 	-as mkisofs \
 	$verbose -J -l -r -joliet-long \
+	-iso-level ${ISO_LEVEL:-2} \
 	-exclude-list /tmp/.exclude \
 	-eltorito-boot boot/grub/bios.img \
 	-no-emul-boot \
